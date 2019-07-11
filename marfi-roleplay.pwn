@@ -214,6 +214,9 @@ main()
 
 // ====================================================================================================== Forwards
 forward CheckPlayerData(playerid);
+forward OnCheckPlayerData(playerid);
+forward LoadPlayerData(playerid);
+forward OnLoadPlayerData(playerid);
 forward OnPlayerRegister(playerid);
 forward OnAccountLoad(playerid);
 
@@ -240,39 +243,6 @@ enum PlayerData
 new PlayerInfo[MAX_PLAYERS][PlayerData];
 
 // ====================================================================================================== Stocks
-// Money AntiCheat
-stock SafeGivePlayerMoney(playerid, money)
-{
-	PlayerInfo[playerid][pMoney] += money;
-	ResetPlayerMoney(playerid);
-	GivePlayerMoney(playerid, PlayerInfo[playerid][pMoney]);
-	
-	return PlayerInfo[playerid][pMoney];
-}
-
-stock SafeSetPlayerMoney(plyerid, money)
-{
-	PlayerInfo[playerid][pMoney] = money;
-	ResetPlayerMoney(playerid);
-	GivePlayerMoney(playerid, PlayerInfo[playerid][pMoney]);
-	
-	return PlayerInfo[playerid][pMoney];
-}
-
-stock SafeResetPlayerMoney(playerid)
-{
-	PlayerInfo[playerid][pMoney] = 0;
-	ResetPlayerMoney(playerid);
-	GivePlayerMoney(playerid, PlayerInfo[playerid][pMoney]);
-	
-	return PlayerInfo[playerid][pMoney];
-}
-
-stock SafeGetPlayerMoney(playerid)
-{
-	return PlayerInfo[playerid][pMoney];
-}
-
 stock isNumeric(string[])
 {
 	for(new i = 0; i < strlen(string); i++)
@@ -286,28 +256,48 @@ stock isNumeric(string[])
 	return 1; // It's a number, return 1 (true)
 }
 // ====================================================================================================== Functions
-public SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color3, color4, color5)
+public CheckPlayerData(playerid)
 {
-	new Float:X, Float:Y, Float:Z, Float:OX, Float:OY, Float:OZ, Float:MSGX, Float:MSGY, Float:MSGZ;
-	new PlayerVirtualWorld = GetPlayerVirtualWorld(playerid);
-	GetPlayerPos(playerid, OX, OY, OZ);
-	for(new i = 0; i < MAX_PLAYERS; i++)
-	{
-		if(PlayerVirtualWorld != GetPlayerVirtualWorld(i)) return 1;
-		GetPlayerPos(i, X, Y, Z);
-		MSGX = (OX - X);
-		MSGY = (OY - Y);
-		MSGZ = (OZ - Z);
-		if(((MSGX < radius/16) && (MSGX > -radius/16)) && ((MSGY < radius/16) && (MSGY > -radius/16)) && ((MSGZ < radius/16) && (MSGZ > -radius/16))) SendClientMessage(i, color1, string);
-		else if(((MSGX < radius/8) && (MSGX > -radius/8)) && ((MSGY < radius/8) && (MSGY > -radius/8)) && ((MSGZ < radius/16) && (MSGZ > -radius/8))) SendClientMessage(i, color2, string);
-		else if(((MSGX < radius/4) && (MSGX > -radius/4)) && ((MSGY < radius/4) && (MSGY > -radius/4)) && ((MSGZ < radius/16) && (MSGZ > -radius/4))) SendClientMessage(i, color3, string);
-		else if(((MSGX < radius/2) && (MSGX > -radius/2)) && ((MSGY < radius/2) && (MSGY > -radius/2)) && ((MSGZ < radius/2) && (MSGZ > -radius/2))) SendClientMessage(i, color4, string);
-		else if(((MSGX < radius) && (MSGX > -radius)) && ((MSGY < radius) && (MSGY > -radius)) && ((MSGZ < radius) && (MSGZ > -radius))) SendClientMessage(i, color5, string);
-	}
+	new query[128], playername[MAX_PLAYER_NAME];
+	
+	GetPlayerName(playerid, playername, sizeof(playername));
+	mysql_format(mysql, query, sizeof(query), "SELECT Password, Plan FROM Players WHERE NAME = '%e' LIMIT 1", playername);
+	mysql_tquery(mysql, query, "OnCheckPlayerData", "i", playerid);
+	
 	return 1;
 }
 
-public CheckPlayerData(playerid)
+public OnCheckPlayerData(playerid)
+{
+// Check if result has atleast one row, that means player has an account, show him dialog for login
+	if(cache_num_rows() > 0)
+	{
+		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
+		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
+		
+		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Vas nalog je pronadjen. Molimo Vas upisite lozinku da se prijavite", "Dalje", "Izlaz");
+	}
+	// Otherwise, player is not registered, show him dialog for registration
+	else
+	{
+		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, "Registracija", "Vas nalog nije pronadjen. Molimo Vas upisite lozinku da se registrujete", "Dalje", "Izlaz");
+	}
+	
+	return 1;
+}
+
+public LoadPlayerData(playerid)
+{
+	new query[128], playername[MAX_PLAYER_NAME];
+	
+	GetPlayerName(playerid, playername, sizeof(playername));
+	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Players WHERE NAME = '%e' LIMIT 1", playername);
+	mysql_tquery(mysql, query, "OnLoadPlayerData", "i", playerid);
+	
+	return 1;
+}
+
+public OnLoadPlayerData(playerid)
 {
 	// Check if result has atleast one row, that means player has an account, show him dialog for login
 	if(cache_num_rows() > 0)
@@ -322,15 +312,7 @@ public CheckPlayerData(playerid)
 		cache_get_value_name_float(0, "SpawnX", PlayerInfo[playerid][SpawnX]);
 		cache_get_value_name_float(0, "SpawnY", PlayerInfo[playerid][SpawnY]);
 		cache_get_value_name_float(0, "SpawnZ", PlayerInfo[playerid][SpawnZ]);
-		
-		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Vas nalog je pronadjen. Molimo Vas upisite lozinku da se prijavite", "Dalje", "Izlaz");
 	}
-	// Otherwise, player is not registered, show him dialog for registration
-	else
-	{
-		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, "Registracija", "Vas nalog nijeje pronadjen. Molimo Vas upisite lozinku da se registrujete", "Dalje", "Izlaz");
-	}
-	
 	return 1;
 }
 
@@ -401,12 +383,10 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerConnect(playerid)
 {
-	new query[128], playername[MAX_PLAYER_NAME];
+	new playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	
-	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Players WHERE NAME = '%e' LIMIT 1", playername);
-	mysql_tquery(mysql, query, "CheckPlayerData", "i", playerid);
+	CheckPlayerData(playerid);
 	return 1;
 }
 
@@ -589,48 +569,48 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			{
 				return Kick(playerid);
 			}
-			
-			new buffer[65], playername[MAX_PLAYER_NAME], query[256];
-			
-			SHA256_PassHash(inputtext, PlayerInfo[playerid][Salt], buffer, 65);
-			
-			if(strcmp(buffer, PlayerInfo[playerid][Password]) == 0)
+			if(response)
 			{
-				GetPlayerName(playerid, playername, sizeof(playername));
+				new buffer[65], playername[MAX_PLAYER_NAME];
+			
+				SHA256_PassHash(inputtext, PlayerInfo[playerid][Salt], buffer, 65);
 				
-				mysql_format(mysql, query, sizeof(query), "SELECT * FROM Players WHERE Name = '%e' LIMIT 1", playername);
-				mysql_tquery(mysql, query, "OnAccountLoad", "i", playerid);
-				
-				// If player didnt pick Sex, show him dialog
-				if(!PlayerInfo[playerid][Sex])
+				if(strcmp(buffer, PlayerInfo[playerid][Password]) == 0)
 				{
-					ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, "Registracija - Pol", "Musko\nZensko", "U redu", "Izadji");
+					GetPlayerName(playerid, playername, sizeof(playername));
+					LoadPlayerData(playerid);
+					
+					// If player didnt pick Sex, show him dialog
+					if(!PlayerInfo[playerid][Sex])
+					{
+						ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, "Registracija - Pol", "Musko\nZensko", "U redu", "Izadji");
+					}
+					// If player didnt pick Age, show him dialog
+					else if(!PlayerInfo[playerid][Age])
+					{
+						ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, "Registracija - Godine", "Unesite koliko imate godina", "U redu", "Izadji");
+					}
+					// If player didnt pick Country, show him dialog
+					else if(!PlayerInfo[playerid][Country])
+					{
+						ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, "Registracija - Drzava", "Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
+					}
+					// If player didnt picky City, show him dialog
+					else if(!PlayerInfo[playerid][City])
+					{
+						ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+					}
+					// Otherwise, player is fully registered, spawn him
+					else 
+					{
+						SetSpawnInfo(playerid, 0, 0, PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], 360.0, 0, 0, 0, 0, 0, 0);
+						SpawnPlayer(playerid);
+					}
 				}
-				// If player didnt pick Age, show him dialog
-				else if(!PlayerInfo[playerid][Age])
+				else
 				{
-					ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, "Registracija - Godine", "Unesite koliko imate godina", "U redu", "Izadji");
+					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Lozinka koju ste uneli nije ispravna, pokusajte ponovo", "Dalje", "Izlaz");
 				}
-				// If player didnt pick Country, show him dialog
-				else if(!PlayerInfo[playerid][Country])
-				{
-					ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, "Registracija - Drzava", "Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
-				}
-				// If player didnt picky City, show him dialog
-				else if(!PlayerInfo[playerid][City])
-				{
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
-				}
-				// Otherwise, player is fully registered, spawn him
-				else 
-				{
-					SetSpawnInfo(playerid, 0, 0, PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], 360.0, 0, 0, 0, 0, 0, 0);
-			        SpawnPlayer(playerid);
-				}
-			}
-			else
-			{
-				ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Lozinka koju ste uneli nije ispravna, pokusajte ponovo", "Dalje", "Izlaz");
 			}
 		}
 		
@@ -728,7 +708,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			mysql_format(mysql, query, sizeof(query), "UPDATE Players \
 												SET Age = %d \
 												WHERE ID = %d", years, PlayerInfo[playerid][ID]);
-			printf("'%s'", query);
 			mysql_tquery(mysql, query, "", "");
 			
 			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, "Registracija - Drzava", "Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
@@ -829,9 +808,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnZ] = 13.5469;
 					//PlayerInfo[playerid][SpawnA] = 0.0;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET City = %d, SpawnX = %d, SpawnY = %d, SpawnZ = %d \
+																SET City = %d, SpawnX = %f, SpawnY = %f, SpawnZ = %f \
 																WHERE ID = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query, "", "");
+					
 					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Uspesno ste zavrsili kompletnu registraciju. \nMolimo Vas upisite lozinku da se prijavite.", "Dalje", "Izlaz");
 					
 				}
@@ -845,9 +825,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					//PlayerInfo[playerid][SpawnA] = 270.4988;
 					
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET City = %d, SpawnX = %d, SpawnY = %d, SpawnZ = %d \
+																SET City = %d, SpawnX = %f, SpawnY = %f, SpawnZ = %f \
 																WHERE ID = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query, "", "");
+					
 					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Uspesno ste zavrsili kompletnu registraciju. \nMolimo Vas upisite lozinku da se prijavite.", "Dalje", "Izlaz");
 				}
 				// San Fierro
@@ -859,9 +840,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnZ] = 14.1484;
 					//PlayerInfo[playerid][SpawnA] = 136.9096;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET City = %d, SpawnX = %d, SpawnY = %d, SpawnZ = %d \
+																SET City = %d, SpawnX = %f, SpawnY = %f, SpawnZ = %f \
 																WHERE ID = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query, "", "");
+					
 					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Uspesno ste zavrsili kompletnu registraciju. \nMolimo Vas upisite lozinku da se prijavite.", "Dalje", "Izlaz");
 				}
 			}
