@@ -220,6 +220,7 @@ forward OnLoadPlayerData(playerid);
 forward OnPlayerRegister(playerid);
 forward OnAccountLoad(playerid);
 
+forward SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color3, color4, color5);
 // ====================================================================================================== Variables
 new MySQL:mysql;
 
@@ -333,6 +334,28 @@ public OnPlayerRegister(playerid)
 	PlayerInfo[playerid][ID] = cache_insert_id();
 	printf("Korisnik se registrovao %d", PlayerInfo[playerid][ID]);
 	SendClientMessage(playerid, -1, "Registrovali ste se na server.");
+}
+
+public SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color3, color4, color5)
+{
+	new Float:X, Float:Y, Float:Z, Float:OX, Float:OY, Float:OZ, Float:MSGX, Float:MSGY, Float:MSGZ;
+	new PlayerVirtualWorld = GetPlayerVirtualWorld(playerid);
+	
+	GetPlayerPos(playerid, OX, OY, OZ);
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+		if(PlayerVirtualWorld != GetPlayerVirtualWorld(i)) return 1;
+		GetPlayerPos(i, X, Y, Z);
+		MSGX = (OX - X);
+		MSGY = (OY - Y);
+		MSGZ = (OZ - Z);
+		if(((MSGX < radius/16) && (MSGX > -radius/16)) && ((MSGY < radius/16) && (MSGY > -radius/16)) && ((MSGZ < radius/16) && (MSGZ > -radius/16))) SendClientMessage(i, color1, string);
+		else if(((MSGX < radius/8) && (MSGX > -radius/8)) && ((MSGY < radius/8) && (MSGY > -radius/8)) && ((MSGZ < radius/16) && (MSGZ > -radius/8))) SendClientMessage(i, color2, string);
+		else if(((MSGX < radius/4) && (MSGX > -radius/4)) && ((MSGY < radius/4) && (MSGY > -radius/4)) && ((MSGZ < radius/16) && (MSGZ > -radius/4))) SendClientMessage(i, color3, string);
+		else if(((MSGX < radius/2) && (MSGX > -radius/2)) && ((MSGY < radius/2) && (MSGY > -radius/2)) && ((MSGZ < radius/2) && (MSGZ > -radius/2))) SendClientMessage(i, color4, string);
+		else if(((MSGX < radius) && (MSGX > -radius)) && ((MSGY < radius) && (MSGY > -radius)) && ((MSGZ < radius) && (MSGZ > -radius))) SendClientMessage(i, color5, string);
+	}
+	return 1;
 }
 
 public OnGameModeInit()
