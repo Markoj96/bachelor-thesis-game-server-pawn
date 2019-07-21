@@ -4,6 +4,7 @@
 #include <streamer>
 #include <YSI\y_commands>
 #include <YSI\y_timers>
+#include <bcrypt>
 
 main()
 {
@@ -16,6 +17,9 @@ main()
 #define MYSQL_USER "root"
 #define MYSQL_DATABASE "sa-mp"
 #define MYSQL_PASSWORD ""
+
+// BCrypt
+#define BCRYPT_COST 12
 
 // Dialogs
 #define DIALOG_LOGIN 0 // On login, typing password to enter the game
@@ -207,13 +211,199 @@ main()
 #define STEALTH_GREEN  													0x33DD1100
 #define STEALTH_PINK  													0xFF22EE00
 #define STEALTH_BLUE  													0x0077BB00
+// Message Colors
+#define TEXT_COLOR_GREY 												"{AFAFAF}"
+// Message System Defined Colors
+#define TEXT_COLOR_ACTIVEBORDER 										"{B4B4B4}"
+#define TEXT_COLOR_ACTIVECAPTION 										"{99B4D1}"
+#define TEXT_COLOR_ACTIVECAPTIONTEXT 									"{000000}"
+#define TEXT_COLOR_ALICEBLUE 											"{F0F8FF}"
+#define TEXT_COLOR_ANTIQUEWHITE 										"{FAEBD7}"
+#define TEXT_COLOR_APPWORKSPACE 										"{ABABAB}"
+#define TEXT_COLOR_AQUA 												"{00FFFF}"
+#define TEXT_COLOR_AQUAMARINE 											"{7FFFD4}"
+#define TEXT_COLOR_AZURE 												"{F0FFFF}"
+#define TEXT_COLOR_BEIGE 												"{F5F5DC}"
+#define TEXT_COLOR_BISQUE 												"{FFE4C4}"
+#define TEXT_COLOR_BLACK 												"{000000}"
+#define TEXT_COLOR_BLANCHEDALMOND 										"{FFEBCD}"
+#define TEXT_COLOR_BLUE 												"{0000FF}"
+#define TEXT_COLOR_BLUEVIOLET 											"{8A2BE2}"
+#define TEXT_COLOR_BROWN 												"{A52A2A}"
+#define TEXT_COLOR_BURLYWOOD 											"{DEB887}"
+#define TEXT_COLOR_BUTTONFACE 											"{F0F0F0}"
+#define TEXT_COLOR_BUTTONHIGHLIGHT 										"{FFFFFF}"
+#define TEXT_COLOR_BUTTONSHADOW 										"{A0A0A0}"
+#define TEXT_COLOR_CADETBLUE 											"{5F9EA0}"
+#define TEXT_COLOR_CHARTREUSE 											"{7FFF00}"
+#define TEXT_COLOR_CHOCOLATE 											"{D2691E}"
+#define TEXT_COLOR_CONTROL 												"{F0F0F0}"
+#define TEXT_COLOR_CONTROLDARK 											"{A0A0A0}"
+#define TEXT_COLOR_CONTROLDARKDARK 										"{696969}"
+#define TEXT_COLOR_CONTROLLIGHT 										"{E3E3E3}"
+#define TEXT_COLOR_CONTROLLIGHTLIGHT 									"{FFFFFF}"
+#define TEXT_COLOR_CONTROLTEXT 											"{000000}"
+#define TEXT_COLOR_CORAL 												"{FF7F50}"
+#define TEXT_COLOR_CORNFLOWERBLUE 										"{6495ED}"
+#define TEXT_COLOR_CORNSILK 											"{FFF8DC}"
+#define TEXT_COLOR_CRIMSON 												"{DC143C}"
+#define TEXT_COLOR_CYAN 												"{00FFFF}"
+#define TEXT_COLOR_DARKBLUE 											"{00008B}"
+#define TEXT_COLOR_DARKCYAN 											"{008B8B}"
+#define TEXT_COLOR_DARKGOLDENROD 										"{B8860B}"
+#define TEXT_COLOR_DARKGRAY 											"{A9A9A9}"
+#define TEXT_COLOR_DARKGREEN 											"{006400}"
+#define TEXT_COLOR_DARKKHAKI 											"{BDB76B}"
+#define TEXT_COLOR_DARKMAGENTA 											"{8B008B}"
+#define TEXT_COLOR_DARKOLIVEGREEN 										"{556B2F}"
+#define TEXT_COLOR_DARKORANGE 											"{FF8C00}"
+#define TEXT_COLOR_DARKORCHID 											"{9932CC}"
+#define TEXT_COLOR_DARKRED 												"{8B0000}"
+#define TEXT_COLOR_DARKSALMON 											"{E9967A}"
+#define TEXT_COLOR_DARKSEAGREEN 										"{8FBC8B}"
+#define TEXT_COLOR_DARKSLATEBLUE 										"{483D8B}"
+#define TEXT_COLOR_DARKSLATEGRAY 										"{2F4F4F}"
+#define TEXT_COLOR_DARKTURQUOISE 										"{00CED1}"
+#define TEXT_COLOR_DARKVIOLET 											"{9400D3}"
+#define TEXT_COLOR_DEEPPINK 											"{FF1493}"
+#define TEXT_COLOR_DEEPSKYBLUE 											"{00BFFF}"
+#define TEXT_COLOR_DESKTOP 												"{000000}"
+#define TEXT_COLOR_DIMGRAY 												"{696969}"
+#define TEXT_COLOR_DODGERBLUE 											"{1E90FF}"
+#define TEXT_COLOR_FIREBRICK 											"{B22222}"
+#define TEXT_COLOR_FLORALWHITE 											"{FFFAF0}"
+#define TEXT_COLOR_FORESTGREEN 											"{228B22}"
+#define TEXT_COLOR_FUCHSIA 												"{FF00FF}"
+#define TEXT_COLOR_GAINSBORO 											"{DCDCDC}"
+#define TEXT_COLOR_GHOSTWHITE 											"{F8F8FF}"
+#define TEXT_COLOR_GOLD 												"{FFD700}"
+#define TEXT_COLOR_GOLDENROD 											"{DAA520}"
+#define TEXT_COLOR_GRADIENTACTIVECAPTION 								"{B9D1EA}"
+#define TEXT_COLOR_GRADIENTINACTIVECAPTION 								"{D7E4F2}"
+#define TEXT_COLOR_GRAY 												"{808080}"
+#define TEXT_COLOR_GRAYTEXT 											"{808080}"
+#define TEXT_COLOR_GREEN 												"{008000}"
+#define TEXT_COLOR_GREENYELLOW 											"{ADFF2F}"
+#define TEXT_COLOR_HIGHLIGHT 											"{3399FF}"
+#define TEXT_COLOR_HIGHLIGHTTEXT 										"{FFFFFF}"
+#define TEXT_COLOR_HONEYDEW 											"{F0FFF0}"
+#define TEXT_COLOR_HOTPINK 												"{FF69B4}"
+#define TEXT_COLOR_HOTTRACK 											"{0066CC}"
+#define TEXT_COLOR_INACTIVEBORDER 										"{F4F7FC}"
+#define TEXT_COLOR_INACTIVECAPTION 										"{BFCDDB}"
+#define TEXT_COLOR_INACTIVECAPTIONTEXT 									"{434E54}"
+#define TEXT_COLOR_INDIANRED	 										"{CD5C5C}"
+#define TEXT_COLOR_INDIGO 												"{4B0082}"
+#define TEXT_COLOR_INFO 												"{FFFFE1}"
+#define TEXT_COLOR_INFOTEXT 											"{000000}"
+#define TEXT_COLOR_IVORY 												"{FFFFF0}"
+#define TEXT_COLOR_KHAKI 												"{F0E68C}"
+#define TEXT_COLOR_LAVENDER 											"{E6E6FA}"
+#define TEXT_COLOR_LAVENDERBLUSH 										"{FFF0F5}"
+#define TEXT_COLOR_LAWNGREEN 											"{7CFC00}"
+#define TEXT_COLOR_LEMONCHIFFON 										"{FFFACD}"
+#define TEXT_COLOR_LIGHTBLUE 											"{ADD8E6}"
+#define TEXT_COLOR_LIGHTCORAL 											"{F08080}"
+#define TEXT_COLOR_LIGHTCYAN 											"{E0FFFF}"
+#define TEXT_COLOR_LIGHTGOLDENRODYELLOW 								"{FAFAD2}"
+#define TEXT_COLOR_LIGHTGRAY  											"{D3D3D3}"
+#define TEXT_COLOR_LIGHTGREEN  											"{90EE90}"
+#define TEXT_COLOR_LIGHTPINK  											"{FFB6C1}"
+#define TEXT_COLOR_LIGHTSALMON  										"{FFA07A}"
+#define TEXT_COLOR_LIGHTSEAGREEN  										"{20B2AA}"
+#define TEXT_COLOR_LIGHTSKYBLUE  										"{87CEFA}"
+#define TEXT_COLOR_LIGHTSLATEGRAY  										"{778899}"
+#define TEXT_COLOR_LIGHTSTEELBLUE  										"{B0C4DE}"
+#define TEXT_COLOR_LIGHTYELLOW  										"{FFFFE0}"
+#define TEXT_COLOR_LIME  												"{00FF00}"
+#define TEXT_COLOR_LIMEGREEN  											"{32CD32}"
+#define TEXT_COLOR_LINEN  												"{FAF0E6}"
+#define TEXT_COLOR_MAGENTA  											"{FF00FF}"
+#define TEXT_COLOR_MAROON  												"{800000}"
+#define TEXT_COLOR_MEDIUMAQUAMARINE  									"{66CDAA}"
+#define TEXT_COLOR_MEDIUMBLUE  											"{0000CD}"
+#define TEXT_COLOR_MEDIUMORCHID  										"{BA55D3}"
+#define TEXT_COLOR_MEDIUMPURPLE  										"{9370DB}"
+#define TEXT_COLOR_MEDIUMSEAGREEN  										"{3CB371}"
+#define TEXT_COLOR_MEDIUMSLATEBLUE  									"{7B68EE}"
+#define TEXT_COLOR_MEDIUMSPRINGGREEN  									"{00FA9A}"
+#define TEXT_COLOR_MEDIUMTURQUOISE  									"{48D1CC}"
+#define TEXT_COLOR_MEDIUMVIOLETRED  									"{C71585}"
+#define TEXT_COLOR_MENU  												"{F0F0F0}"
+#define TEXT_COLOR_MENUBAR  											"{F0F0F0}"
+#define TEXT_COLOR_MENUHIGHLIGHT  										"{3399FF}"
+#define TEXT_COLOR_MENUTEXT  											"{000000}"
+#define TEXT_COLOR_MIDNIGHTBLUE  										"{191970}"
+#define TEXT_COLOR_MINTCREAM  											"{F5FFFA}"
+#define TEXT_COLOR_MISTYROSE  											"{FFE4E1}"
+#define TEXT_COLOR_MOCCASIN  											"{FFE4B5}"
+#define TEXT_COLOR_NAVAJOWHITE  										"{FFDEAD}"
+#define TEXT_COLOR_NAVY  												"{000080}"
+#define TEXT_COLOR_OLDLACE  											"{FDF5E6}"
+#define TEXT_COLOR_OLIVE  												"{808000}"
+#define TEXT_COLOR_OLIVEDRAB  											"{6B8E23}"
+#define TEXT_COLOR_ORANGE  												"{FFA500}"
+#define TEXT_COLOR_ORANGERED  											"{FF4500}"
+#define TEXT_COLOR_ORCHID  												"{DA70D6}"
+#define TEXT_COLOR_PALEGOLDENROD  										"{EEE8AA}"
+#define TEXT_COLOR_PALEGREEN  											"{98FB98}"
+#define TEXT_COLOR_PALETURQUOISE  										"{AFEEEE}"
+#define TEXT_COLOR_PALEVIOLETRED  										"{DB7093}"
+#define TEXT_COLOR_PAPAYAWHIP  											"{FFEFD5}"
+#define TEXT_COLOR_PEACHPUFF  											"{FFDAB9}"
+#define TEXT_COLOR_PERU  												"{CD853F}"
+#define TEXT_COLOR_PINK  												"{FFC0CB}"
+#define TEXT_COLOR_PLUM  												"{DDA0DD}"
+#define TEXT_COLOR_POWDERBLUE  											"{B0E0E6}"
+#define TEXT_COLOR_PURPLE  												"{800080}"
+#define TEXT_COLOR_RED  												"{FF0000}"
+#define TEXT_COLOR_ROSYBROWN  											"{BC8F8F}"
+#define TEXT_COLOR_ROYALBLUE  											"{4169E1}"
+#define TEXT_COLOR_SADDLEBROWN  										"{8B4513}"
+#define TEXT_COLOR_SALMON  												"{FA8072}"
+#define TEXT_COLOR_SANDYBROWN  											"{F4A460}"
+#define TEXT_COLOR_SCROLLBAR  											"{C8C8C8}"
+#define TEXT_COLOR_SEAGREEN  											"{2E8B57}"
+#define TEXT_COLOR_SEASHELL  											"{FFF5EE}"
+#define TEXT_COLOR_SIENNA  												"{A0522D}"
+#define TEXT_COLOR_SILVER  												"{C0C0C0}"
+#define TEXT_COLOR_SKYBLUE  											"{87CEEB}"
+#define TEXT_COLOR_SLATEBLUE  											"{6A5ACD}"
+#define TEXT_COLOR_SLATEGRAY  											"{708090}"
+#define TEXT_COLOR_SNOW  												"{FFFAFA}"
+#define TEXT_COLOR_SPRINGGREEN  										"{00FF7F}"
+#define TEXT_COLOR_STEELBLUE  											"{4682B4}"
+#define TEXT_COLOR_TAN  												"{D2B48C}"
+#define TEXT_COLOR_TEAL  												"{008080}"
+#define TEXT_COLOR_THISTLE  											"{D8BFD8}"
+#define TEXT_COLOR_TOMATO  												"{FF6347}"
+#define TEXT_COLOR_TRANSPARENT  										"{FFFFFF}"
+#define TEXT_COLOR_TURQUOISE  											"{40E0D0}"
+#define TEXT_COLOR_VIOLET  												"{EE82EE}"
+#define TEXT_COLOR_WHEAT  												"{F5DEB3}"
+#define TEXT_COLOR_WHITE  												"{FFFFFF}"
+#define TEXT_COLOR_WHITESMOKE  											"{F5F5F5}"
+#define TEXT_COLOR_WINDOW  												"{FFFFFF}"
+#define TEXT_COLOR_WINDOWFRAME  										"{646464}"
+#define TEXT_COLOR_WINDOWTEXT  											"{000000}"
+#define TEXT_COLOR_YELLOW  												"{FFFF00}"
+#define TEXT_COLOR_YELLOWGREEN  										"{9ACD32}"
+#define TEXT_STEALTH_ORANGE  											"{FF8800}"
+#define TEXT_STEALTH_OLIVE  											"{666600}"
+#define TEXT_STEALTH_GREEN  											"{33DD11}"
+#define TEXT_STEALTH_PINK  												"{FF22EE}"
+#define TEXT_STEALTH_BLUE  												"{0077BB}"
 // ====================================================================================================== Forwards
 forward CheckPlayerData(playerid);
 forward OnCheckPlayerData(playerid);
 forward LoadPlayerData(playerid);
 forward OnLoadPlayerData(playerid);
+forward SavePlayerData(playerid);
+forward OnSavePlayerData(playerid);
 forward OnPlayerRegister(playerid);
 forward OnAccountLoad(playerid);
+forward OnPasswordHashed(playerid);
+forward OnPasswordChecked(playerid);
 
 forward IsARentVehicle(vehicleid);
 forward IsASalesVehicle(vehicleid);
@@ -233,7 +423,7 @@ forward AntiFreezePlayer(playerid);
 forward SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color3, color4, color5);
 
 forward LoadVehicles();
-forward OnVehiclesLoad();
+forward OnLoadVehicles();
 forward InsertVehicle(vehicleOwner, vehicleModel);
 forward SaveVehicle(vehicleid);
 forward SetVehicleComponents(vehicleid);
@@ -241,11 +431,15 @@ forward RemoveVehicleComponents(vehicleid);
 forward SaveVehicleComponents(vehicleid);
 forward GetVehicleName(vehicleid, model[], len);
 
+forward LoadVehiclesFuel();
 forward StartVehicleEngine(playerid, vehicleid);
 forward CheckVehicleFuel();
 // ====================================================================================================== Variables
 new MySQL:mysql;
 
+// Server counters
+new GlobalVehiclesCounter = 1;
+new OwnedVehiclesCounter = 0;
 // Textdraws
 new Text:FuelTD[MAX_PLAYERS];
 
@@ -256,7 +450,7 @@ enum PlayerData
 	Name[MAX_PLAYER_NAME], // Name of the player
 	Password[65], // Encrypted password
 	Salt[11], // Salt for encryption
-	Sex, // Sex of the player (male | female)
+	Gender, // Gender of the player (male | female)
 	Age, // Age of the player
 	Country, // Country from where players come
 	City, // City where player will spawn
@@ -317,7 +511,7 @@ new VehicleHood[MAX_VEHICLES];
 new VehicleTrunk[MAX_VEHICLES];
 
 // Adding vehicles
-new RentVehicle[25];
+new RentVehicle[24];
 new SalesVehicle[89];
 new OwnedVehicle[sizeof(VehicleInfo)];
 
@@ -368,92 +562,324 @@ stock isNumeric(string[])
 	return 1; // It's a number, return 1 (true)
 }
 
+stock GetPlayerSex(playerid)
+{
+    new gender[8];
+	
+    switch(PlayerInfo[playerid][Gender])
+    {
+        case 1: gender = "Musko";
+        case 2: gender = "Zensko";
+		default: gender = "/";
+    }
+	
+    return gender;
+}
+
+stock GetPlayerCountry(playerid)
+{
+    new country[32];
+	
+    switch(PlayerInfo[playerid][Country])
+    {
+        case 1: country = "Srbija";
+        case 2: country = "Crna Gora";
+        case 3: country = "Bosna i Hercegovina";
+        case 4: country = "Makedonija";
+        case 5: country = "Hrvatska";
+        case 6: country = "Ostalo";
+		default: country = "/";
+    }
+	
+    return country;
+}
+
+stock GetPlayerCity(playerid)
+{
+    new city[16];
+	
+    switch(PlayerInfo[playerid][City])
+    {
+        case 1: city = "Los Santos";
+        case 2: city = "Las Venturas";
+        case 3: city = "San Fierro";
+		default: city = "/";
+    }
+	
+    return city;
+}
+
+public CheckPlayerData(playerid)
+{
+	new query[128], player_name[MAX_PLAYER_NAME];
+	
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Players WHERE NAME = '%e' LIMIT 1", player_name);
+	mysql_tquery(mysql, query, "OnCheckPlayerData", "i", playerid);
+	
+	return 1;
+}
+
+public OnCheckPlayerData(playerid)
+{
+	new message[256], player_name[MAX_PLAYER_NAME], player_age, player_sex[8], player_country[32], player_city[16];
+	
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	
+	// Check if result has atleast one row, that means player has an account, show him dialog for login
+	if(cache_num_rows() > 0)
+	{
+		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
+		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
+		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
+		cache_get_value_name_int(0, "Gender", PlayerInfo[playerid][Gender]);
+		cache_get_value_name_int(0, "Age", PlayerInfo[playerid][Age]);
+		cache_get_value_name_int(0, "Country", PlayerInfo[playerid][Country]);
+		cache_get_value_name_int(0, "City", PlayerInfo[playerid][City]);
+		cache_get_value_name_float(0, "SpawnX", PlayerInfo[playerid][SpawnX]);
+		cache_get_value_name_float(0, "SpawnY", PlayerInfo[playerid][SpawnY]);
+		cache_get_value_name_float(0, "SpawnZ", PlayerInfo[playerid][SpawnZ]);
+		
+		player_age = PlayerInfo[playerid][Age];
+		player_sex = GetPlayerSex(playerid);
+		player_country = GetPlayerCountry(playerid);
+		player_city = GetPlayerCity(playerid);
+		
+		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Dobrodosli, Vas nalog je pronadjen. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", player_name, player_sex, player_age, player_country, player_city);
+		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");
+	}
+	// Otherwise, player is not registered, show him dialog for registration
+	else
+	{
+		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Dobrodosli, Vas nalog nije pronadjen. \nUnesite zeljenu lozinku da se registrujete.");
+		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Registracija", message, "Dalje", "Izlaz");
+	}
+	
+	return 1;
+}
+
+public LoadPlayerData(playerid)
+{
+	new query[128], player_name[MAX_PLAYER_NAME];
+	
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Players WHERE NAME = '%e' LIMIT 1", player_name);
+	//mysql_tquery(mysql, query, "OnLoadPlayerData", "i", playerid);
+	mysql_query(mysql, query);
+	
+	// Check if result has atleast one row, that means player has an account, show him dialog for login
+	if(cache_num_rows() > 0)
+	{
+		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
+		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
+		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
+		cache_get_value_name_int(0, "Gender", PlayerInfo[playerid][Gender]);
+		cache_get_value_name_int(0, "Age", PlayerInfo[playerid][Age]);
+		cache_get_value_name_int(0, "Country", PlayerInfo[playerid][Country]);
+		cache_get_value_name_int(0, "City", PlayerInfo[playerid][City]);
+		cache_get_value_name_float(0, "SpawnX", PlayerInfo[playerid][SpawnX]);
+		cache_get_value_name_float(0, "SpawnY", PlayerInfo[playerid][SpawnY]);
+		cache_get_value_name_float(0, "SpawnZ", PlayerInfo[playerid][SpawnZ]);
+	}
+	return 1;
+}
+
+public OnLoadPlayerData(playerid)
+{
+	// Check if result has atleast one row, that means player has an account, show him dialog for login
+	if(cache_num_rows() > 0)
+	{
+		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
+		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
+		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
+		cache_get_value_name_int(0, "Gender", PlayerInfo[playerid][Gender]);
+		cache_get_value_name_int(0, "Age", PlayerInfo[playerid][Age]);
+		cache_get_value_name_int(0, "Country", PlayerInfo[playerid][Country]);
+		cache_get_value_name_int(0, "City", PlayerInfo[playerid][City]);
+		cache_get_value_name_float(0, "SpawnX", PlayerInfo[playerid][SpawnX]);
+		cache_get_value_name_float(0, "SpawnY", PlayerInfo[playerid][SpawnY]);
+		cache_get_value_name_float(0, "SpawnZ", PlayerInfo[playerid][SpawnZ]);
+	}
+	return 1;
+}
+
+public SavePlayerData(playerid)
+{
+	return 1;
+}
+
+public OnSavePlayerData(playerid)
+{
+	return 1;
+}
+
+public OnPasswordHashed(playerid)
+{
+	new query[256], playername[MAX_PLAYER_NAME];
+	
+    bcrypt_get_hash(PlayerInfo[playerid][Password]);
+	PlayerInfo[playerid][Password][2] = 'a'; // Hardcode -> $2a instead of $2y | BCrypt in rails cannot provide $2y
+	
+	GetPlayerName(playerid, playername, sizeof(playername));
+	
+	mysql_format(mysql, query, sizeof(query), "INSERT INTO Players SET \
+												name = '%e', \
+												password_digest = '%e'", playername, PlayerInfo[playerid][Password]);
+	mysql_tquery(mysql, query, "OnPlayerRegister", "i", playerid);
+	
+	ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Pol", ""TEXT_COLOR_WHITE"Musko\nZensko", "U redu", "Izadji");
+}
+
+public OnPasswordChecked(playerid)
+{
+	new bool:match, message[256], player_name[MAX_PLAYER_NAME], player_age, player_sex[8], player_country[32], player_city[16];
+	match = bcrypt_is_equal();
+	
+	if(match)
+	{
+		GetPlayerName(playerid, player_name, sizeof(player_name));
+		//LoadPlayerData(playerid);
+		
+		// If player didnt pick Gender, show him dialog
+		if(!PlayerInfo[playerid][Gender])
+		{
+			ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Pol", ""TEXT_COLOR_WHITE"Musko\nZensko", "U redu", "Izadji");
+		}
+		// If player didnt pick Age, show him dialog
+		else if(!PlayerInfo[playerid][Age])
+		{
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE"Unesite koliko imate godina");
+			ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", message, "U redu", "Izadji");
+		}
+		// If player didnt pick Country, show him dialog
+		else if(!PlayerInfo[playerid][Country])
+		{
+			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Drzava", ""TEXT_COLOR_WHITE"Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
+		}
+		// If player didnt picky City, show him dialog
+		else if(!PlayerInfo[playerid][City])
+		{
+			ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+		}
+		// Otherwise, player is fully registered, spawn him
+		else 
+		{
+			SetSpawnInfo(playerid, 0, 0, PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], 360.0, 0, 0, 0, 0, 0, 0);
+			SpawnPlayer(playerid);
+		}
+	}
+	else
+	{
+		player_age = PlayerInfo[playerid][Age];
+		player_sex = GetPlayerSex(playerid);
+		player_country = GetPlayerCountry(playerid);
+		player_city = GetPlayerCity(playerid);
+		
+		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Lozinka koju ste uneli nije ispravna. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nPokusajte ponovo. \nUnesite Vasu lozinku da se prijavite", player_name, player_sex, player_age, player_country, player_city);
+		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");
+	}
+}
+
 public LoadVehicles()
 {
 	new query[256];
 	
 	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Vehicles");
-	mysql_tquery(mysql, query, "OnVehiclesLoad");
-		
+	mysql_tquery(mysql, query, "OnLoadVehicles");
+	
 	return 0;
 }
 
-public OnVehiclesLoad()
+public OnLoadVehicles()
 {
 	if(cache_num_rows() > 0)
 	{
 		for(new i = 0; i < cache_num_rows(); i++)
 		{
-			cache_get_value_name_int(i, "ID", VehicleInfo[i][ID]);
-			cache_get_value_name_int(i, "Owned", VehicleInfo[i][Owned]);
-			cache_get_value_name_int(i, "Owner", VehicleInfo[i][Owner]);
-			cache_get_value_name_int(i, "Model", VehicleInfo[i][Model]);
-			cache_get_value_name_float(i, "ParkX", VehicleInfo[i][ParkX]);
-			cache_get_value_name_float(i, "ParkY", VehicleInfo[i][ParkY]);
-			cache_get_value_name_float(i, "ParkZ", VehicleInfo[i][ParkZ]);
-			cache_get_value_name_float(i, "ParkA", VehicleInfo[i][ParkA]);
-			cache_get_value_name_int(i, "Color1", VehicleInfo[i][Color1]);
-			cache_get_value_name_int(i, "Color2", VehicleInfo[i][Color2]);
-			cache_get_value_name_int(i, "Paintjob", VehicleInfo[i][Paintjob]);
-			cache_get_value_name_int(i, "Locked", VehicleInfo[i][Locked]);
-			cache_get_value_name_int(i, "Registration", VehicleInfo[i][Registration]);
-			cache_get_value_name_int(i, "Spoiler", VehicleInfo[i][Spoiler]);
-			cache_get_value_name_int(i, "Hood", VehicleInfo[i][Hood]);
-			cache_get_value_name_int(i, "Roof", VehicleInfo[i][Roof]);
-			cache_get_value_name_int(i, "Sideskirt", VehicleInfo[i][Sideskirt]);
-			cache_get_value_name_int(i, "Lamps", VehicleInfo[i][Lamps]);
-			cache_get_value_name_int(i, "Nitro", VehicleInfo[i][Nitro]);
-			cache_get_value_name_int(i, "Exhaust", VehicleInfo[i][Exhaust]);
-			cache_get_value_name_int(i, "Wheels", VehicleInfo[i][Wheels]);
-			cache_get_value_name_int(i, "Stereo", VehicleInfo[i][Stereo]);
-			cache_get_value_name_int(i, "Hydraulics", VehicleInfo[i][Hydraulics]);
-			cache_get_value_name_int(i, "Front_bumper", VehicleInfo[i][Front_bumper]);
-			cache_get_value_name_int(i, "Rear_bumper", VehicleInfo[i][Rear_bumper]);
-			cache_get_value_name_int(i, "Vent_right", VehicleInfo[i][Vent_right]);
-			cache_get_value_name_int(i, "Vent_left", VehicleInfo[i][Vent_left]);
+			cache_get_value_name_int(i, "ID", VehicleInfo[GlobalVehiclesCounter][ID]);
+			cache_get_value_name_int(i, "Owned", VehicleInfo[GlobalVehiclesCounter][Owned]);
+			cache_get_value_name_int(i, "Owner", VehicleInfo[GlobalVehiclesCounter][Owner]);
+			cache_get_value_name_int(i, "Model", VehicleInfo[GlobalVehiclesCounter][Model]);
+			cache_get_value_name_float(i, "ParkX", VehicleInfo[GlobalVehiclesCounter][ParkX]);
+			cache_get_value_name_float(i, "ParkY", VehicleInfo[GlobalVehiclesCounter][ParkY]);
+			cache_get_value_name_float(i, "ParkZ", VehicleInfo[GlobalVehiclesCounter][ParkZ]);
+			cache_get_value_name_float(i, "ParkA", VehicleInfo[GlobalVehiclesCounter][ParkA]);
+			cache_get_value_name_int(i, "Color1", VehicleInfo[GlobalVehiclesCounter][Color1]);
+			cache_get_value_name_int(i, "Color2", VehicleInfo[GlobalVehiclesCounter][Color2]);
+			cache_get_value_name_int(i, "Paintjob", VehicleInfo[GlobalVehiclesCounter][Paintjob]);
+			cache_get_value_name_int(i, "Locked", VehicleInfo[GlobalVehiclesCounter][Locked]);
+			cache_get_value_name_int(i, "Registration", VehicleInfo[GlobalVehiclesCounter][Registration]);
+			cache_get_value_name_int(i, "Spoiler", VehicleInfo[GlobalVehiclesCounter][Spoiler]);
+			cache_get_value_name_int(i, "Hood", VehicleInfo[GlobalVehiclesCounter][Hood]);
+			cache_get_value_name_int(i, "Roof", VehicleInfo[GlobalVehiclesCounter][Roof]);
+			cache_get_value_name_int(i, "Sideskirt", VehicleInfo[GlobalVehiclesCounter][Sideskirt]);
+			cache_get_value_name_int(i, "Lamps", VehicleInfo[GlobalVehiclesCounter][Lamps]);
+			cache_get_value_name_int(i, "Nitro", VehicleInfo[GlobalVehiclesCounter][Nitro]);
+			cache_get_value_name_int(i, "Exhaust", VehicleInfo[GlobalVehiclesCounter][Exhaust]);
+			cache_get_value_name_int(i, "Wheels", VehicleInfo[GlobalVehiclesCounter][Wheels]);
+			cache_get_value_name_int(i, "Stereo", VehicleInfo[GlobalVehiclesCounter][Stereo]);
+			cache_get_value_name_int(i, "Hydraulics", VehicleInfo[GlobalVehiclesCounter][Hydraulics]);
+			cache_get_value_name_int(i, "Front_bumper", VehicleInfo[GlobalVehiclesCounter][Front_bumper]);
+			cache_get_value_name_int(i, "Rear_bumper", VehicleInfo[GlobalVehiclesCounter][Rear_bumper]);
+			cache_get_value_name_int(i, "Vent_right", VehicleInfo[GlobalVehiclesCounter][Vent_right]);
+			cache_get_value_name_int(i, "Vent_left", VehicleInfo[GlobalVehiclesCounter][Vent_left]);
 			
-			if(VehicleInfo[i][Owned] == 1)
+			if(VehicleInfo[GlobalVehiclesCounter][Owned] == 1)
 			{
-				OwnedVehicle[i] = CreateVehicle(VehicleInfo[i][Model], VehicleInfo[i][ParkX], VehicleInfo[i][ParkY], VehicleInfo[i][ParkZ], VehicleInfo[i][ParkA], VehicleInfo[i][Color1], VehicleInfo[i][Color2], 0);
-				SetVehicleComponents(i);
-			}				
+				OwnedVehicle[OwnedVehiclesCounter] = CreateVehicle(VehicleInfo[GlobalVehiclesCounter][Model], VehicleInfo[GlobalVehiclesCounter][ParkX], VehicleInfo[GlobalVehiclesCounter][ParkY], VehicleInfo[GlobalVehiclesCounter][ParkZ], VehicleInfo[GlobalVehiclesCounter][ParkA], VehicleInfo[GlobalVehiclesCounter][Color1], VehicleInfo[GlobalVehiclesCounter][Color2], 0);
+				SetVehicleComponents(GlobalVehiclesCounter);
+				OwnedVehiclesCounter++;
+			}		
+			GlobalVehiclesCounter++;			
 		}
+	}
+	
+	LoadVehiclesFuel();
+}
+
+public LoadVehiclesFuel()
+{
+	for(new i = 0; i < GlobalVehiclesCounter; i++)
+	{
+	    if(IsABike(i)) VehicleFuel[i] = 30;
+	    else VehicleFuel[i] = 60;
 	}
 }
 
 public InsertVehicle(vehicleOwner, vehicleModel) 
 {
 	new query[512];
+	
 	mysql_format(mysql, query, sizeof(query), "INSERT INTO Vehicles SET \
-													Owned = 1, \
-													Owner = %d, \
-													Model = %d, \
-													ParkX = 1590.59, \
-													ParkY = -2319.39, \
-													ParkZ = 13.3828, \
-													ParkA = 80, \
-													Color1 = 0, \
-													Color2 = 0, \
-													Paintjob = 0, \
-													Locked = 0, \
-													Registration = 0, \
-													Spoiler = 0, \
-													Hood = 0, \
-													Roof = 0, \
-													Sideskirt = 0, \
-													Lamps = 0, \
-													Nitro = 0, \
-													Exhaust = 0, \
-													Wheels = 0, \
-													Stereo = 0, \
-													Hydraulics = 0, \
-													Front_bumper= 0, \
-													Rear_bumper = 0, \
-													Vent_right = 0, \
-													Vent_left = 0",
+													owned = 1, \
+													owner = %d, \
+													model = %d, \
+													parkX = 1590.59, \
+													parkY = -2319.39, \
+													parkZ = 13.3828, \
+													parkA = 80, \
+													color1 = 0, \
+													color2 = 0, \
+													paintjob = 0, \
+													locked = 0, \
+													registration = 0, \
+													spoiler = 0, \
+													hood = 0, \
+													roof = 0, \
+													sideskirt = 0, \
+													lamps = 0, \
+													nitro = 0, \
+													exhaust = 0, \
+													wheels = 0, \
+													stereo = 0, \
+													hydraulics = 0, \
+													front_bumper= 0, \
+													rear_bumper = 0, \
+													vent_right = 0, \
+													vent_left = 0",
 													vehicleOwner,
 													vehicleModel);
-	mysql_tquery(mysql, query, "", "");
+	mysql_tquery(mysql, query);
 }
 
 public SaveVehicle(vehicleid)
@@ -461,32 +887,32 @@ public SaveVehicle(vehicleid)
 	new query[512];
 	
 	mysql_format(mysql, query, sizeof(query), "UPDATE Vehicles \
-												SET Owned = %d, \
-													Owner = %d, \
-													Model = %d, \
-													ParkX = %f, \
-													ParkY = %f, \
-													ParkZ = %f, \
-													ParkA = %f, \
-													Color1 = %d, \
-													Color2 = %d, \
-													Paintjob = %d, \
-													Locked = %d, \
-													Registration = %d, \
-													Spoiler = %d, \
-													Hood = %d, \
-													Roof = %d, \
-													Sideskirt = %d, \
-													Lamps = %d, \
-													Nitro = %d, \
-													Exhaust = %d, \
-													Wheels = %d, \
-													Stereo = %d, \
-													Hydraulics = %d, \
-													Front_bumper= %d, \
-													Rear_bumper = %d, \
-													Vent_right = %d, \
-													Vent_left = %d \												
+												SET owned = %d, \
+													owner = %d, \
+													model = %d, \
+													parkX = %f, \
+													parkY = %f, \
+													parkZ = %f, \
+													parkA = %f, \
+													color1 = %d, \
+													color2 = %d, \
+													paintjob = %d, \
+													locked = %d, \
+													registration = %d, \
+													spoiler = %d, \
+													hood = %d, \
+													roof = %d, \
+													sideskirt = %d, \
+													lamps = %d, \
+													nitro = %d, \
+													exhaust = %d, \
+													wheels = %d, \
+													stereo = %d, \
+													hydraulics = %d, \
+													front_bumper= %d, \
+													rear_bumper = %d, \
+													vent_right = %d, \
+													vent_left = %d \												
 												WHERE ID = %d", 
 												VehicleInfo[vehicleid][ParkX], 
 												VehicleInfo[vehicleid][ParkY], 
@@ -512,9 +938,9 @@ public SaveVehicle(vehicleid)
 												VehicleInfo[vehicleid][Vent_right],
 												VehicleInfo[vehicleid][Vent_left],
 												VehicleInfo[vehicleid][ID]);
-	mysql_tquery(mysql, query, "", "");
+	mysql_pquery(mysql, query);
 
-	return 0;
+	return 1;
 }
 
 public SaveVehicleComponents(vehicleid)
@@ -553,7 +979,8 @@ public SaveVehicleComponents(vehicleid)
 	if(leftvent != 0) { VehicleInfo[vehicleid][Vent_left] = leftvent; }
 	
 	SaveVehicle(vehicleid);
-	return 0;
+	
+	return 1;
 }
 
 public SetVehicleComponents(vehicleid)
@@ -573,7 +1000,7 @@ public SetVehicleComponents(vehicleid)
 	if(VehicleInfo[vehicleid][Vent_right] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Vent_right]); }
 	if(VehicleInfo[vehicleid][Vent_left] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Vent_left]); }
 	
-	return 0;
+	return 1;
 }
 
 public RemoveVehicleComponents(vehicleid)
@@ -594,298 +1021,232 @@ public RemoveVehicleComponents(vehicleid)
     VehicleInfo[vehicleid][Vent_left] = 0;
 	
     SaveVehicle(vehicleid);
-	return 0;
+	return 1;
 }
 
 public GetVehicleName(vehicleid, model[], len)
 {
-	new checking = GetVehicleModel(vehicleid);
-	if(checking == 400) return format(model, len, "Landstalker", 0);
-	else if(checking == 401) return format(model, len, "Bravura", 0);
-	else if(checking == 402) return format(model, len, "Buffalo", 0);
-	else if(checking == 403) return format(model, len, "Linerunner", 0);
-	else if(checking == 404) return format(model, len, "Perenail", 0);
-	else if(checking == 405) return format(model, len, "Sentinel", 0);
-	else if(checking == 406) return format(model, len, "Dumper", 0);
-	else if(checking == 407) return format(model, len, "Firetruck", 0);
-	else if(checking == 408) return format(model, len, "Trashmaster", 0);
-	else if(checking == 409) return format(model, len, "Stretch", 0);
-	else if(checking == 410) return format(model, len, "Manana", 0);
-	else if(checking == 411) return format(model, len, "Infernus", 0);
-	else if(checking == 412) return format(model, len, "Vodooo", 0);
-	else if(checking == 413) return format(model, len, "Pony", 0);
-	else if(checking == 414) return format(model, len, "Mule", 0);
-	else if(checking == 415) return format(model, len, "Cheetah", 0);
-	else if(checking == 416) return format(model, len, "Ambulance", 0);
-	else if(checking == 417) return format(model, len, "Leviathan", 0);
-	else if(checking == 418) return format(model, len, "Moonbeam", 0);
-	else if(checking == 419) return format(model, len, "Esperanto", 0);
-	else if(checking == 420) return format(model, len, "Taxi", 0);
-	else if(checking == 421) return format(model, len, "Washington", 0);
-	else if(checking == 422) return format(model, len, "Bobcat", 0);
-	else if(checking == 423) return format(model, len, "Mr Whoopee", 0);
-	else if(checking == 424) return format(model, len, "BF Injection", 0);
-	else if(checking == 425) return format(model, len, "Hunter", 0);
-	else if(checking == 426) return format(model, len, "Premier", 0);
-	else if(checking == 427) return format(model, len, "S.W.A.T Truck", 0);
-	else if(checking == 428) return format(model, len, "Securicar", 0);
-	else if(checking == 429) return format(model, len, "Banshee", 0);
-	else if(checking == 430) return format(model, len, "Predator", 0);
-	else if(checking == 431) return format(model, len, "Bus", 0);
-	else if(checking == 432) return format(model, len, "Rhino", 0);
-	else if(checking == 433) return format(model, len, "Barracks", 0);
-	else if(checking == 434) return format(model, len, "Hotknife", 0);
-	else if(checking == 435) return format(model, len, "Trailer", 0);
-	else if(checking == 436) return format(model, len, "Previon", 0);
-	else if(checking == 437) return format(model, len, "Coach", 0);
-	else if(checking == 438) return format(model, len, "Cabbie", 0);
-	else if(checking == 439) return format(model, len, "Stallion", 0);
-	else if(checking == 440) return format(model, len, "Rumpo", 0);
-	else if(checking == 441) return format(model, len, "RC Bandit", 0);
-	else if(checking == 442) return format(model, len, "Romero", 0);
-	else if(checking == 443) return format(model, len, "Packer", 0);
-	else if(checking == 444) return format(model, len, "Monster", 0);
-	else if(checking == 445) return format(model, len, "Admiral", 0);
-	else if(checking == 446) return format(model, len, "Squalo", 0);
-	else if(checking == 447) return format(model, len, "Seasparrow", 0);
-	else if(checking == 448) return format(model, len, "Pizza Boy", 0);
-	else if(checking == 449) return format(model, len, "Tram", 0);
-	else if(checking == 450) return format(model, len, "Trailer 2", 0);
-	else if(checking == 451) return format(model, len, "Turismo", 0);
-	else if(checking == 452) return format(model, len, "Speeder", 0);
-	else if(checking == 453) return format(model, len, "Refeer", 0);
-	else if(checking == 454) return format(model, len, "Tropic", 0);
-	else if(checking == 455) return format(model, len, "Flatbed", 0);
-	else if(checking == 456) return format(model, len, "Yankee", 0);
-	else if(checking == 457) return format(model, len, "Caddy", 0);
-	else if(checking == 458) return format(model, len, "Solair", 0);
-	else if(checking == 459) return format(model, len, "Top Fun", 0);
-	else if(checking == 460) return format(model, len, "Skimmer", 0);
-	else if(checking == 461) return format(model, len, "PCJ-600", 0);
-	else if(checking == 462) return format(model, len, "Faggio", 0);
-	else if(checking == 463) return format(model, len, "Freeway", 0);
-	else if(checking == 464) return format(model, len, "RC Baron", 0);
-	else if(checking == 465) return format(model, len, "RC Raider", 0);
-	else if(checking == 466) return format(model, len, "Glendade", 0);
-	else if(checking == 467) return format(model, len, "Oceanic", 0);
-	else if(checking == 468) return format(model, len, "Sanchez", 0);
-	else if(checking == 469) return format(model, len, "Sparrow", 0);
-	else if(checking == 470) return format(model, len, "Patriot", 0);
-	else if(checking == 471) return format(model, len, "Quad", 0);
-	else if(checking == 472) return format(model, len, "Coastguard", 0);
-	else if(checking == 473) return format(model, len, "Dinghy", 0);
-	else if(checking == 474) return format(model, len, "Hermes", 0);
-	else if(checking == 475) return format(model, len, "Sabre", 0);
-	else if(checking == 476) return format(model, len, "Rustler", 0);
-	else if(checking == 477) return format(model, len, "ZR-350", 0);
-	else if(checking == 478) return format(model, len, "Walton", 0);
-	else if(checking == 479) return format(model, len, "Regina", 0);
-	else if(checking == 480) return format(model, len, "Comet", 0);
-	else if(checking == 481) return format(model, len, "BMX", 0);
-	else if(checking == 482) return format(model, len, "Burrito", 0);
-	else if(checking == 483) return format(model, len, "Camper", 0);
-	else if(checking == 484) return format(model, len, "Marquis", 0);
-	else if(checking == 485) return format(model, len, "Baggage", 0);
-	else if(checking == 486) return format(model, len, "Dozer", 0);
-	else if(checking == 487) return format(model, len, "Maverick", 0);
-	else if(checking == 488) return format(model, len, "News Maverick", 0);
-	else if(checking == 489) return format(model, len, "Rancher", 0);
-	else if(checking == 490) return format(model, len, "Federal Rancher", 0);
-	else if(checking == 491) return format(model, len, "Virgo", 0);
-	else if(checking == 492) return format(model, len, "Greenwood", 0);
-	else if(checking == 493) return format(model, len, "Jetmax", 0);
-	else if(checking == 494) return format(model, len, "Hotring", 0);
-	else if(checking == 495) return format(model, len, "Sandking", 0);
-	else if(checking == 496) return format(model, len, "Blista Compact", 0);
-	else if(checking == 497) return format(model, len, "Police Maverick", 0);
-	else if(checking == 498) return format(model, len, "Boxville", 0);
-	else if(checking == 499) return format(model, len, "Benson", 0);
-	else if(checking == 500) return format(model, len, "Mesa", 0);
-	else if(checking == 501) return format(model, len, "RC Goblin", 0);
-	else if(checking == 502) return format(model, len, "Hotring A", 0);
-	else if(checking == 503) return format(model, len, "Hotring B", 0);
-	else if(checking == 504) return format(model, len, "Blooding Banger", 0);
-	else if(checking == 505) return format(model, len, "Rancher", 0);
-	else if(checking == 506) return format(model, len, "Super GT", 0);
-	else if(checking == 507) return format(model, len, "Elegant", 0);
-	else if(checking == 508) return format(model, len, "Journey", 0);
-	else if(checking == 509) return format(model, len, "Bike", 0);
-	else if(checking == 510) return format(model, len, "Mountain Bike", 0);
-	else if(checking == 511) return format(model, len, "Beagle", 0);
-	else if(checking == 512) return format(model, len, "Cropduster", 0);
-	else if(checking == 513) return format(model, len, "Stuntplane", 0);
-	else if(checking == 514) return format(model, len, "Petrol", 0);
-	else if(checking == 515) return format(model, len, "Roadtrain", 0);
-	else if(checking == 516) return format(model, len, "Nebula", 0);
-	else if(checking == 517) return format(model, len, "Majestic", 0);
-	else if(checking == 518) return format(model, len, "Buccaneer", 0);
-	else if(checking == 519) return format(model, len, "Shamal", 0);
-	else if(checking == 520) return format(model, len, "Hydra", 0);
-	else if(checking == 521) return format(model, len, "FCR-300", 0);
-	else if(checking == 522) return format(model, len, "NRG-500", 0);
-	else if(checking == 523) return format(model, len, "HPV-1000", 0);
-	else if(checking == 524) return format(model, len, "Cement Truck", 0);
-	else if(checking == 525) return format(model, len, "Towtruck", 0);
-	else if(checking == 526) return format(model, len, "Fortune", 0);
-	else if(checking == 527) return format(model, len, "Cadrona", 0);
-	else if(checking == 528) return format(model, len, "Federal Truck", 0);
-	else if(checking == 529) return format(model, len, "Williard", 0);
-	else if(checking == 530) return format(model, len, "Fork Lift", 0);
-	else if(checking == 531) return format(model, len, "Tractor", 0);
-	else if(checking == 532) return format(model, len, "Combine", 0);
-	else if(checking == 533) return format(model, len, "Feltzer", 0);
-	else if(checking == 534) return format(model, len, "Remington", 0);
-	else if(checking == 535) return format(model, len, "Slamvan", 0);
-	else if(checking == 536) return format(model, len, "Blade", 0);
-	else if(checking == 537) return format(model, len, "Freight", 0);
-	else if(checking == 538) return format(model, len, "Streak", 0);
-	else if(checking == 539) return format(model, len, "Vortex", 0);
-	else if(checking == 540) return format(model, len, "Vincent", 0);
-	else if(checking == 541) return format(model, len, "Bullet", 0);
-	else if(checking == 542) return format(model, len, "Clover", 0);
-	else if(checking == 543) return format(model, len, "Sadler", 0);
-	else if(checking == 544) return format(model, len, "Stairs Firetruck", 0);
-	else if(checking == 545) return format(model, len, "Hustler", 0);
-	else if(checking == 546) return format(model, len, "Intruder", 0);
-	else if(checking == 547) return format(model, len, "Primo", 0);
-	else if(checking == 548) return format(model, len, "Cargobob", 0);
-	else if(checking == 549) return format(model, len, "Tampa", 0);
-	else if(checking == 550) return format(model, len, "Sunrise", 0);
-	else if(checking == 551) return format(model, len, "Merit", 0);
-	else if(checking == 552) return format(model, len, "Utility Van", 0);
-	else if(checking == 553) return format(model, len, "Nevada", 0);
-	else if(checking == 554) return format(model, len, "Yosemite", 0);
-	else if(checking == 555) return format(model, len, "Windsor", 0);
-	else if(checking == 556) return format(model, len, "Monster A", 0);
-	else if(checking == 557) return format(model, len, "Monster B", 0);
-	else if(checking == 558) return format(model, len, "Uranus", 0);
-	else if(checking == 559) return format(model, len, "Jester", 0);
-	else if(checking == 560) return format(model, len, "Sultan", 0);
-	else if(checking == 561) return format(model, len, "Stratum", 0);
-	else if(checking == 562) return format(model, len, "Elegy", 0);
-	else if(checking == 563) return format(model, len, "Raindance", 0);
-	else if(checking == 564) return format(model, len, "RC Tiger", 0);
-	else if(checking == 565) return format(model, len, "Flash", 0);
-	else if(checking == 566) return format(model, len, "Tahoma", 0);
-	else if(checking == 567) return format(model, len, "Savanna", 0);
-	else if(checking == 568) return format(model, len, "Bandito", 0);
-	else if(checking == 569) return format(model, len, "Freight Flat", 0);
-	else if(checking == 570) return format(model, len, "Streak", 0);
-	else if(checking == 571) return format(model, len, "Kart", 0);
-	else if(checking == 572) return format(model, len, "Mower", 0);
-	else if(checking == 573) return format(model, len, "Duneride", 0);
-	else if(checking == 574) return format(model, len, "Sweeper", 0);
-	else if(checking == 575) return format(model, len, "Broadway", 0);
-	else if(checking == 576) return format(model, len, "Tornado", 0);
-	else if(checking == 577) return format(model, len, "AT-400", 0);
-	else if(checking == 578) return format(model, len, "DFT-30", 0);
-	else if(checking == 579) return format(model, len, "Huntley", 0);
-	else if(checking == 580) return format(model, len, "Stafford", 0);
-	else if(checking == 581) return format(model, len, "BF-400", 0);
-	else if(checking == 582) return format(model, len, "Raindance", 0);
-	else if(checking == 583) return format(model, len, "News Van", 0);
-	else if(checking == 584) return format(model, len, "Tug", 0);
-	else if(checking == 585) return format(model, len, "Petrol Tanker", 0);
-	else if(checking == 586) return format(model, len, "Wayfarer", 0);
-	else if(checking == 587) return format(model, len, "Euros", 0);
-	else if(checking == 588) return format(model, len, "Hotdog", 0);
-	else if(checking == 589) return format(model, len, "Club", 0);
-	else if(checking == 590) return format(model, len, "Freight Box", 0);
-	else if(checking == 591) return format(model, len, "Trailer 3", 0);
-	else if(checking == 592) return format(model, len, "Andromada", 0);
-	else if(checking == 593) return format(model, len, "Dodo", 0);
-	else if(checking == 594) return format(model, len, "RC Cam", 0);
-	else if(checking == 595) return format(model, len, "Launch", 0);
-	else if(checking == 596) return format(model, len, "LSPD Patrol Car", 0);
-	else if(checking == 597) return format(model, len, "FBI Patrol Car", 0);
-	else if(checking == 598) return format(model, len, "NG Patrol Car", 0);
-	else if(checking == 599) return format(model, len, "LSPD Patrol Ranger", 0);
-	else if(checking == 600) return format(model, len, "Picador", 0);
-	else if(checking == 601) return format(model, len, "S.W.A.T Tank", 0);
-    else if(checking == 602) return format(model, len, "Alpha", 0);
-	else if(checking == 603) return format(model, len, "Phoenix", 0);
-	else if(checking == 609) return format(model, len, "Boxville", 0);
+	new model_id = GetVehicleModel(vehicleid);
+	if(model_id == 400) return format(model, len, "Landstalker", 0);
+	else if(model_id == 401) return format(model, len, "Bravura", 0);
+	else if(model_id == 402) return format(model, len, "Buffalo", 0);
+	else if(model_id == 403) return format(model, len, "Linerunner", 0);
+	else if(model_id == 404) return format(model, len, "Perenail", 0);
+	else if(model_id == 405) return format(model, len, "Sentinel", 0);
+	else if(model_id == 406) return format(model, len, "Dumper", 0);
+	else if(model_id == 407) return format(model, len, "Firetruck", 0);
+	else if(model_id == 408) return format(model, len, "Trashmaster", 0);
+	else if(model_id == 409) return format(model, len, "Stretch", 0);
+	else if(model_id == 410) return format(model, len, "Manana", 0);
+	else if(model_id == 411) return format(model, len, "Infernus", 0);
+	else if(model_id == 412) return format(model, len, "Vodooo", 0);
+	else if(model_id == 413) return format(model, len, "Pony", 0);
+	else if(model_id == 414) return format(model, len, "Mule", 0);
+	else if(model_id == 415) return format(model, len, "Cheetah", 0);
+	else if(model_id == 416) return format(model, len, "Ambulance", 0);
+	else if(model_id == 417) return format(model, len, "Leviathan", 0);
+	else if(model_id == 418) return format(model, len, "Moonbeam", 0);
+	else if(model_id == 419) return format(model, len, "Esperanto", 0);
+	else if(model_id == 420) return format(model, len, "Taxi", 0);
+	else if(model_id == 421) return format(model, len, "Washington", 0);
+	else if(model_id == 422) return format(model, len, "Bobcat", 0);
+	else if(model_id == 423) return format(model, len, "Mr Whoopee", 0);
+	else if(model_id == 424) return format(model, len, "BF Injection", 0);
+	else if(model_id == 425) return format(model, len, "Hunter", 0);
+	else if(model_id == 426) return format(model, len, "Premier", 0);
+	else if(model_id == 427) return format(model, len, "S.W.A.T Truck", 0);
+	else if(model_id == 428) return format(model, len, "Securicar", 0);
+	else if(model_id == 429) return format(model, len, "Banshee", 0);
+	else if(model_id == 430) return format(model, len, "Predator", 0);
+	else if(model_id == 431) return format(model, len, "Bus", 0);
+	else if(model_id == 432) return format(model, len, "Rhino", 0);
+	else if(model_id == 433) return format(model, len, "Barracks", 0);
+	else if(model_id == 434) return format(model, len, "Hotknife", 0);
+	else if(model_id == 435) return format(model, len, "Trailer", 0);
+	else if(model_id == 436) return format(model, len, "Previon", 0);
+	else if(model_id == 437) return format(model, len, "Coach", 0);
+	else if(model_id == 438) return format(model, len, "Cabbie", 0);
+	else if(model_id == 439) return format(model, len, "Stallion", 0);
+	else if(model_id == 440) return format(model, len, "Rumpo", 0);
+	else if(model_id == 441) return format(model, len, "RC Bandit", 0);
+	else if(model_id == 442) return format(model, len, "Romero", 0);
+	else if(model_id == 443) return format(model, len, "Packer", 0);
+	else if(model_id == 444) return format(model, len, "Monster", 0);
+	else if(model_id == 445) return format(model, len, "Admiral", 0);
+	else if(model_id == 446) return format(model, len, "Squalo", 0);
+	else if(model_id == 447) return format(model, len, "Seasparrow", 0);
+	else if(model_id == 448) return format(model, len, "Pizza Boy", 0);
+	else if(model_id == 449) return format(model, len, "Tram", 0);
+	else if(model_id == 450) return format(model, len, "Trailer 2", 0);
+	else if(model_id == 451) return format(model, len, "Turismo", 0);
+	else if(model_id == 452) return format(model, len, "Speeder", 0);
+	else if(model_id == 453) return format(model, len, "Refeer", 0);
+	else if(model_id == 454) return format(model, len, "Tropic", 0);
+	else if(model_id == 455) return format(model, len, "Flatbed", 0);
+	else if(model_id == 456) return format(model, len, "Yankee", 0);
+	else if(model_id == 457) return format(model, len, "Caddy", 0);
+	else if(model_id == 458) return format(model, len, "Solair", 0);
+	else if(model_id == 459) return format(model, len, "Top Fun", 0);
+	else if(model_id == 460) return format(model, len, "Skimmer", 0);
+	else if(model_id == 461) return format(model, len, "PCJ-600", 0);
+	else if(model_id == 462) return format(model, len, "Faggio", 0);
+	else if(model_id == 463) return format(model, len, "Freeway", 0);
+	else if(model_id == 464) return format(model, len, "RC Baron", 0);
+	else if(model_id == 465) return format(model, len, "RC Raider", 0);
+	else if(model_id == 466) return format(model, len, "Glendade", 0);
+	else if(model_id == 467) return format(model, len, "Oceanic", 0);
+	else if(model_id == 468) return format(model, len, "Sanchez", 0);
+	else if(model_id == 469) return format(model, len, "Sparrow", 0);
+	else if(model_id == 470) return format(model, len, "Patriot", 0);
+	else if(model_id == 471) return format(model, len, "Quad", 0);
+	else if(model_id == 472) return format(model, len, "Coastguard", 0);
+	else if(model_id == 473) return format(model, len, "Dinghy", 0);
+	else if(model_id == 474) return format(model, len, "Hermes", 0);
+	else if(model_id == 475) return format(model, len, "Sabre", 0);
+	else if(model_id == 476) return format(model, len, "Rustler", 0);
+	else if(model_id == 477) return format(model, len, "ZR-350", 0);
+	else if(model_id == 478) return format(model, len, "Walton", 0);
+	else if(model_id == 479) return format(model, len, "Regina", 0);
+	else if(model_id == 480) return format(model, len, "Comet", 0);
+	else if(model_id == 481) return format(model, len, "BMX", 0);
+	else if(model_id == 482) return format(model, len, "Burrito", 0);
+	else if(model_id == 483) return format(model, len, "Camper", 0);
+	else if(model_id == 484) return format(model, len, "Marquis", 0);
+	else if(model_id == 485) return format(model, len, "Baggage", 0);
+	else if(model_id == 486) return format(model, len, "Dozer", 0);
+	else if(model_id == 487) return format(model, len, "Maverick", 0);
+	else if(model_id == 488) return format(model, len, "News Maverick", 0);
+	else if(model_id == 489) return format(model, len, "Rancher", 0);
+	else if(model_id == 490) return format(model, len, "Federal Rancher", 0);
+	else if(model_id == 491) return format(model, len, "Virgo", 0);
+	else if(model_id == 492) return format(model, len, "Greenwood", 0);
+	else if(model_id == 493) return format(model, len, "Jetmax", 0);
+	else if(model_id == 494) return format(model, len, "Hotring", 0);
+	else if(model_id == 495) return format(model, len, "Sandking", 0);
+	else if(model_id == 496) return format(model, len, "Blista Compact", 0);
+	else if(model_id == 497) return format(model, len, "Police Maverick", 0);
+	else if(model_id == 498) return format(model, len, "Boxville", 0);
+	else if(model_id == 499) return format(model, len, "Benson", 0);
+	else if(model_id == 500) return format(model, len, "Mesa", 0);
+	else if(model_id == 501) return format(model, len, "RC Goblin", 0);
+	else if(model_id == 502) return format(model, len, "Hotring A", 0);
+	else if(model_id == 503) return format(model, len, "Hotring B", 0);
+	else if(model_id == 504) return format(model, len, "Blooding Banger", 0);
+	else if(model_id == 505) return format(model, len, "Rancher", 0);
+	else if(model_id == 506) return format(model, len, "Super GT", 0);
+	else if(model_id == 507) return format(model, len, "Elegant", 0);
+	else if(model_id == 508) return format(model, len, "Journey", 0);
+	else if(model_id == 509) return format(model, len, "Bike", 0);
+	else if(model_id == 510) return format(model, len, "Mountain Bike", 0);
+	else if(model_id == 511) return format(model, len, "Beagle", 0);
+	else if(model_id == 512) return format(model, len, "Cropduster", 0);
+	else if(model_id == 513) return format(model, len, "Stuntplane", 0);
+	else if(model_id == 514) return format(model, len, "Petrol", 0);
+	else if(model_id == 515) return format(model, len, "Roadtrain", 0);
+	else if(model_id == 516) return format(model, len, "Nebula", 0);
+	else if(model_id == 517) return format(model, len, "Majestic", 0);
+	else if(model_id == 518) return format(model, len, "Buccaneer", 0);
+	else if(model_id == 519) return format(model, len, "Shamal", 0);
+	else if(model_id == 520) return format(model, len, "Hydra", 0);
+	else if(model_id == 521) return format(model, len, "FCR-300", 0);
+	else if(model_id == 522) return format(model, len, "NRG-500", 0);
+	else if(model_id == 523) return format(model, len, "HPV-1000", 0);
+	else if(model_id == 524) return format(model, len, "Cement Truck", 0);
+	else if(model_id == 525) return format(model, len, "Towtruck", 0);
+	else if(model_id == 526) return format(model, len, "Fortune", 0);
+	else if(model_id == 527) return format(model, len, "Cadrona", 0);
+	else if(model_id == 528) return format(model, len, "Federal Truck", 0);
+	else if(model_id == 529) return format(model, len, "Williard", 0);
+	else if(model_id == 530) return format(model, len, "Fork Lift", 0);
+	else if(model_id == 531) return format(model, len, "Tractor", 0);
+	else if(model_id == 532) return format(model, len, "Combine", 0);
+	else if(model_id == 533) return format(model, len, "Feltzer", 0);
+	else if(model_id == 534) return format(model, len, "Remington", 0);
+	else if(model_id == 535) return format(model, len, "Slamvan", 0);
+	else if(model_id == 536) return format(model, len, "Blade", 0);
+	else if(model_id == 537) return format(model, len, "Freight", 0);
+	else if(model_id == 538) return format(model, len, "Streak", 0);
+	else if(model_id == 539) return format(model, len, "Vortex", 0);
+	else if(model_id == 540) return format(model, len, "Vincent", 0);
+	else if(model_id == 541) return format(model, len, "Bullet", 0);
+	else if(model_id == 542) return format(model, len, "Clover", 0);
+	else if(model_id == 543) return format(model, len, "Sadler", 0);
+	else if(model_id == 544) return format(model, len, "Stairs Firetruck", 0);
+	else if(model_id == 545) return format(model, len, "Hustler", 0);
+	else if(model_id == 546) return format(model, len, "Intruder", 0);
+	else if(model_id == 547) return format(model, len, "Primo", 0);
+	else if(model_id == 548) return format(model, len, "Cargobob", 0);
+	else if(model_id == 549) return format(model, len, "Tampa", 0);
+	else if(model_id == 550) return format(model, len, "Sunrise", 0);
+	else if(model_id == 551) return format(model, len, "Merit", 0);
+	else if(model_id == 552) return format(model, len, "Utility Van", 0);
+	else if(model_id == 553) return format(model, len, "Nevada", 0);
+	else if(model_id == 554) return format(model, len, "Yosemite", 0);
+	else if(model_id == 555) return format(model, len, "Windsor", 0);
+	else if(model_id == 556) return format(model, len, "Monster A", 0);
+	else if(model_id == 557) return format(model, len, "Monster B", 0);
+	else if(model_id == 558) return format(model, len, "Uranus", 0);
+	else if(model_id == 559) return format(model, len, "Jester", 0);
+	else if(model_id == 560) return format(model, len, "Sultan", 0);
+	else if(model_id == 561) return format(model, len, "Stratum", 0);
+	else if(model_id == 562) return format(model, len, "Elegy", 0);
+	else if(model_id == 563) return format(model, len, "Raindance", 0);
+	else if(model_id == 564) return format(model, len, "RC Tiger", 0);
+	else if(model_id == 565) return format(model, len, "Flash", 0);
+	else if(model_id == 566) return format(model, len, "Tahoma", 0);
+	else if(model_id == 567) return format(model, len, "Savanna", 0);
+	else if(model_id == 568) return format(model, len, "Bandito", 0);
+	else if(model_id == 569) return format(model, len, "Freight Flat", 0);
+	else if(model_id == 570) return format(model, len, "Streak", 0);
+	else if(model_id == 571) return format(model, len, "Kart", 0);
+	else if(model_id == 572) return format(model, len, "Mower", 0);
+	else if(model_id == 573) return format(model, len, "Duneride", 0);
+	else if(model_id == 574) return format(model, len, "Sweeper", 0);
+	else if(model_id == 575) return format(model, len, "Broadway", 0);
+	else if(model_id == 576) return format(model, len, "Tornado", 0);
+	else if(model_id == 577) return format(model, len, "AT-400", 0);
+	else if(model_id == 578) return format(model, len, "DFT-30", 0);
+	else if(model_id == 579) return format(model, len, "Huntley", 0);
+	else if(model_id == 580) return format(model, len, "Stafford", 0);
+	else if(model_id == 581) return format(model, len, "BF-400", 0);
+	else if(model_id == 582) return format(model, len, "Raindance", 0);
+	else if(model_id == 583) return format(model, len, "News Van", 0);
+	else if(model_id == 584) return format(model, len, "Tug", 0);
+	else if(model_id == 585) return format(model, len, "Petrol Tanker", 0);
+	else if(model_id == 586) return format(model, len, "Wayfarer", 0);
+	else if(model_id == 587) return format(model, len, "Euros", 0);
+	else if(model_id == 588) return format(model, len, "Hotdog", 0);
+	else if(model_id == 589) return format(model, len, "Club", 0);
+	else if(model_id == 590) return format(model, len, "Freight Box", 0);
+	else if(model_id == 591) return format(model, len, "Trailer 3", 0);
+	else if(model_id == 592) return format(model, len, "Andromada", 0);
+	else if(model_id == 593) return format(model, len, "Dodo", 0);
+	else if(model_id == 594) return format(model, len, "RC Cam", 0);
+	else if(model_id == 595) return format(model, len, "Launch", 0);
+	else if(model_id == 596) return format(model, len, "LSPD Patrol Car", 0);
+	else if(model_id == 597) return format(model, len, "FBI Patrol Car", 0);
+	else if(model_id == 598) return format(model, len, "NG Patrol Car", 0);
+	else if(model_id == 599) return format(model, len, "LSPD Patrol Ranger", 0);
+	else if(model_id == 600) return format(model, len, "Picador", 0);
+	else if(model_id == 601) return format(model, len, "S.W.A.T Tank", 0);
+    else if(model_id == 602) return format(model, len, "Alpha", 0);
+	else if(model_id == 603) return format(model, len, "Phoenix", 0);
+	else if(model_id == 609) return format(model, len, "Boxville", 0);
 	
 	return 0;
 }
 
 stock GetVehicleOwnerName(vehicleid)
 {
-	new query[256], playername[MAX_PLAYER_NAME];
+	new query[256], player_name[MAX_PLAYER_NAME];
 	
 	mysql_format(mysql, query, sizeof(query), "SELECT Name \
 												FROM Players \
-												WHERE ID = %d", VehicleInfo[vehicleid][ID]);
-    mysql_tquery(mysql, query, "", "");
-
-	if(cache_num_rows() > 0) 
-	{
-		cache_get_value_name(0, "Name", playername);
-		
-		return playername;
-	}
+												WHERE ID = %d", VehicleInfo[vehicleid][Owner]);
+    mysql_query(mysql, query);
+	cache_get_value_name(0, "Name", player_name);
 	
-	return 0;
-}
-
-public CheckPlayerData(playerid)
-{
-	new query[128], playername[MAX_PLAYER_NAME];
-	
-	GetPlayerName(playerid, playername, sizeof(playername));
-	mysql_format(mysql, query, sizeof(query), "SELECT Password, Salt FROM Players WHERE NAME = '%e' LIMIT 1", playername);
-	mysql_tquery(mysql, query, "OnCheckPlayerData", "i", playerid);
-	
-	return 1;
-}
-
-public OnCheckPlayerData(playerid)
-{
-// Check if result has atleast one row, that means player has an account, show him dialog for login
-	if(cache_num_rows() > 0)
-	{
-		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
-		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
-		
-		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Vas nalog je pronadjen. Molimo Vas upisite lozinku da se prijavite", "Dalje", "Izlaz");
-	}
-	// Otherwise, player is not registered, show him dialog for registration
-	else
-	{
-		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, "Registracija", "Vas nalog nije pronadjen. Molimo Vas upisite lozinku da se registrujete", "Dalje", "Izlaz");
-	}
-	
-	return 1;
-}
-
-public LoadPlayerData(playerid)
-{
-	new query[128], playername[MAX_PLAYER_NAME];
-	
-	GetPlayerName(playerid, playername, sizeof(playername));
-	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Players WHERE NAME = '%e' LIMIT 1", playername);
-	mysql_tquery(mysql, query, "OnLoadPlayerData", "i", playerid);
-	
-	return 1;
-}
-
-public OnLoadPlayerData(playerid)
-{
-	// Check if result has atleast one row, that means player has an account, show him dialog for login
-	if(cache_num_rows() > 0)
-	{
-		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
-		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
-		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
-		cache_get_value_name_int(0, "Sex", PlayerInfo[playerid][Sex]);
-		cache_get_value_name_int(0, "Age", PlayerInfo[playerid][Age]);
-		cache_get_value_name_int(0, "Country", PlayerInfo[playerid][Country]);
-		cache_get_value_name_int(0, "City", PlayerInfo[playerid][City]);
-		cache_get_value_name_float(0, "SpawnX", PlayerInfo[playerid][SpawnX]);
-		cache_get_value_name_float(0, "SpawnY", PlayerInfo[playerid][SpawnY]);
-		cache_get_value_name_float(0, "SpawnZ", PlayerInfo[playerid][SpawnZ]);
-	}
-	return 1;
+	return player_name;
 }
 
 public OnAccountLoad(playerid)
@@ -906,6 +1267,7 @@ public IsASalesVehicle(vehicleid)
 	{
 	    if(vehicleid == SalesVehicle[i]) return 1;
 	}
+	
 	return 0;
 }
 
@@ -915,6 +1277,7 @@ public IsAOwnedVehicle(vehicleid)
    {
       if(vehicleid == OwnedVehicle[i]) return 1;
    }
+   
    return 0;
 }
 
@@ -925,55 +1288,113 @@ public IsARentVehicle(vehicleid)
    {
       if(vehicleid == RentVehicle[i]) return 1;
    }
+   
    return 0;
 }
 
 public IsABike(vehicleid)
 {
-    new modelid = GetVehicleModel(vehicleid);
-	if(modelid == 448 || modelid == 461 || modelid == 462 || modelid == 463 || modelid == 468 || modelid == 471 || modelid == 481 || modelid == 509 || modelid == 510 || modelid == 521 || modelid == 522 || modelid == 523 || modelid == 581 || modelid == 586)
+    new model_id = GetVehicleModel(vehicleid);
+	
+	if(model_id == 448 
+		|| model_id == 461 
+		|| model_id == 462 
+		|| model_id == 463 
+		|| model_id == 468 
+		|| model_id == 471 
+		|| model_id == 481 
+		|| model_id == 509 
+		|| model_id == 510 
+		|| model_id == 521 
+		|| model_id == 522 
+		|| model_id == 523 
+		|| model_id == 581 
+		|| model_id == 586)
 	{
 		return 1;
 	}
+	
 	return 0;
 }
 
 public IsABoat(vehicleid)
 {
-    new modelid = GetVehicleModel(vehicleid);
-	if(modelid == 430 || modelid == 446 || modelid == 452 || modelid == 453 || modelid == 454 || modelid == 472 || modelid == 473 || modelid == 484 || modelid == 493) return 1;
+    new model_id = GetVehicleModel(vehicleid);
+	
+	if(model_id == 430 
+		|| model_id == 446 
+		|| model_id == 452 
+		|| model_id == 453 
+		|| model_id == 454 
+		|| model_id == 472 
+		|| model_id == 473 
+		|| model_id == 484 
+		|| model_id == 493)
+	{
+		return 1;
+	}
+		
 	return 0;
 }
 
 public IsAPlane(vehicleid)
 {
-    new modelid = GetVehicleModel(vehicleid);
-	if(modelid == 460 || modelid == 464 || modelid == 476 || modelid == 511 || modelid == 512 || modelid == 513 || modelid == 519 || modelid == 520 || modelid == 553 || modelid == 577 || modelid == 592 || modelid == 593) return 1;
+    new model_id = GetVehicleModel(vehicleid);
+	
+	if(model_id == 460 
+		|| model_id == 464 
+		|| model_id == 476 
+		|| model_id == 511 
+		|| model_id == 512 
+		|| model_id == 513 
+		|| model_id == 519 
+		|| model_id == 520 
+		|| model_id == 553 
+		|| model_id == 577 
+		|| model_id == 592 
+		|| model_id == 593)
+	{
+		return 1;
+	}
+	
 	return 0;
 }
 
 public IsATrain(vehicleid)
 {
-	new modelid = GetVehicleModel(vehicleid);
-	if(modelid == 449 || modelid == 537 || modelid == 538 || modelid == 569 || modelid == 570 || modelid == 590) return 1;
+	new model_id = GetVehicleModel(vehicleid);
+	
+	if(model_id == 449 
+		|| model_id == 537 
+		|| model_id == 538 
+		|| model_id == 569 
+		|| model_id == 570 
+		|| model_id == 590) 
+	{
+		return 1; 
+	}
+	
     return 0;
 }
 
 public IsPlayerNearPump1(playerid)
 {
 	if(IsPlayerInRangeOfPoint(playerid, 10.0, 1944.3260, -1772.9254, 13.3906)) return 1;
+	
  	return 0;
 }
 
 public IsPlayerNearPump2(playerid)
 {
 	if(IsPlayerInRangeOfPoint(playerid, 10.0, -90.5515, -1169.4578, 2.4079)) return 1;
+	
  	return 0;
 }
 
 public IsPlayerNearPump3(playerid)
 {
 	if(IsPlayerInRangeOfPoint(playerid, 10.0, 1004.0070, -939.3102, 42.1797)) return 1;
+	
  	return 0;
 }
 
@@ -996,6 +1417,7 @@ public SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color
 		else if(((MSGX < radius/2) && (MSGX > -radius/2)) && ((MSGY < radius/2) && (MSGY > -radius/2)) && ((MSGZ < radius/2) && (MSGZ > -radius/2))) SendClientMessage(i, color4, string);
 		else if(((MSGX < radius) && (MSGX > -radius)) && ((MSGY < radius) && (MSGY > -radius)) && ((MSGZ < radius) && (MSGZ > -radius))) SendClientMessage(i, color5, string);
 	}
+	
 	return 1;
 }
 
@@ -1020,18 +1442,20 @@ public StartVehicleEngine(playerid, vehicleid)
 public CheckVehicleFuel()
 {
 	new engine, lights, alarm, doors, bonnet, boot, objective;
-    for(new v = 0; v < MAX_VEHICLES; v++)
+	
+    for(new i = 0; i < MAX_VEHICLES; i++)
     {
-   		GetVehicleParamsEx(v, engine, lights, alarm, doors, bonnet, boot, objective);
-    	if(IsABoat(v)) VehicleFuel[v] += 1;
-    	if(IsAPlane(v)) VehicleFuel[v] += 1;
-    	if(VehicleEngine[v] == 1 && VehicleFuel[v] > 0) VehicleFuel[v] -= 1;
-    	if(VehicleFuel[v] < 1)
+   		GetVehicleParamsEx(i, engine, lights, alarm, doors, bonnet, boot, objective);
+    	if(IsABoat(i)) VehicleFuel[i] += 1;
+    	if(IsAPlane(i)) VehicleFuel[i] += 1;
+    	if(VehicleEngine[i] == 1 && VehicleFuel[i] > 0) VehicleFuel[i] -= 1;
+    	if(VehicleFuel[i] < 1)
 		{
-			SetVehicleParamsEx(v, 0, 0, alarm, doors, bonnet, boot, objective);
-			VehicleEngine[v] = 0;
+			SetVehicleParamsEx(i, 0, 0, alarm, doors, bonnet, boot, objective);
+			VehicleEngine[i] = 0;
 		}
 	}
+	
 	return 1;
 }
 
@@ -1058,6 +1482,8 @@ public OnPlayerRegister(playerid)
 
 public OnGameModeInit()
 {
+	AddPlayerClass(0, 1642.2903, -2333.3423, 13.5469, 360.0, 0, 0, 0, 0, 0, 0);
+	
 	// Disable other player markers on radar
 	ShowPlayerMarkers(0);
 	
@@ -1085,9 +1511,6 @@ public OnGameModeInit()
 		return 1;
 	}
 	
-	// Load owned vehicles
-	LoadVehicles();
-	
 	//------------------------------------------------------------------------ > RENT
 	RentVehicle[0] = AddStaticVehicleEx(462,1560.3000500,-2309.0000000,13.2000000,90.0000000,-1,7,-1); //Faggio
 	RentVehicle[1] = AddStaticVehicleEx(462,1560.3000500,-2312.3000500,13.2000000,90.0000000,-1,7,-1); //Faggio
@@ -1113,12 +1536,10 @@ public OnGameModeInit()
 	RentVehicle[21] = AddStaticVehicleEx(462,1180.0000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	RentVehicle[22] = AddStaticVehicleEx(462,1175.4000000,-1337.6000000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	RentVehicle[23] = AddStaticVehicleEx(462,1175.4000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
+	GlobalVehiclesCounter += 24;
 	
-	for(new v = 0; v < MAX_VEHICLES; v++)
-	{
-	    if(IsABike(v)) VehicleFuel[v] = 30;
-	    else VehicleFuel[v] = 60;
-	}
+	// Load owned vehicles
+	LoadVehicles();
 	
 	SetTimer("CheckVehicleFuel", 60000, true);
 	
@@ -1141,9 +1562,6 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerConnect(playerid)
 {
-	// Disable < > SPAWN dialog
-	TogglePlayerSpectating(playerid, 0);
-	
 	new playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
@@ -1205,6 +1623,7 @@ public OnVehicleSpawn(vehicleid)
         ChangeVehicleColor(vehicleid, VehicleInfo[vehicleid][Color1], VehicleInfo[vehicleid][Color2]);
         if(VehicleInfo[vehicleid][Paintjob] != 9999) ChangeVehiclePaintjob(vehicleid, VehicleInfo[vehicleid][Paintjob]);
     }
+	
     return 1;
 }
 
@@ -1232,6 +1651,7 @@ public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 			VehicleEngine[vehicleid] = 0;
   		}
 	}
+	
     return 1;
 }
 
@@ -1246,17 +1666,19 @@ public OnPlayerCommandText(playerid, cmdtext[])
 	{
 		return 1;
 	}
+	
 	return 0;
 }
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-	new vehiclename[32], str[128];
-	GetVehicleName(vehicleid, vehiclename, sizeof(vehiclename));
+	new vehicleName[32], vehicleOwner[64], str[128];
+	GetVehicleName(vehicleid, vehicleName, sizeof(vehicleName));
+	vehicleOwner = GetVehicleOwnerName(vehicleid);
 	
 	if(IsAOwnedVehicle(vehicleid))
 	{
-	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: %s", vehiclename, vehicleid, VehicleInfo[vehicleid][Owner]);
+	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: %s", vehicleName, vehicleid, vehicleOwner);
 	    SendClientMessage(playerid, -1, str);
 		
 	    if(VehicleInfo[vehicleid][Locked] == 1)
@@ -1476,57 +1898,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			{
 				return Kick(playerid);
 			}
-			if(response)
-			{
-				new buffer[65], playername[MAX_PLAYER_NAME];
 			
-				SHA256_PassHash(inputtext, PlayerInfo[playerid][Salt], buffer, 65);
-				
-				if(strcmp(buffer, PlayerInfo[playerid][Password]) == 0)
-				{
-					GetPlayerName(playerid, playername, sizeof(playername));
-					LoadPlayerData(playerid);
-					
-					printf("Sex je %d \n", PlayerInfo[playerid][Sex]);
-					printf("Age je %d \n", PlayerInfo[playerid][Age]);
-					printf("Country je %d \n", PlayerInfo[playerid][Country]);
-					printf("City je %d \n", PlayerInfo[playerid][City]);
-					// If player didnt pick Sex, show him dialog
-					if(!PlayerInfo[playerid][Sex])
-					{
-						ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, "Registracija - Pol", "Musko\nZensko", "U redu", "Izadji");
-					}
-					// If player didnt pick Age, show him dialog
-					else if(!PlayerInfo[playerid][Age])
-					{
-						ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, "Registracija - Godine", "Unesite koliko imate godina", "U redu", "Izadji");
-					}
-					// If player didnt pick Country, show him dialog
-					else if(!PlayerInfo[playerid][Country])
-					{
-						ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, "Registracija - Drzava", "Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
-					}
-					// If player didnt picky City, show him dialog
-					else if(!PlayerInfo[playerid][City])
-					{
-						ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
-					}
-					// Otherwise, player is fully registered, spawn him
-					else 
-					{
-						SetSpawnInfo(playerid, 0, 0, PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], 360.0, 0, 0, 0, 0, 0, 0);
-						SpawnPlayer(playerid);
-					}
-				}
-				else
-				{
-					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Lozinka koju ste uneli nije ispravna, pokusajte ponovo", "Dalje", "Izlaz");
-				}
-			}
+			// SHA256_PassHash(inputtext, PlayerInfo[playerid][Salt], buffer, 65);
+			bcrypt_check(inputtext, PlayerInfo[playerid][Password], "OnPasswordChecked", "d", playerid);		
 		}
 		
 		case DIALOG_REGISTER:
 		{
+			
 			if(!response) 
 			{
 				return Kick(playerid);
@@ -1534,33 +1913,16 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			
 			if(strlen(inputtext) < 6 || strlen(inputtext) > 20)
 			{
-				ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_INPUT, "Registracija", "Vas nalog nije pronadjen. \nMolimo Vas upisite lozinku da se registrujete", "Dalje", "Izlaz");
+				ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija", ""TEXT_COLOR_WHITE"Lozinka mora biti izmedju 6 i 20 karaktera. \nMolimo Vas upisite lozinku da se registrujete", "Dalje", "Izlaz");
 				return 1;
 			}
 			
-			for (new i = 0; i < 10; i++) 
-			{
-				PlayerInfo[playerid][Salt][i] = random(100) + 50;
-			}
-			
-			PlayerInfo[playerid][Salt][10] = 0;
-			SHA256_PassHash(inputtext, PlayerInfo[playerid][Salt], PlayerInfo[playerid][Password], 65);
-			
-			new query[256], playername[MAX_PLAYER_NAME];
-			GetPlayerName(playerid, playername, sizeof(playername));
-			
-			mysql_format(mysql, query, sizeof(query), "INSERT INTO Players SET \
-														Name = '%e', \
-														Password = '%e', \
-														Salt = '%e'", playername, PlayerInfo[playerid][Password], PlayerInfo[playerid][Salt]);
-			mysql_tquery(mysql, query, "OnPlayerRegister", "i", playerid);
-			
-			ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, "Registracija - Pol", "Musko\nZensko", "U redu", "Izadji");
+			bcrypt_hash(inputtext, BCRYPT_COST, "OnPasswordHashed", "d", playerid);
 		}
 		
 		case DIALOG_SEX:
 		{
-			new query[256];
+			new query[256], message[256];
 			
 			if(!response) 
 			{
@@ -1569,25 +1931,25 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			
 			if(listitem == 0)
 			{
-				PlayerInfo[playerid][Sex] = 1;
+				PlayerInfo[playerid][Gender] = 1;
 				mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-															SET Sex = %d \
-															WHERE ID = %d", PlayerInfo[playerid][Sex], PlayerInfo[playerid][ID]);											
-				// Maybe this code could do once, test it later.											
-				mysql_tquery(mysql, query, "", "");
-				
-				ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, "Registracija - Godine", "Unesite koliko imate godina", "U redu", "Izadji");
+															SET gender = %d \
+															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);																						
+				mysql_tquery(mysql, query);
+			
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Unesite koliko imate godina");
+				ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", message, "U redu", "Izadji");
 			}
 			else if(listitem == 1)
 			{
-				PlayerInfo[playerid][Sex] = 2;
+				PlayerInfo[playerid][Gender] = 2;
 				mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-															SET Sex = %d \
-															WHERE ID = %d", PlayerInfo[playerid][Sex], PlayerInfo[playerid][ID]);
-				// Maybe this code could do once, test it later.
-				mysql_tquery(mysql, query, "", "");
+															SET gender = %d \
+															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);
+				mysql_tquery(mysql, query);
 				
-				ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, "Registracija - Godine", "Unesite koliko imate godina", "U redu", "Izadji");
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Unesite koliko imate godina");
+				ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", message, "U redu", "Izadji");
 			}
 		}
 		
@@ -1602,26 +1964,26 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			
 			if(!strlen(inputtext))
 			{
-				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, "Registracija - Godine", "Niste uneli koliko imate godina. \nMUnesite koliko imate godina.", "U redu", "Izadji");
+				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", ""TEXT_COLOR_WHITE"Niste uneli koliko imate godina. \nUnesite koliko imate godina.", "U redu", "Izadji");
 			}
 			
 			if(!isNumeric(inputtext))
 			{
-				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, "Registracija - Godine", "Niste uneli koliko imate godina. \nUnesite koliko imate godina.", "U redu", "Izadji");
+				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", ""TEXT_COLOR_WHITE"Niste uneli koliko imate godina. \nUnesite koliko imate godina.", "U redu", "Izadji");
 			}
 			
 			years = strval(inputtext);
 			if(years < 7 || years > 99)
 			{
-				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, "Registracija - Godine", "Molimo Vas budite iskreni sa godinama. \nUnesite koliko imate godina.", "U redu", "Izadji");
+				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", ""TEXT_COLOR_WHITE"Opseg godina mora biti izmedju 7 i 99. \nUnesite koliko imate godina.", "U redu", "Izadji");
 			}
 			
+			PlayerInfo[playerid][Age] = years;
 			mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-												SET Age = %d \
-												WHERE ID = %d", years, PlayerInfo[playerid][ID]);
-			mysql_tquery(mysql, query, "", "");
-			
-			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, "Registracija - Drzava", "Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
+														SET age = %d \
+														WHERE id = %d", years, PlayerInfo[playerid][ID]);
+			mysql_tquery(mysql, query);
+			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Drzava", ""TEXT_COLOR_WHITE"Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
 		}
 		
 		case DIALOG_COUNTRY:
@@ -1640,10 +2002,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				{
 					PlayerInfo[playerid][Country] = 1;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET Country = %d \
-																WHERE ID = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);									
-					mysql_tquery(mysql, query, "", "");
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+																SET country = %d \
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);									
+					mysql_tquery(mysql, query);
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
 					
 				}
 				// Montenegro
@@ -1651,62 +2013,64 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				{
 					PlayerInfo[playerid][Country] = 2;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET Country = %d \
-																WHERE ID = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
-					mysql_tquery(mysql, query, "", "");
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+																SET country = %d \
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+					mysql_tquery(mysql, query);
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
 				}
 				// Bosnia and Herzegovina
 				case 2:
 				{
 					PlayerInfo[playerid][Country] = 3;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET Country = %d \
-																WHERE ID = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
-					mysql_tquery(mysql, query, "", "");
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+																SET country = %d \
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+					mysql_tquery(mysql, query);
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
 				}
 				// Croatia
 				case 3:
 				{
 					PlayerInfo[playerid][Country] = 4;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET Country = %d \
-																WHERE ID = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
-					mysql_tquery(mysql, query, "", "");
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+																SET country = %d \
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+					mysql_tquery(mysql, query);
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
 				}
 				// Macedonia
 				case 4:
 				{
 					PlayerInfo[playerid][Country] = 5;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET Country = %d \
-																WHERE ID = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
-					mysql_tquery(mysql, query, "", "");
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+																SET country = %d \
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+					mysql_tquery(mysql, query);
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
 				}
 				// Other 
 				case 5:
 				{
 					PlayerInfo[playerid][Country] = 6;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET Country = %d \
-																WHERE ID = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
-					mysql_tquery(mysql, query, "", "");
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, "Registracija - Grad", "Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+																SET country = %d \
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+					mysql_tquery(mysql, query);
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
 				}
 			}
 		}
 		
 		case DIALOG_CITY:
 		{
-			new query[256];
+			new query[256], message[256], player_name[MAX_PLAYER_NAME], player_age, player_sex[8], player_country[32], player_city[16];
 			
 			if(!response)
 			{
 				return Kick(playerid);
 			}
+			
+			GetPlayerName(playerid, player_name, sizeof(player_name));
 			
 			switch(listitem)
 			{
@@ -1719,12 +2083,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnZ] = 13.5469;
 					//PlayerInfo[playerid][SpawnA] = 0.0;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET City = %d, SpawnX = %f, SpawnY = %f, SpawnZ = %f \
-																WHERE ID = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
-					mysql_tquery(mysql, query, "", "");
+																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
+																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
+					mysql_tquery(mysql, query);
 					
-					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Uspesno ste zavrsili kompletnu registraciju. \nMolimo Vas upisite lozinku da se prijavite.", "Dalje", "Izlaz");
+					player_age = PlayerInfo[playerid][Age];
+					player_sex = GetPlayerSex(playerid);
+					player_country = GetPlayerCountry(playerid);
+					player_city = GetPlayerCity(playerid);
 					
+					format(message, sizeof(message), ""TEXT_COLOR_WHITE"Uspesno ste zavrsili registraciju. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", player_name, player_sex, player_age, player_country, player_city);
+					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");					
 				}
 				// Las Venturas
 				case 1:
@@ -1736,11 +2105,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					//PlayerInfo[playerid][SpawnA] = 270.4988;
 					
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET City = %d, SpawnX = %f, SpawnY = %f, SpawnZ = %f \
-																WHERE ID = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
-					mysql_tquery(mysql, query, "", "");
+																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
+																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
+					mysql_tquery(mysql, query);
 					
-					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Uspesno ste zavrsili kompletnu registraciju. \nMolimo Vas upisite lozinku da se prijavite.", "Dalje", "Izlaz");
+					format(message, sizeof(message), ""TEXT_COLOR_WHITE"Uspesno ste zavrsili registraciju. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", player_name, player_sex, player_age, player_country, player_city);
+					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");	
 				}
 				// San Fierro
 				case 2:
@@ -1751,11 +2121,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnZ] = 14.1484;
 					//PlayerInfo[playerid][SpawnA] = 136.9096;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
-																SET City = %d, SpawnX = %f, SpawnY = %f, SpawnZ = %f \
-																WHERE ID = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
-					mysql_tquery(mysql, query, "", "");
+																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
+																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
+					mysql_tquery(mysql, query);
 					
-					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "Uspesno ste zavrsili kompletnu registraciju. \nMolimo Vas upisite lozinku da se prijavite.", "Dalje", "Izlaz");
+					player_age = PlayerInfo[playerid][Age];
+					player_sex = GetPlayerSex(playerid);
+					player_country = GetPlayerCountry(playerid);
+					player_city = GetPlayerCity(playerid);
+		
+					format(message, sizeof(message), ""TEXT_COLOR_WHITE"Uspesno ste zavrsili registraciju. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", player_name, player_sex, player_age, player_country, player_city);
+					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");	
 				}
 			}
 		}
