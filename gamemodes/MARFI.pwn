@@ -395,9 +395,7 @@ main()
 #define TEXT_STEALTH_BLUE  												"{0077BB}"
 // ====================================================================================================== Forwards
 forward CheckPlayerData(playerid);
-forward OnCheckPlayerData(playerid);
-forward LoadPlayerData(playerid);
-forward OnLoadPlayerData(playerid);
+forward OnPlayerDataChecked(playerid);
 forward SavePlayerData(playerid);
 forward OnSavePlayerData(playerid);
 forward OnPlayerRegister(playerid);
@@ -423,7 +421,7 @@ forward AntiFreezePlayer(playerid);
 forward SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color3, color4, color5);
 
 forward LoadVehicles();
-forward OnLoadVehicles();
+forward OnVehiclesLoaded();
 forward InsertVehicle(vehicleOwner, vehicleModel);
 forward SaveVehicle(vehicleid);
 forward SetVehicleComponents(vehicleid);
@@ -449,7 +447,6 @@ enum PlayerData
 	ID, // ID in the Table of Players
 	Name[MAX_PLAYER_NAME], // Name of the player
 	Password[65], // Encrypted password
-	Salt[11], // Salt for encryption
 	Gender, // Gender of the player (male | female)
 	Age, // Age of the player
 	Country, // Country from where players come
@@ -481,7 +478,7 @@ enum VehicleData
 	Spoiler, // Addons - spoiler
 	Hood, // Addons - hood
 	Roof, // Addons - roof
-	Sideskirt, // Addons - sideskirt
+	Side_skirt, // Addons - sideskirt
 	Lamps, // Addons - lamps
 	Nitro, // Addons - nitro
 	Exhaust, // Addons - exhaust
@@ -511,9 +508,9 @@ new VehicleHood[MAX_VEHICLES];
 new VehicleTrunk[MAX_VEHICLES];
 
 // Adding vehicles
-new RentVehicle[24];
-new SalesVehicle[89];
-new OwnedVehicle[sizeof(VehicleInfo)];
+new rent_vehicles[24];
+new sale_vehicles[89];
+new owned_vehicles[sizeof(VehicleInfo)];
 
 // ====================================================================================================== Functions (Public & Stock)
 // Money AntiCheat
@@ -562,14 +559,14 @@ stock isNumeric(string[])
 	return 1; // It's a number, return 1 (true)
 }
 
-stock GetPlayerSex(playerid)
+stock GetPlayerGender(playerid)
 {
     new gender[8];
 	
     switch(PlayerInfo[playerid][Gender])
     {
-        case 1: gender = "Musko";
-        case 2: gender = "Zensko";
+        case 0: gender = "Musko";
+        case 1: gender = "Zensko";
 		default: gender = "/";
     }
 	
@@ -582,12 +579,12 @@ stock GetPlayerCountry(playerid)
 	
     switch(PlayerInfo[playerid][Country])
     {
-        case 1: country = "Srbija";
-        case 2: country = "Crna Gora";
-        case 3: country = "Bosna i Hercegovina";
-        case 4: country = "Makedonija";
-        case 5: country = "Hrvatska";
-        case 6: country = "Ostalo";
+        case 0: country = "Srbija";
+        case 1: country = "Crna Gora";
+        case 2: country = "Bosna i Hercegovina";
+        case 3: country = "Makedonija";
+        case 4: country = "Hrvatska";
+        case 5: country = "Ostalo";
 		default: country = "/";
     }
 	
@@ -600,9 +597,9 @@ stock GetPlayerCity(playerid)
 	
     switch(PlayerInfo[playerid][City])
     {
-        case 1: city = "Los Santos";
-        case 2: city = "Las Venturas";
-        case 3: city = "San Fierro";
+        case 0: city = "Los Santos";
+        case 1: city = "Las Venturas";
+        case 2: city = "San Fierro";
 		default: city = "/";
     }
 	
@@ -614,34 +611,34 @@ public CheckPlayerData(playerid)
 	new query[128], player_name[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, player_name, sizeof(player_name));
-	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Players WHERE NAME = '%e' LIMIT 1", player_name);
-	mysql_tquery(mysql, query, "OnCheckPlayerData", "i", playerid);
+	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Users WHERE name = '%e' LIMIT 1", player_name);
+	mysql_tquery(mysql, query, "OnPlayerDataChecked", "i", playerid);
 	
 	return 1;
 }
 
-public OnCheckPlayerData(playerid)
+public OnPlayerDataChecked(playerid)
 {
-	new message[256], player_name[MAX_PLAYER_NAME], player_age, player_sex[8], player_country[32], player_city[16];
+	new message[256], player_name[MAX_PLAYER_NAME], player_password[65], player_age, player_sex[8], player_country[32], player_city[16];
 	
 	GetPlayerName(playerid, player_name, sizeof(player_name));
 	
 	// Check if result has atleast one row, that means player has an account, show him dialog for login
 	if(cache_num_rows() > 0)
 	{
-		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
-		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
-		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
-		cache_get_value_name_int(0, "Gender", PlayerInfo[playerid][Gender]);
-		cache_get_value_name_int(0, "Age", PlayerInfo[playerid][Age]);
-		cache_get_value_name_int(0, "Country", PlayerInfo[playerid][Country]);
-		cache_get_value_name_int(0, "City", PlayerInfo[playerid][City]);
-		cache_get_value_name_float(0, "SpawnX", PlayerInfo[playerid][SpawnX]);
-		cache_get_value_name_float(0, "SpawnY", PlayerInfo[playerid][SpawnY]);
-		cache_get_value_name_float(0, "SpawnZ", PlayerInfo[playerid][SpawnZ]);
+		cache_get_value_name_int(0, "id", PlayerInfo[playerid][ID]);
+		cache_get_value_name(0, "password_digest", player_password, 65);
+		cache_get_value_name_int(0, "gender", PlayerInfo[playerid][Gender]);
+		cache_get_value_name_int(0, "age", PlayerInfo[playerid][Age]);
+		cache_get_value_name_int(0, "country", PlayerInfo[playerid][Country]);
+		cache_get_value_name_int(0, "city", PlayerInfo[playerid][City]);
+		cache_get_value_name_float(0, "spawnX", PlayerInfo[playerid][SpawnX]);
+		cache_get_value_name_float(0, "spawnY", PlayerInfo[playerid][SpawnY]);
+		cache_get_value_name_float(0, "spawnZ", PlayerInfo[playerid][SpawnZ]);
 		
+		PlayerInfo[playerid][Password] = player_password;
 		player_age = PlayerInfo[playerid][Age];
-		player_sex = GetPlayerSex(playerid);
+		player_sex = GetPlayerGender(playerid);
 		player_country = GetPlayerCountry(playerid);
 		player_city = GetPlayerCity(playerid);
 		
@@ -655,51 +652,6 @@ public OnCheckPlayerData(playerid)
 		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Registracija", message, "Dalje", "Izlaz");
 	}
 	
-	return 1;
-}
-
-public LoadPlayerData(playerid)
-{
-	new query[128], player_name[MAX_PLAYER_NAME];
-	
-	GetPlayerName(playerid, player_name, sizeof(player_name));
-	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Players WHERE NAME = '%e' LIMIT 1", player_name);
-	//mysql_tquery(mysql, query, "OnLoadPlayerData", "i", playerid);
-	mysql_query(mysql, query);
-	
-	// Check if result has atleast one row, that means player has an account, show him dialog for login
-	if(cache_num_rows() > 0)
-	{
-		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
-		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
-		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
-		cache_get_value_name_int(0, "Gender", PlayerInfo[playerid][Gender]);
-		cache_get_value_name_int(0, "Age", PlayerInfo[playerid][Age]);
-		cache_get_value_name_int(0, "Country", PlayerInfo[playerid][Country]);
-		cache_get_value_name_int(0, "City", PlayerInfo[playerid][City]);
-		cache_get_value_name_float(0, "SpawnX", PlayerInfo[playerid][SpawnX]);
-		cache_get_value_name_float(0, "SpawnY", PlayerInfo[playerid][SpawnY]);
-		cache_get_value_name_float(0, "SpawnZ", PlayerInfo[playerid][SpawnZ]);
-	}
-	return 1;
-}
-
-public OnLoadPlayerData(playerid)
-{
-	// Check if result has atleast one row, that means player has an account, show him dialog for login
-	if(cache_num_rows() > 0)
-	{
-		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
-		cache_get_value_name(0, "Password", PlayerInfo[playerid][Password], 65);
-		cache_get_value_name(0, "Salt", PlayerInfo[playerid][Salt], 11);
-		cache_get_value_name_int(0, "Gender", PlayerInfo[playerid][Gender]);
-		cache_get_value_name_int(0, "Age", PlayerInfo[playerid][Age]);
-		cache_get_value_name_int(0, "Country", PlayerInfo[playerid][Country]);
-		cache_get_value_name_int(0, "City", PlayerInfo[playerid][City]);
-		cache_get_value_name_float(0, "SpawnX", PlayerInfo[playerid][SpawnX]);
-		cache_get_value_name_float(0, "SpawnY", PlayerInfo[playerid][SpawnY]);
-		cache_get_value_name_float(0, "SpawnZ", PlayerInfo[playerid][SpawnZ]);
-	}
 	return 1;
 }
 
@@ -722,7 +674,7 @@ public OnPasswordHashed(playerid)
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
 	
-	mysql_format(mysql, query, sizeof(query), "INSERT INTO Players SET \
+	mysql_format(mysql, query, sizeof(query), "INSERT INTO Users SET \
 												name = '%e', \
 												password_digest = '%e'", playername, PlayerInfo[playerid][Password]);
 	mysql_tquery(mysql, query, "OnPlayerRegister", "i", playerid);
@@ -738,26 +690,25 @@ public OnPasswordChecked(playerid)
 	if(match)
 	{
 		GetPlayerName(playerid, player_name, sizeof(player_name));
-		//LoadPlayerData(playerid);
 		
 		// If player didnt pick Gender, show him dialog
-		if(!PlayerInfo[playerid][Gender])
+		if(PlayerInfo[playerid][Gender] == 9999)
 		{
 			ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Pol", ""TEXT_COLOR_WHITE"Musko\nZensko", "U redu", "Izadji");
 		}
 		// If player didnt pick Age, show him dialog
-		else if(!PlayerInfo[playerid][Age])
+		else if(PlayerInfo[playerid][Age] == 9999)
 		{
 			format(message, sizeof(message), ""TEXT_COLOR_WHITE"Unesite koliko imate godina");
 			ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", message, "U redu", "Izadji");
 		}
 		// If player didnt pick Country, show him dialog
-		else if(!PlayerInfo[playerid][Country])
+		else if(PlayerInfo[playerid][Country] == 9999)
 		{
 			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Drzava", ""TEXT_COLOR_WHITE"Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
 		}
 		// If player didnt picky City, show him dialog
-		else if(!PlayerInfo[playerid][City])
+		else if(PlayerInfo[playerid][City] == 9999)
 		{
 			ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
 		}
@@ -771,7 +722,7 @@ public OnPasswordChecked(playerid)
 	else
 	{
 		player_age = PlayerInfo[playerid][Age];
-		player_sex = GetPlayerSex(playerid);
+		player_sex = GetPlayerGender(playerid);
 		player_country = GetPlayerCountry(playerid);
 		player_city = GetPlayerCity(playerid);
 		
@@ -785,52 +736,52 @@ public LoadVehicles()
 	new query[256];
 	
 	mysql_format(mysql, query, sizeof(query), "SELECT * FROM Vehicles");
-	mysql_tquery(mysql, query, "OnLoadVehicles");
+	mysql_tquery(mysql, query, "OnVehiclesLoaded");
 	
 	return 0;
 }
 
-public OnLoadVehicles()
+public OnVehiclesLoaded()
 {
 	if(cache_num_rows() > 0)
 	{
 		for(new i = 0; i < cache_num_rows(); i++)
 		{
-			cache_get_value_name_int(i, "ID", VehicleInfo[GlobalVehiclesCounter][ID]);
-			cache_get_value_name_int(i, "Owned", VehicleInfo[GlobalVehiclesCounter][Owned]);
-			cache_get_value_name_int(i, "Owner", VehicleInfo[GlobalVehiclesCounter][Owner]);
-			cache_get_value_name_int(i, "Model", VehicleInfo[GlobalVehiclesCounter][Model]);
-			cache_get_value_name_float(i, "ParkX", VehicleInfo[GlobalVehiclesCounter][ParkX]);
-			cache_get_value_name_float(i, "ParkY", VehicleInfo[GlobalVehiclesCounter][ParkY]);
-			cache_get_value_name_float(i, "ParkZ", VehicleInfo[GlobalVehiclesCounter][ParkZ]);
-			cache_get_value_name_float(i, "ParkA", VehicleInfo[GlobalVehiclesCounter][ParkA]);
-			cache_get_value_name_int(i, "Color1", VehicleInfo[GlobalVehiclesCounter][Color1]);
-			cache_get_value_name_int(i, "Color2", VehicleInfo[GlobalVehiclesCounter][Color2]);
-			cache_get_value_name_int(i, "Paintjob", VehicleInfo[GlobalVehiclesCounter][Paintjob]);
-			cache_get_value_name_int(i, "Locked", VehicleInfo[GlobalVehiclesCounter][Locked]);
-			cache_get_value_name_int(i, "Registration", VehicleInfo[GlobalVehiclesCounter][Registration]);
-			cache_get_value_name_int(i, "Spoiler", VehicleInfo[GlobalVehiclesCounter][Spoiler]);
-			cache_get_value_name_int(i, "Hood", VehicleInfo[GlobalVehiclesCounter][Hood]);
-			cache_get_value_name_int(i, "Roof", VehicleInfo[GlobalVehiclesCounter][Roof]);
-			cache_get_value_name_int(i, "Sideskirt", VehicleInfo[GlobalVehiclesCounter][Sideskirt]);
-			cache_get_value_name_int(i, "Lamps", VehicleInfo[GlobalVehiclesCounter][Lamps]);
-			cache_get_value_name_int(i, "Nitro", VehicleInfo[GlobalVehiclesCounter][Nitro]);
-			cache_get_value_name_int(i, "Exhaust", VehicleInfo[GlobalVehiclesCounter][Exhaust]);
-			cache_get_value_name_int(i, "Wheels", VehicleInfo[GlobalVehiclesCounter][Wheels]);
-			cache_get_value_name_int(i, "Stereo", VehicleInfo[GlobalVehiclesCounter][Stereo]);
-			cache_get_value_name_int(i, "Hydraulics", VehicleInfo[GlobalVehiclesCounter][Hydraulics]);
-			cache_get_value_name_int(i, "Front_bumper", VehicleInfo[GlobalVehiclesCounter][Front_bumper]);
-			cache_get_value_name_int(i, "Rear_bumper", VehicleInfo[GlobalVehiclesCounter][Rear_bumper]);
-			cache_get_value_name_int(i, "Vent_right", VehicleInfo[GlobalVehiclesCounter][Vent_right]);
-			cache_get_value_name_int(i, "Vent_left", VehicleInfo[GlobalVehiclesCounter][Vent_left]);
+			cache_get_value_name_int(i, "id", VehicleInfo[GlobalVehiclesCounter][ID]);
+			cache_get_value_name_int(i, "owned", VehicleInfo[GlobalVehiclesCounter][Owned]);
+			cache_get_value_name_int(i, "user_id", VehicleInfo[GlobalVehiclesCounter][Owner]);
+			cache_get_value_name_int(i, "model", VehicleInfo[GlobalVehiclesCounter][Model]);
+			cache_get_value_name_float(i, "parkX", VehicleInfo[GlobalVehiclesCounter][ParkX]);
+			cache_get_value_name_float(i, "parkY", VehicleInfo[GlobalVehiclesCounter][ParkY]);
+			cache_get_value_name_float(i, "parkZ", VehicleInfo[GlobalVehiclesCounter][ParkZ]);
+			cache_get_value_name_float(i, "parkA", VehicleInfo[GlobalVehiclesCounter][ParkA]);
+			cache_get_value_name_int(i, "color1", VehicleInfo[GlobalVehiclesCounter][Color1]);
+			cache_get_value_name_int(i, "color2", VehicleInfo[GlobalVehiclesCounter][Color2]);
+			cache_get_value_name_int(i, "paintjob", VehicleInfo[GlobalVehiclesCounter][Paintjob]);
+			cache_get_value_name_int(i, "locked", VehicleInfo[GlobalVehiclesCounter][Locked]);
+			cache_get_value_name_int(i, "registration", VehicleInfo[GlobalVehiclesCounter][Registration]);
+			cache_get_value_name_int(i, "spoiler", VehicleInfo[GlobalVehiclesCounter][Spoiler]);
+			cache_get_value_name_int(i, "hood", VehicleInfo[GlobalVehiclesCounter][Hood]);
+			cache_get_value_name_int(i, "roof", VehicleInfo[GlobalVehiclesCounter][Roof]);
+			cache_get_value_name_int(i, "side_skirt", VehicleInfo[GlobalVehiclesCounter][Side_skirt]);
+			cache_get_value_name_int(i, "lamps", VehicleInfo[GlobalVehiclesCounter][Lamps]);
+			cache_get_value_name_int(i, "nitro", VehicleInfo[GlobalVehiclesCounter][Nitro]);
+			cache_get_value_name_int(i, "exhaust", VehicleInfo[GlobalVehiclesCounter][Exhaust]);
+			cache_get_value_name_int(i, "wheels", VehicleInfo[GlobalVehiclesCounter][Wheels]);
+			cache_get_value_name_int(i, "stereo", VehicleInfo[GlobalVehiclesCounter][Stereo]);
+			cache_get_value_name_int(i, "hydraulics", VehicleInfo[GlobalVehiclesCounter][Hydraulics]);
+			cache_get_value_name_int(i, "front_bumper", VehicleInfo[GlobalVehiclesCounter][Front_bumper]);
+			cache_get_value_name_int(i, "rear_bumper", VehicleInfo[GlobalVehiclesCounter][Rear_bumper]);
+			cache_get_value_name_int(i, "vent_right", VehicleInfo[GlobalVehiclesCounter][Vent_right]);
+			cache_get_value_name_int(i, "vent_left", VehicleInfo[GlobalVehiclesCounter][Vent_left]);
 			
 			if(VehicleInfo[GlobalVehiclesCounter][Owned] == 1)
 			{
-				OwnedVehicle[OwnedVehiclesCounter] = CreateVehicle(VehicleInfo[GlobalVehiclesCounter][Model], VehicleInfo[GlobalVehiclesCounter][ParkX], VehicleInfo[GlobalVehiclesCounter][ParkY], VehicleInfo[GlobalVehiclesCounter][ParkZ], VehicleInfo[GlobalVehiclesCounter][ParkA], VehicleInfo[GlobalVehiclesCounter][Color1], VehicleInfo[GlobalVehiclesCounter][Color2], 0);
+				owned_vehicles[OwnedVehiclesCounter] = CreateVehicle(VehicleInfo[GlobalVehiclesCounter][Model], VehicleInfo[GlobalVehiclesCounter][ParkX], VehicleInfo[GlobalVehiclesCounter][ParkY], VehicleInfo[GlobalVehiclesCounter][ParkZ], VehicleInfo[GlobalVehiclesCounter][ParkA], VehicleInfo[GlobalVehiclesCounter][Color1], VehicleInfo[GlobalVehiclesCounter][Color2], 0);
 				SetVehicleComponents(GlobalVehiclesCounter);
 				OwnedVehiclesCounter++;
-			}		
-			GlobalVehiclesCounter++;			
+				GlobalVehiclesCounter++;		
+			}			
 		}
 	}
 	
@@ -852,7 +803,7 @@ public InsertVehicle(vehicleOwner, vehicleModel)
 	
 	mysql_format(mysql, query, sizeof(query), "INSERT INTO Vehicles SET \
 													owned = 1, \
-													owner = %d, \
+													user_id = %d, \
 													model = %d, \
 													parkX = 1590.59, \
 													parkY = -2319.39, \
@@ -866,7 +817,7 @@ public InsertVehicle(vehicleOwner, vehicleModel)
 													spoiler = 0, \
 													hood = 0, \
 													roof = 0, \
-													sideskirt = 0, \
+													side_skirt = 0, \
 													lamps = 0, \
 													nitro = 0, \
 													exhaust = 0, \
@@ -888,8 +839,7 @@ public SaveVehicle(vehicleid)
 	
 	mysql_format(mysql, query, sizeof(query), "UPDATE Vehicles \
 												SET owned = %d, \
-													owner = %d, \
-													model = %d, \
+													user_id = %d, \
 													parkX = %f, \
 													parkY = %f, \
 													parkZ = %f, \
@@ -902,7 +852,7 @@ public SaveVehicle(vehicleid)
 													spoiler = %d, \
 													hood = %d, \
 													roof = %d, \
-													sideskirt = %d, \
+													side_skirt = %d, \
 													lamps = %d, \
 													nitro = %d, \
 													exhaust = %d, \
@@ -913,7 +863,9 @@ public SaveVehicle(vehicleid)
 													rear_bumper = %d, \
 													vent_right = %d, \
 													vent_left = %d \												
-												WHERE ID = %d", 
+												WHERE id = %d",
+												VehicleInfo[vehicleid][Owned],
+												VehicleInfo[vehicleid][Owner],												
 												VehicleInfo[vehicleid][ParkX], 
 												VehicleInfo[vehicleid][ParkY], 
 												VehicleInfo[vehicleid][ParkZ], 
@@ -926,7 +878,7 @@ public SaveVehicle(vehicleid)
 												VehicleInfo[vehicleid][Spoiler],
 												VehicleInfo[vehicleid][Hood],
 												VehicleInfo[vehicleid][Roof],
-												VehicleInfo[vehicleid][Sideskirt],
+												VehicleInfo[vehicleid][Side_skirt],
 												VehicleInfo[vehicleid][Lamps],
 												VehicleInfo[vehicleid][Nitro],
 												VehicleInfo[vehicleid][Exhaust],
@@ -945,38 +897,37 @@ public SaveVehicle(vehicleid)
 
 public SaveVehicleComponents(vehicleid)
 {
-	new spoiler, hood, roof, sideskirt, lamps, nitro, exhaust, wheels;
-	new stereo, hydraulics, frontbumper, rearbumper, leftvent, rightvent;
+	new spoiler, hood, roof, side_skirt, lamps, nitro, exhaust, wheels, stereo, hydraulics, front_bumper, rear_bumper, left_vent, right_vent;
 	
 	spoiler = GetVehicleComponentInSlot(vehicleid, 0);
 	hood = GetVehicleComponentInSlot(vehicleid, 1);
 	roof = GetVehicleComponentInSlot(vehicleid, 2);
-	sideskirt = GetVehicleComponentInSlot(vehicleid, 3);
+	side_skirt = GetVehicleComponentInSlot(vehicleid, 3);
 	lamps = GetVehicleComponentInSlot(vehicleid, 4);
 	nitro = GetVehicleComponentInSlot(vehicleid, 5);
 	exhaust = GetVehicleComponentInSlot(vehicleid, 6);
 	wheels = GetVehicleComponentInSlot(vehicleid, 7);
 	stereo = GetVehicleComponentInSlot(vehicleid, 8);
 	hydraulics = GetVehicleComponentInSlot(vehicleid, 9);
-	frontbumper = GetVehicleComponentInSlot(vehicleid, 10);
-	rearbumper = GetVehicleComponentInSlot(vehicleid, 11);
-	rightvent = GetVehicleComponentInSlot(vehicleid, 12);
-	leftvent = GetVehicleComponentInSlot(vehicleid, 13);
+	front_bumper = GetVehicleComponentInSlot(vehicleid, 10);
+	rear_bumper = GetVehicleComponentInSlot(vehicleid, 11);
+	right_vent = GetVehicleComponentInSlot(vehicleid, 12);
+	left_vent = GetVehicleComponentInSlot(vehicleid, 13);
 
 	if(spoiler != 0) { VehicleInfo[vehicleid][Spoiler] = spoiler; }
 	if(hood != 0) { VehicleInfo[vehicleid][Hood] = hood; }
 	if(roof != 0) { VehicleInfo[vehicleid][Roof] = roof; }
-	if(sideskirt != 0) { VehicleInfo[vehicleid][Sideskirt] = sideskirt; }
+	if(side_skirt != 0) { VehicleInfo[vehicleid][Side_skirt] = side_skirt; }
 	if(lamps != 0) { VehicleInfo[vehicleid][Lamps] = lamps; }
 	if(nitro != 0) { VehicleInfo[vehicleid][Nitro] = nitro; }
 	if(exhaust != 0) { VehicleInfo[vehicleid][Exhaust] = exhaust; }
 	if(wheels != 0) { VehicleInfo[vehicleid][Wheels] = wheels; }
 	if(stereo != 0) { VehicleInfo[vehicleid][Stereo] = stereo; }
 	if(hydraulics != 0) { VehicleInfo[vehicleid][Hydraulics] = hydraulics; }
-	if(frontbumper != 0) { VehicleInfo[vehicleid][Front_bumper] = frontbumper; }
-	if(rearbumper != 0) { VehicleInfo[vehicleid][Rear_bumper] = rearbumper; }
-	if(rightvent != 0) { VehicleInfo[vehicleid][Vent_right] = rightvent; }
-	if(leftvent != 0) { VehicleInfo[vehicleid][Vent_left] = leftvent; }
+	if(front_bumper != 0) { VehicleInfo[vehicleid][Front_bumper] = front_bumper; }
+	if(rear_bumper != 0) { VehicleInfo[vehicleid][Rear_bumper] = rear_bumper; }
+	if(right_vent != 0) { VehicleInfo[vehicleid][Vent_right] = right_vent; }
+	if(left_vent != 0) { VehicleInfo[vehicleid][Vent_left] = left_vent; }
 	
 	SaveVehicle(vehicleid);
 	
@@ -988,7 +939,7 @@ public SetVehicleComponents(vehicleid)
 	if(VehicleInfo[vehicleid][Spoiler] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Spoiler]); }
 	if(VehicleInfo[vehicleid][Hood] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Hood]); }
 	if(VehicleInfo[vehicleid][Roof] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Roof]); }
-	if(VehicleInfo[vehicleid][Sideskirt] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Sideskirt]); }
+	if(VehicleInfo[vehicleid][Side_skirt] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Side_skirt]); }
 	if(VehicleInfo[vehicleid][Lamps] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Lamps]); }
 	if(VehicleInfo[vehicleid][Nitro] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Nitro]); }
 	if(VehicleInfo[vehicleid][Exhaust] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Exhaust]); }
@@ -1008,7 +959,7 @@ public RemoveVehicleComponents(vehicleid)
     VehicleInfo[vehicleid][Spoiler] = 0;
     VehicleInfo[vehicleid][Hood] = 0;
     VehicleInfo[vehicleid][Roof] = 0;
-    VehicleInfo[vehicleid][Sideskirt] = 0;
+    VehicleInfo[vehicleid][Side_skirt] = 0;
     VehicleInfo[vehicleid][Lamps] = 0;
     VehicleInfo[vehicleid][Nitro] = 0;
     VehicleInfo[vehicleid][Exhaust] = 0;
@@ -1241,7 +1192,7 @@ stock GetVehicleOwnerName(vehicleid)
 	new query[256], player_name[MAX_PLAYER_NAME];
 	
 	mysql_format(mysql, query, sizeof(query), "SELECT Name \
-												FROM Players \
+												FROM Users \
 												WHERE ID = %d", VehicleInfo[vehicleid][Owner]);
     mysql_query(mysql, query);
 	cache_get_value_name(0, "Name", player_name);
@@ -1263,9 +1214,9 @@ public OnAccountLoad(playerid)
 
 public IsASalesVehicle(vehicleid)
 {
-	for(new i = 0; i < sizeof(SalesVehicle); i++)
+	for(new i = 0; i < sizeof(sale_vehicles); i++)
 	{
-	    if(vehicleid == SalesVehicle[i]) return 1;
+	    if(vehicleid == sale_vehicles[i]) return 1;
 	}
 	
 	return 0;
@@ -1273,9 +1224,9 @@ public IsASalesVehicle(vehicleid)
 
 public IsAOwnedVehicle(vehicleid)
 {
-   for(new i = 0; i < sizeof(OwnedVehicle); i++)
+   for(new i = 0; i < sizeof(owned_vehicles); i++)
    {
-      if(vehicleid == OwnedVehicle[i]) return 1;
+      if(vehicleid == owned_vehicles[i]) return 1;
    }
    
    return 0;
@@ -1284,9 +1235,9 @@ public IsAOwnedVehicle(vehicleid)
 
 public IsARentVehicle(vehicleid)
 {
-   for(new i = 0; i < sizeof(RentVehicle); i++)
+   for(new i = 0; i < sizeof(rent_vehicles); i++)
    {
-      if(vehicleid == RentVehicle[i]) return 1;
+      if(vehicleid == rent_vehicles[i]) return 1;
    }
    
    return 0;
@@ -1512,34 +1463,34 @@ public OnGameModeInit()
 	}
 	
 	//------------------------------------------------------------------------ > RENT
-	RentVehicle[0] = AddStaticVehicleEx(462,1560.3000500,-2309.0000000,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[1] = AddStaticVehicleEx(462,1560.3000500,-2312.3000500,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[2] = AddStaticVehicleEx(462,1560.3000500,-2315.6001000,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[3] = AddStaticVehicleEx(462,1560.3000500,-2318.8999000,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[4] = AddStaticVehicleEx(462,1560.3000500,-2322.1999500,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[5] = AddStaticVehicleEx(462,1560.3000500,-2325.5000000,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[6] = AddStaticVehicleEx(462,1560.3000500,-2328.6999500,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[7] = AddStaticVehicleEx(462,1560.3000500,-2332.0000000,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[8] = AddStaticVehicleEx(462,1560.3000500,-2335.3000500,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[9] = AddStaticVehicleEx(462,1560.3000500,-2338.5000000,13.2000000,90.0000000,-1,7,-1); //Faggio
-	RentVehicle[10] = AddStaticVehicleEx(410, 1552.6835, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
-	RentVehicle[11] = AddStaticVehicleEx(410, 1549.4233, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
-	RentVehicle[12] = AddStaticVehicleEx(410, 1546.1617, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
-	RentVehicle[13] = AddStaticVehicleEx(410, 1542.9518, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
-	RentVehicle[14] = AddStaticVehicleEx(410, 1539.6881, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
-	RentVehicle[15] = AddStaticVehicleEx(410, 1536.3673, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
-	RentVehicle[16] = AddStaticVehicleEx(410, 1533.1079, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
-	RentVehicle[17] = AddStaticVehicleEx(410, 1529.8678, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
-	RentVehicle[18] = AddStaticVehicleEx(462,1180.0000000,-1337.6000000,13.2000000,270.0000000,-1,7,-1); //Faggio
-	RentVehicle[19] = AddStaticVehicleEx(462,1184.5996000,-1337.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
-	RentVehicle[20] = AddStaticVehicleEx(462,1184.5996000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
-	RentVehicle[21] = AddStaticVehicleEx(462,1180.0000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
-	RentVehicle[22] = AddStaticVehicleEx(462,1175.4000000,-1337.6000000,13.2000000,270.0000000,-1,7,-1); //Faggio
-	RentVehicle[23] = AddStaticVehicleEx(462,1175.4000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
+	rent_vehicles[0] = AddStaticVehicleEx(462,1560.3000500,-2309.0000000,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[1] = AddStaticVehicleEx(462,1560.3000500,-2312.3000500,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[2] = AddStaticVehicleEx(462,1560.3000500,-2315.6001000,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[3] = AddStaticVehicleEx(462,1560.3000500,-2318.8999000,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[4] = AddStaticVehicleEx(462,1560.3000500,-2322.1999500,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[5] = AddStaticVehicleEx(462,1560.3000500,-2325.5000000,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[6] = AddStaticVehicleEx(462,1560.3000500,-2328.6999500,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[7] = AddStaticVehicleEx(462,1560.3000500,-2332.0000000,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[8] = AddStaticVehicleEx(462,1560.3000500,-2335.3000500,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[9] = AddStaticVehicleEx(462,1560.3000500,-2338.5000000,13.2000000,90.0000000,-1,7,-1); //Faggio
+	rent_vehicles[10] = AddStaticVehicleEx(410, 1552.6835, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
+	rent_vehicles[11] = AddStaticVehicleEx(410, 1549.4233, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
+	rent_vehicles[12] = AddStaticVehicleEx(410, 1546.1617, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
+	rent_vehicles[13] = AddStaticVehicleEx(410, 1542.9518, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
+	rent_vehicles[14] = AddStaticVehicleEx(410, 1539.6881, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
+	rent_vehicles[15] = AddStaticVehicleEx(410, 1536.3673, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
+	rent_vehicles[16] = AddStaticVehicleEx(410, 1533.1079, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
+	rent_vehicles[17] = AddStaticVehicleEx(410, 1529.8678, -2361.0581, 13.2520, 0.0000, -1, 7, -1);
+	rent_vehicles[18] = AddStaticVehicleEx(462,1180.0000000,-1337.6000000,13.2000000,270.0000000,-1,7,-1); //Faggio
+	rent_vehicles[19] = AddStaticVehicleEx(462,1184.5996000,-1337.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
+	rent_vehicles[20] = AddStaticVehicleEx(462,1184.5996000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
+	rent_vehicles[21] = AddStaticVehicleEx(462,1180.0000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
+	rent_vehicles[22] = AddStaticVehicleEx(462,1175.4000000,-1337.6000000,13.2000000,270.0000000,-1,7,-1); //Faggio
+	rent_vehicles[23] = AddStaticVehicleEx(462,1175.4000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	GlobalVehiclesCounter += 24;
 	
 	// Load owned vehicles
-	LoadVehicles();
+	LoadVehicles(); 
 	
 	SetTimer("CheckVehicleFuel", 60000, true);
 	
@@ -1672,13 +1623,13 @@ public OnPlayerCommandText(playerid, cmdtext[])
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-	new vehicleName[32], vehicleOwner[64], str[128];
-	GetVehicleName(vehicleid, vehicleName, sizeof(vehicleName));
-	vehicleOwner = GetVehicleOwnerName(vehicleid);
+	new vehicle_name[32], vehicle_owned[64], str[128];
+	GetVehicleName(vehicleid, vehicle_name, sizeof(vehicle_name));
+	vehicle_owned = GetVehicleOwnerName(vehicleid);
 	
 	if(IsAOwnedVehicle(vehicleid))
 	{
-	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: %s", vehicleName, vehicleid, vehicleOwner);
+	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: %s", vehicle_name, vehicleid, vehicle_owned);
 	    SendClientMessage(playerid, -1, str);
 		
 	    if(VehicleInfo[vehicleid][Locked] == 1)
@@ -1694,7 +1645,11 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 	    
 		SendClientMessage(playerid, -1, str);
 	}
-	
+	else
+	{
+	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: Drzava", vehicle_name, vehicleid);
+	    SendClientMessage(playerid, -1, str);
+	}
 	return 1;
 }
 
@@ -1900,6 +1855,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			
 			// SHA256_PassHash(inputtext, PlayerInfo[playerid][Salt], buffer, 65);
+			printf("Input text je %s \n", inputtext);
+			printf("Password je %s \n", PlayerInfo[playerid][Password]);
 			bcrypt_check(inputtext, PlayerInfo[playerid][Password], "OnPasswordChecked", "d", playerid);		
 		}
 		
@@ -1931,8 +1888,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			
 			if(listitem == 0)
 			{
-				PlayerInfo[playerid][Gender] = 1;
-				mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+				PlayerInfo[playerid][Gender] = 0;
+				mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 															SET gender = %d \
 															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);																						
 				mysql_tquery(mysql, query);
@@ -1942,8 +1899,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			else if(listitem == 1)
 			{
-				PlayerInfo[playerid][Gender] = 2;
-				mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+				PlayerInfo[playerid][Gender] = 1;
+				mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 															SET gender = %d \
 															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);
 				mysql_tquery(mysql, query);
@@ -1979,7 +1936,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			
 			PlayerInfo[playerid][Age] = years;
-			mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+			mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 														SET age = %d \
 														WHERE id = %d", years, PlayerInfo[playerid][ID]);
 			mysql_tquery(mysql, query);
@@ -2000,8 +1957,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// Serbia
 				case 0:
 				{
-					PlayerInfo[playerid][Country] = 1;
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					PlayerInfo[playerid][Country] = 0;
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);									
 					mysql_tquery(mysql, query);
@@ -2011,8 +1968,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// Montenegro
 				case 1:
 				{
-					PlayerInfo[playerid][Country] = 2;
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					PlayerInfo[playerid][Country] = 1;
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
@@ -2021,8 +1978,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// Bosnia and Herzegovina
 				case 2:
 				{
-					PlayerInfo[playerid][Country] = 3;
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					PlayerInfo[playerid][Country] = 2;
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
@@ -2031,8 +1988,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// Croatia
 				case 3:
 				{
-					PlayerInfo[playerid][Country] = 4;
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					PlayerInfo[playerid][Country] = 3;
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
@@ -2041,8 +1998,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// Macedonia
 				case 4:
 				{
-					PlayerInfo[playerid][Country] = 5;
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					PlayerInfo[playerid][Country] = 4;
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
@@ -2051,8 +2008,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// Other 
 				case 5:
 				{
-					PlayerInfo[playerid][Country] = 6;
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					PlayerInfo[playerid][Country] = 5;
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
@@ -2077,18 +2034,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// Los Santos
 				case 0:
 				{
-					PlayerInfo[playerid][City] = 1;
+					PlayerInfo[playerid][City] = 0;
 					PlayerInfo[playerid][SpawnX] = 1642.2903;
 					PlayerInfo[playerid][SpawnY] = -2333.3423;
 					PlayerInfo[playerid][SpawnZ] = 13.5469;
 					//PlayerInfo[playerid][SpawnA] = 0.0;
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
 																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
 					
 					player_age = PlayerInfo[playerid][Age];
-					player_sex = GetPlayerSex(playerid);
+					player_sex = GetPlayerGender(playerid);
 					player_country = GetPlayerCountry(playerid);
 					player_city = GetPlayerCity(playerid);
 					
@@ -2098,13 +2055,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// Las Venturas
 				case 1:
 				{
-					PlayerInfo[playerid][City] = 2;
+					PlayerInfo[playerid][City] = 1;
 					PlayerInfo[playerid][SpawnX] = 1676.4181;
 					PlayerInfo[playerid][SpawnY] = 1447.8713;
 					PlayerInfo[playerid][SpawnZ] = 10.7845;
 					//PlayerInfo[playerid][SpawnA] = 270.4988;
 					
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
 																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
@@ -2115,18 +2072,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				// San Fierro
 				case 2:
 				{
-					PlayerInfo[playerid][City] = 3;
+					PlayerInfo[playerid][City] = 2;
 					PlayerInfo[playerid][SpawnX] = 1410.8577;
 					PlayerInfo[playerid][SpawnY] = -301.6284;
 					PlayerInfo[playerid][SpawnZ] = 14.1484;
 					//PlayerInfo[playerid][SpawnA] = 136.9096;
-					mysql_format(mysql, query, sizeof(query), "UPDATE Players \
+					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
 																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
 					
 					player_age = PlayerInfo[playerid][Age];
-					player_sex = GetPlayerSex(playerid);
+					player_sex = GetPlayerGender(playerid);
 					player_country = GetPlayerCountry(playerid);
 					player_city = GetPlayerCity(playerid);
 		
