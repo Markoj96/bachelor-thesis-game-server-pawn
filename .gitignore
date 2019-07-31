@@ -1,0 +1,8 @@
+
+server_log\.txt
+
+logs/
+
+*.amx
+
+downloads/

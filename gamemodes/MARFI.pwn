@@ -393,15 +393,20 @@ main()
 #define TEXT_STEALTH_GREEN  											"{33DD11}"
 #define TEXT_STEALTH_PINK  												"{FF22EE}"
 #define TEXT_STEALTH_BLUE  												"{0077BB}"
+
+
+
 // ====================================================================================================== Forwards
 forward CheckPlayerData(playerid);
 forward OnPlayerDataChecked(playerid);
-forward SavePlayerData(playerid);
-forward OnSavePlayerData(playerid);
+forward SavePlayer(playerid);
+forward OnPlayerSaved(playerid);
 forward OnPlayerRegister(playerid);
 forward OnAccountLoad(playerid);
 forward OnPasswordHashed(playerid);
 forward OnPasswordChecked(playerid);
+
+forward AntiRoleplayName(playerid, player_name[]);
 
 forward IsARentVehicle(vehicleid);
 forward IsASalesVehicle(vehicleid);
@@ -416,13 +421,14 @@ forward IsPlayerNearPump1(playerid);
 forward IsPlayerNearPump2(playerid);
 forward IsPlayerNearPump3(playerid);
 
+forward KickPlayer(playerid);
 forward AntiFreezePlayer(playerid);
 
 forward SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color3, color4, color5);
 
 forward LoadVehicles();
 forward OnVehiclesLoaded();
-forward InsertVehicle(vehicleOwner, vehicleModel);
+forward InsertVehicle(vehicle_owner, vehicle_model);
 forward SaveVehicle(vehicleid);
 forward SetVehicleComponents(vehicleid);
 forward RemoveVehicleComponents(vehicleid);
@@ -655,12 +661,35 @@ public OnPlayerDataChecked(playerid)
 	return 1;
 }
 
-public SavePlayerData(playerid)
+public SavePlayer(playerid)
 {
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "UPDATE Users \
+												SET gender = %d, \
+													age = %d, \
+													country = %d, \
+													city = %d, \
+													money = %d, \
+													spawnX = %f, \
+													spawnY = %f, \
+													spawnZ = %f \												
+												WHERE id = %d",
+												PlayerInfo[playerid][Gender],
+												PlayerInfo[playerid][Age],												
+												PlayerInfo[playerid][Country], 
+												PlayerInfo[playerid][City], 
+												PlayerInfo[playerid][Money], 
+												PlayerInfo[playerid][SpawnX], 
+												PlayerInfo[playerid][SpawnY],  
+												PlayerInfo[playerid][SpawnZ],
+												PlayerInfo[playerid][ID]);
+	mysql_pquery(mysql, query);
+
 	return 1;
 }
 
-public OnSavePlayerData(playerid)
+public OnPlayerSaved(playerid)
 {
 	return 1;
 }
@@ -777,7 +806,7 @@ public OnVehiclesLoaded()
 			
 			if(VehicleInfo[GlobalVehiclesCounter][Owned] == 1)
 			{
-				owned_vehicles[OwnedVehiclesCounter] = CreateVehicle(VehicleInfo[GlobalVehiclesCounter][Model], VehicleInfo[GlobalVehiclesCounter][ParkX], VehicleInfo[GlobalVehiclesCounter][ParkY], VehicleInfo[GlobalVehiclesCounter][ParkZ], VehicleInfo[GlobalVehiclesCounter][ParkA], VehicleInfo[GlobalVehiclesCounter][Color1], VehicleInfo[GlobalVehiclesCounter][Color2], 0);
+				owned_vehicles[GlobalVehiclesCounter] = CreateVehicle(VehicleInfo[GlobalVehiclesCounter][Model], VehicleInfo[GlobalVehiclesCounter][ParkX], VehicleInfo[GlobalVehiclesCounter][ParkY], VehicleInfo[GlobalVehiclesCounter][ParkZ], VehicleInfo[GlobalVehiclesCounter][ParkA], VehicleInfo[GlobalVehiclesCounter][Color1], VehicleInfo[GlobalVehiclesCounter][Color2], 0);
 				SetVehicleComponents(GlobalVehiclesCounter);
 				OwnedVehiclesCounter++;
 				GlobalVehiclesCounter++;		
@@ -797,7 +826,7 @@ public LoadVehiclesFuel()
 	}
 }
 
-public InsertVehicle(vehicleOwner, vehicleModel) 
+public InsertVehicle(vehicle_owner, vehicle_model) 
 {
 	new query[512];
 	
@@ -809,10 +838,10 @@ public InsertVehicle(vehicleOwner, vehicleModel)
 													parkY = -2319.39, \
 													parkZ = 13.3828, \
 													parkA = 80, \
-													color1 = 0, \
-													color2 = 0, \
-													paintjob = 0, \
-													locked = 0, \
+													color1 = 1, \
+													color2 = 1, \
+													paintjob = 9999, \
+													locked = 1, \
 													registration = 0, \
 													spoiler = 0, \
 													hood = 0, \
@@ -828,8 +857,8 @@ public InsertVehicle(vehicleOwner, vehicleModel)
 													rear_bumper = 0, \
 													vent_right = 0, \
 													vent_left = 0",
-													vehicleOwner,
-													vehicleModel);
+													vehicle_owner,
+													vehicle_model);
 	mysql_tquery(mysql, query);
 }
 
@@ -1212,6 +1241,30 @@ public OnAccountLoad(playerid)
 	return 1;
 }
 
+public KickPlayer(playerid)
+{
+	Kick(playerid);
+}
+
+public AntiRoleplayName(playerid, player_name[])
+{
+	new str[128], check_name;
+	
+	check_name = strfind(player_name, "_", true);
+	if(check_name == -1 ) 
+	{
+		format(str, sizeof(str), "%s je kikovan zbog neprihvatljivog imena", player_name);
+		
+		SendClientMessageToAll(COLOR_RED, str);
+		SendClientMessage(playerid, COLOR_RED, "GRESKA: Vase ime je neprihvatljivo.");
+		SendClientMessage(playerid, COLOR_RED, "Vase ime mora biti u formatu Ime_Prezime. Velika pocetna slova.");
+		
+		Kick(playerid);
+	}
+	
+	return 1;
+}
+
 public IsASalesVehicle(vehicleid)
 {
 	for(new i = 0; i < sizeof(sale_vehicles); i++)
@@ -1513,9 +1566,10 @@ public OnPlayerRequestClass(playerid, classid)
 
 public OnPlayerConnect(playerid)
 {
-	new playername[MAX_PLAYER_NAME];
+	new player_name[MAX_PLAYER_NAME];
 	
-	GetPlayerName(playerid, playername, sizeof(playername));
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	AntiRoleplayName(playerid, player_name);
 	CheckPlayerData(playerid);	
 	
 	IsPlayerRentingVehicle[playerid] = 0;
@@ -1541,9 +1595,17 @@ public OnPlayerConnect(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
+	new Float:X, Float:Y, Float:Z;
+	
 	// If player rented a vehicle, respawn it
 	if(IsPlayerRentingVehicle[playerid]) SetVehicleToRespawn(RentedVehicle[playerid]);
 	
+	GetPlayerPos(playerid, X, Y, Z);
+	PlayerInfo[playerid][SpawnX] = X;
+	PlayerInfo[playerid][SpawnY] = Y;
+	PlayerInfo[playerid][SpawnZ] = Z;
+	SavePlayer(playerid);
+		
 	return 1;
 }
 
