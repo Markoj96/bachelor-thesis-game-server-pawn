@@ -29,6 +29,8 @@ main()
 #define DIALOG_COUNTRY 4 // On registration, choose between Balkan countries
 #define DIALOG_CITY 5 // On registration, choose between in-game cities
 
+#define DIALOG_BUY_VEHICLE 10 // Vehicle sell(buy) offer
+
 // Colors
 #define COLOR_GREY 														0xAFAFAFAA
 // System Defined Colors
@@ -436,6 +438,8 @@ forward SaveVehicleComponents(vehicleid);
 forward GetVehiclePrice(vehicleid);
 forward GetVehicleName(vehicleid, model[], len);
 
+forward VehicleStopOffer(playerid, target);
+
 forward LoadVehiclesFuel();
 forward StartVehicleEngine(playerid, vehicleid);
 forward CheckVehicleFuel();
@@ -513,6 +517,11 @@ new VehicleEngine[MAX_VEHICLES];
 new VehicleFuel[MAX_VEHICLES];
 new VehicleHood[MAX_VEHICLES];
 new VehicleTrunk[MAX_VEHICLES];
+new VehicleSellOffer[MAX_PLAYERS];
+new VehicleBuyOffer[MAX_PLAYERS];
+new VehicleForOffer[MAX_PLAYERS];
+new VehiclePlayerOffer[MAX_PLAYERS];
+new VehicleOfferPrice[MAX_PLAYERS];
 
 // Adding vehicles
 new rent_vehicles[24];
@@ -611,6 +620,17 @@ stock GetPlayerCity(playerid)
     }
 	
     return city;
+}
+
+stock GetVehicleRegistration(vehicleid)
+{
+	new registration[4];
+	switch(VehicleInfo[vehicleid][Registration])
+	{
+	    case 1: registration = "Da";
+	    case 0: registration = "Ne";
+	}
+	return registration;
 }
 
 public CheckPlayerData(playerid)
@@ -1435,6 +1455,20 @@ public GetVehicleName(vehicleid, model[], len)
 	return 0;
 }
 
+public VehicleStopOffer(playerid, target)
+{
+    VehicleSellOffer[playerid] = 9999;
+	VehicleBuyOffer[playerid] = 9999;
+ 	VehicleForOffer[playerid] = 9999;
+	VehiclePlayerOffer[playerid] = 9999;
+	VehicleOfferPrice[playerid] = 0;
+	VehicleSellOffer[target] = 9999;
+	VehicleBuyOffer[target] = 9999;
+ 	VehicleForOffer[target] = 9999;
+	VehiclePlayerOffer[target] = 9999;
+	VehicleOfferPrice[target] = 0;
+}
+
 stock GetVehicleOwnerName(vehicleid)
 {
 	new query[256], player_name[MAX_PLAYER_NAME];
@@ -1918,6 +1952,12 @@ public OnPlayerConnect(playerid)
 	HasBelt[playerid] = 0;
 	HasHelmet[playerid] = 0;
 	
+	VehicleSellOffer[playerid] = 9999;
+ 	VehicleBuyOffer[playerid] = 9999;
+ 	VehicleForOffer[playerid] = 9999;
+	VehiclePlayerOffer[playerid] = 9999;
+	VehicleOfferPrice[playerid] = 0;
+	
 	FuelTD[playerid] = TextDrawCreate(526.399963, 412.906738, "Gorivo: 100");
 	TextDrawLetterSize(FuelTD[playerid], 0.449999, 1.600000);
 	TextDrawAlignment(FuelTD[playerid], 1);
@@ -1942,6 +1982,7 @@ public OnPlayerDisconnect(playerid, reason)
 	PlayerInfo[playerid][SpawnX] = X;
 	PlayerInfo[playerid][SpawnY] = Y;
 	PlayerInfo[playerid][SpawnZ] = Z;
+	
 	SavePlayer(playerid);
 		
 	return 1;
@@ -2023,13 +2064,13 @@ public OnPlayerCommandText(playerid, cmdtext[])
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-	new vehicle_name[32], vehicle_owned[64], str[128];
+	new vehicle_name[32], vehicle_owner[64], str[128];
 	GetVehicleName(vehicleid, vehicle_name, sizeof(vehicle_name));
-	vehicle_owned = GetVehicleOwnerName(vehicleid);
+	vehicle_owner = GetVehicleOwnerName(vehicleid);
 	
 	if(IsAOwnedVehicle(vehicleid))
 	{
-	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: %s", vehicle_name, vehicleid, vehicle_owned);
+	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: %s", vehicle_name, vehicleid, vehicle_owner);
 	    SendClientMessage(playerid, -1, str);
 		
 	    if(VehicleInfo[vehicleid][Locked] == 1)
@@ -2255,8 +2296,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			
 			// SHA256_PassHash(inputtext, PlayerInfo[playerid][Salt], buffer, 65);
-			printf("Input text je %s \n", inputtext);
-			printf("Password je %s \n", PlayerInfo[playerid][Password]);
 			bcrypt_check(inputtext, PlayerInfo[playerid][Password], "OnPasswordChecked", "d", playerid);		
 		}
 		
@@ -2490,6 +2529,71 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					format(message, sizeof(message), ""TEXT_COLOR_WHITE"Uspesno ste zavrsili registraciju. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", player_name, player_sex, player_age, player_country, player_city);
 					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");	
 				}
+			}
+		}
+		
+		case DIALOG_BUY_VEHICLE:
+		{
+			if(!response)
+			{
+				VehicleSellOffer[VehiclePlayerOffer[playerid]] = 9999;
+				VehicleBuyOffer[playerid] = 9999;
+				VehicleForOffer[playerid] = 9999;
+				VehicleOfferPrice[playerid] = 0;
+				VehiclePlayerOffer[playerid] = 9999;
+
+				SendClientMessage(playerid, COLOR_RED, "Odbili ste da kupite vozilo!");
+				SendClientMessage(VehiclePlayerOffer[playerid], COLOR_RED, "Igrac je odbio ponudu za vozilo!");
+			}
+			if(response)
+			{
+				if(GetPlayerMoney(playerid) < VehicleOfferPrice[playerid])
+				{
+					VehicleSellOffer[VehiclePlayerOffer[playerid]] = 9999;
+					VehicleBuyOffer[playerid] = 9999;
+					VehicleForOffer[playerid] = 9999;
+					VehicleOfferPrice[playerid] = 0;
+					VehiclePlayerOffer[playerid] = 9999;
+
+					SendClientMessage(playerid, COLOR_RED, "Nemate dovoljno novca da kupite vozilo!");
+					SendClientMessage(VehiclePlayerOffer[playerid], COLOR_RED, "Igrac nema dovoljno novca da kupi vozilo!");
+				}
+				else
+				{
+					new player_name[MAX_PLAYER_NAME], player, vehicle_id, vehicle_model;
+
+					GetPlayerName(playerid, player_name, sizeof(player_name));
+					player = VehiclePlayerOffer[playerid];
+					vehicle_id = VehicleForOffer[playerid];
+					vehicle_model = GetVehicleModel(vehicle_id);
+					//strmid(VehicleInfo[VehicleForOffer[playerid]][vOwner], player_name, 0, strlen(player_name), 999);
+					VehicleInfo[vehicle_id][Owner] = PlayerInfo[playerid][ID];
+					VehicleInfo[vehicle_id][Locked] = 1;
+
+					RemovePlayerFromVehicle(player);
+
+					PlayerInfo[playerid][Money] -= VehicleOfferPrice[playerid];
+					GivePlayerMoney(playerid, -VehicleOfferPrice[playerid]);
+					SavePlayer(playerid);
+					SendClientMessage(playerid, COLOR_GREEN, "KUPILI STE VOZILO!");
+
+					PlayerInfo[player][Money] += VehicleOfferPrice[playerid];
+					GivePlayerMoney(player, VehicleOfferPrice[playerid]);
+					SavePlayer(player);
+					SendClientMessage(player, COLOR_GREEN, "PRODALI STE VOZILO!");
+
+					SaveVehicle(vehicle_id);
+					DestroyVehicle(vehicle_id);
+
+					owned_vehicles[vehicle_id] = CreateVehicle(vehicle_model, VehicleInfo[vehicle_id][ParkX], VehicleInfo[vehicle_id][ParkY], VehicleInfo[vehicle_id][ParkZ], VehicleInfo[vehicle_id][ParkA], VehicleInfo[vehicle_id][Color1], VehicleInfo[vehicle_id][Color2], -1);
+
+					VehicleSellOffer[player] = 9999;
+					VehicleBuyOffer[playerid] = 9999;
+					VehicleForOffer[playerid] = 9999;
+					VehicleOfferPrice[playerid] = 0;
+					VehiclePlayerOffer[playerid] = 9999;
+				}
+				return 1;
 			}
 		}
 	}
@@ -2830,11 +2934,216 @@ YCMD:v(playerid, params[], help)
 			
 			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste vozilo. Vozilo je na parkingu, preuzmite ga.");
             
-			PlayerInfo[playerid][Money] -= GetVehiclePrice(vehicle_id);
-			GivePlayerMoney(playerid, -GetVehiclePrice(vehicle_id));
+			PlayerInfo[playerid][Money] -= GetVehiclePrice(vehicle_model);
+			GivePlayerMoney(playerid, -GetVehiclePrice(vehicle_model));
 			
 			SavePlayer(playerid);
 		}
+		else if(strcmp(command, "lock", true) == 0)
+		{
+			new Float:X, Float:Y, Float:Z;
+
+			for(new i = 0; i < MAX_VEHICLES; i++) 
+			{
+				if(VehicleInfo[i][Owner] != PlayerInfo[playerid][ID]) continue;
+				if(VehicleInfo[i][Owned] == 1) 
+				{
+					GetVehiclePos(i, X, Y, Z);
+					if(IsPlayerInRangeOfPoint(playerid, 50.0, X, Y, Z))
+					{
+						if(VehicleInfo[i][Locked] == 1)
+						{
+							SetVehicleParamsForPlayer(i, playerid, 0, 0);
+							GameTextForPlayer(playerid, "~g~Vozilo otkljucano!", 2000, 3);
+							VehicleInfo[i][Locked] = 0;
+							SaveVehicle(i);
+							
+							return 1;
+						}
+						else
+						{
+							SetVehicleParamsForPlayer(i, playerid, 0, 1);
+							GameTextForPlayer(playerid, "~r~Vozilo zakljucano!", 2000, 3);
+							VehicleInfo[i][Locked] = 1;
+							SaveVehicle(i);
+							
+							return 1;
+						}
+					}
+				}
+			}
+			
+			SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog vozila!");
+
+			return 1;
+		}
+		else if(strcmp(command, "sell", true) == 0)
+		{
+			new vehicle_id;
+
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+
+			vehicle_id = GetPlayerVehicleID(playerid);
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vasem vozilu!");
+
+			VehicleInfo[vehicle_id][Owned] = 9999;
+			VehicleInfo[vehicle_id][ParkX] = 1590.3740;
+			VehicleInfo[vehicle_id][ParkY] = -1026.0565;
+			VehicleInfo[vehicle_id][ParkZ] = 23.9063;
+			VehicleInfo[vehicle_id][ParkA] = 317.1649;
+			VehicleInfo[vehicle_id][Locked] = 0;
+			VehicleInfo[vehicle_id][Registration] = 0;
+			VehicleInfo[vehicle_id][Spoiler] = 0;
+			VehicleInfo[vehicle_id][Hood] = 0;
+			VehicleInfo[vehicle_id][Roof] = 0;
+			VehicleInfo[vehicle_id][Side_skirt] = 0;
+			VehicleInfo[vehicle_id][Lamps] = 0;
+			VehicleInfo[vehicle_id][Nitro] = 0;
+			VehicleInfo[vehicle_id][Exhaust] = 0;
+			VehicleInfo[vehicle_id][Wheels] = 0;
+			VehicleInfo[vehicle_id][Stereo] = 0;
+			VehicleInfo[vehicle_id][Hydraulics] = 0;
+			VehicleInfo[vehicle_id][Front_bumper] = 0;
+			VehicleInfo[vehicle_id][Rear_bumper] = 0;
+			VehicleInfo[vehicle_id][Vent_right] = 0;
+			VehicleInfo[vehicle_id][Vent_left] = 0;
+			VehicleEngine[vehicle_id] = 0;
+
+			SaveVehicle(vehicle_id);
+			
+			PlayerInfo[playerid][Money] += GetVehiclePrice(vehicle_id);
+			GivePlayerMoney(playerid, PlayerInfo[playerid][Money]);
+			SavePlayer(playerid);
+			
+			RemovePlayerFromVehicle(playerid);
+			DestroyVehicle(vehicle_id);
+			TogglePlayerControllable(playerid, 1);
+			
+			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste vase vozilo.");
+
+			return 1;
+		}
+		else if(strcmp(command, "save", true) == 0)
+		{
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			new vehicle_id = GetPlayerVehicleID(playerid);
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRSKA: Niste u vasem vozilu!");
+			if(VehicleInfo[vehicle_id][Owned] == 1)
+			{
+				SaveVehicleComponents(vehicle_id);
+
+				SendClientMessage(playerid, COLOR_GREEN, "Sacuvali ste komponente vaseg vozila.");
+			}
+
+			return 1;
+		}
+		else if(strcmp(command, "park", true) == 0)
+		{
+			new vehicle_id, vehicle_model, Float:X, Float:Y, Float:Z, Float:A;
+
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			vehicle_id = GetPlayerVehicleID(playerid);
+			vehicle_model = GetVehicleModel(vehicle_id);
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vasem vozilu!");
+
+			GetVehiclePos(vehicle_id, X, Y, Z);
+			GetVehicleZAngle(vehicle_id, A);
+
+			VehicleInfo[vehicle_id][ParkX] = X;
+			VehicleInfo[vehicle_id][ParkY] = Y;
+			VehicleInfo[vehicle_id][ParkZ] = Z;
+			VehicleInfo[vehicle_id][ParkA] = A;
+			VehicleEngine[vehicle_id] = 0;
+
+			SaveVehicle(vehicle_id);
+			RemovePlayerFromVehicle(playerid);
+			DestroyVehicle(vehicle_id);
+			TogglePlayerControllable(playerid, 1);
+
+			owned_vehicles[vehicle_id] = CreateVehicle(vehicle_model, VehicleInfo[vehicle_id][ParkX], VehicleInfo[vehicle_id][ParkY], VehicleInfo[vehicle_id][ParkZ], VehicleInfo[vehicle_id][ParkA], VehicleInfo[vehicle_id][Color1], VehicleInfo[vehicle_id][Color2], -1);
+			SetVehicleComponents(vehicle_id);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Parkirali ste vase vozilo.");
+
+			return 1;
+		}
+		else if(!strfind(command, "color"))
+		{
+			new color1, color2;
+
+			if(sscanf(params, "s[16]ii", command, color1, color2)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [color] [boja 1] [boja 2]");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			new vehicle_id = GetPlayerVehicleID(playerid);
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vasem vozilu!");
+			if(GetPlayerMoney(playerid) < 2500) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca! ($2500)");
+
+			PlayerInfo[playerid][Money] -= 2500;
+			GivePlayerMoney(playerid, -2500);
+			SavePlayer(playerid);
+
+			ChangeVehicleColor(vehicle_id, color1, color2);
+			VehicleInfo[vehicle_id][Color1] = color1;
+			VehicleInfo[vehicle_id][Color2] = color2;
+			SaveVehicle(vehicle_id);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Promenili ste boju vaseg vozila.");
+
+			return 1;
+		}
+		else if(!strfind(command, "paintjob"))
+		{
+			new paintjob;
+
+			if(sscanf(params, "s[16]ii", command, paintjob)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [paintjob] [paintjob id]");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			new vehicle_id = GetPlayerVehicleID(playerid);
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vasem vozilu!");
+			if(GetPlayerMoney(playerid) < 5000) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca! ($5000)");
+
+			PlayerInfo[playerid][Money] -= 5000;
+			GivePlayerMoney(playerid, -5000);
+			SavePlayer(playerid);
+
+			ChangeVehiclePaintjob(vehicle_id, paintjob);
+			VehicleInfo[vehicle_id][Paintjob] = paintjob;
+			SaveVehicle(vehicle_id);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Promenili ste boju vaseg vozila.");
+
+			return 1;
+		}
+		else if(!strfind(command, "sellto"))
+		{
+			new player_name[MAX_PLAYER_NAME], vehicle_id, target, price, vehicle[32], Float:X, Float:Y, Float:Z, message[512];
+
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /sellto [id igraca/deo imena] [cena]");
+			if(VehicleSellOffer[playerid] != 9999) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Vec ste ponudili prodaju vozila!");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			vehicle_id = GetPlayerVehicleID(playerid);
+			GetVehiclePos(vehicle_id, X, Y, Z);
+			GetVehicleName(vehicle_id, vehicle, sizeof(vehicle));
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u svom vozilu!");
+			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Igrac nije blizu vas!");
+
+			VehicleSellOffer[playerid] = 1;
+			VehicleBuyOffer[target] = 1;
+			VehicleForOffer[target] = vehicle_id;
+			VehiclePlayerOffer[target] = playerid;
+			VehicleOfferPrice[target] = price;
+
+			SetTimerEx("VehicleStopOffer", 10000, false, "ii", playerid, target);
+			format(message, sizeof(message), "\n"TEXT_COLOR_RED"Vozilo"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Trenutni vlasnik"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Registrovan"TEXT_COLOR_WHITE": %s\n", vehicle, GetVehicleOwnerName(vehicle_id), price, GetVehicleRegistration(vehicle_id));
+			ShowPlayerDialog(target, DIALOG_BUY_VEHICLE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"KUPOVINA VOZILA", message, "Kupi", "Odbij");
+
+			GetPlayerName(target, player_name, sizeof(player_name));
+			format(message, sizeof(message), "Ponudili ste igracu %s da kupi vase vozilo.", player_name);
+			SendClientMessage(playerid, COLOR_GREEN, message);
+
+			GetPlayerName(target, player_name, sizeof(player_name));
+			format(message, sizeof(message), "Igrac %s Vam je ponudio da kupite njegovo vozilo.", player_name);
+			SendClientMessage(target, COLOR_GREEN, message);
+		}
+
 		/*else
 		{
 		    SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [komanda]");

@@ -12533,3 +12533,9357 @@ v0.3.7-R2, (C)2005-2015 SA-MP Team
 [09:35:43]  ======================================= 
 [09:35:43]  
 [09:35:43] Number of vehicle models: 2
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[09:25:01] filterscripts = ""  (string)
+[09:25:01] 
+[09:25:01] Server Plugins
+[09:25:01] --------------
+[09:25:01]  Loading plugin: Whirlpool.dll
+[09:25:01]  
+[09:25:01]  ==================
+[09:25:01]  
+[09:25:01]   Whirlpool loaded
+[09:25:01]  
+[09:25:01]  ==================
+[09:25:01]  
+[09:25:01]   Loaded.
+[09:25:01]  Loading plugin: mysql.dll
+[09:25:01]  >> plugin.mysql: R41-4 successfully loaded.
+[09:25:01]   Loaded.
+[09:25:01]  Loading plugin: sscanf.dll
+[09:25:01] 
+
+[09:25:01]  ===============================
+
+[09:25:01]       sscanf plugin loaded.     
+
+[09:25:01]          Version:  2.8.3        
+
+[09:25:01]   (c) 2018 Alex "Y_Less" Cole  
+
+[09:25:01]  ===============================
+
+[09:25:01]   Loaded.
+[09:25:01]  Loading plugin: streamer.dll
+[09:25:01] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[09:25:01]   Loaded.
+[09:25:01]  Loading plugin: bcrypt-samp.dll
+[09:25:01]   plugin.bcrypt v2.2.3 was loaded.
+[09:25:01]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[09:25:01]   Loaded.
+[09:25:01]  Loaded 5 plugins.
+
+[09:25:01] 
+[09:25:01] Filterscripts
+[09:25:01] ---------------
+[09:25:01]   Loaded 0 filterscripts.
+
+[09:25:01] AMX (43221664) loaded
+[09:25:01]  
+[09:25:01]  
+[09:25:01]  
+[09:25:01]  ======================================= 
+[09:25:01]  |                                     | 
+[09:25:01]  |        YSI version 4.00.0001        | 
+[09:25:01]  |        By Alex "Y_Less" Cole        | 
+[09:25:01]  |                                     | 
+[09:25:01]  ======================================= 
+[09:25:01]  
+[09:25:01] Number of vehicle models: 2
+[09:25:01] plugin.bcrypt: Version check failed.
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[09:25:20] filterscripts = ""  (string)
+[09:25:20] 
+[09:25:20] Server Plugins
+[09:25:20] --------------
+[09:25:20]  Loading plugin: Whirlpool.dll
+[09:25:20]  
+[09:25:20]  ==================
+[09:25:20]  
+[09:25:20]   Whirlpool loaded
+[09:25:20]  
+[09:25:20]  ==================
+[09:25:20]  
+[09:25:20]   Loaded.
+[09:25:20]  Loading plugin: mysql.dll
+[09:25:20]  >> plugin.mysql: R41-4 successfully loaded.
+[09:25:20]   Loaded.
+[09:25:20]  Loading plugin: sscanf.dll
+[09:25:20] 
+
+[09:25:20]  ===============================
+
+[09:25:20]       sscanf plugin loaded.     
+
+[09:25:20]          Version:  2.8.3        
+
+[09:25:20]   (c) 2018 Alex "Y_Less" Cole  
+
+[09:25:20]  ===============================
+
+[09:25:20]   Loaded.
+[09:25:20]  Loading plugin: streamer.dll
+[09:25:20] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[09:25:20]   Loaded.
+[09:25:20]  Loading plugin: bcrypt-samp.dll
+[09:25:20]   plugin.bcrypt v2.2.3 was loaded.
+[09:25:20]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[09:25:20]   Loaded.
+[09:25:20]  Loaded 5 plugins.
+
+[09:25:20] 
+[09:25:20] Filterscripts
+[09:25:20] ---------------
+[09:25:20]   Loaded 0 filterscripts.
+
+[09:25:20] AMX (44401312) loaded
+[09:25:20]  
+[09:25:20]  
+[09:25:20]  
+[09:25:20]  ======================================= 
+[09:25:20]  |                                     | 
+[09:25:20]  |        YSI version 4.00.0001        | 
+[09:25:20]  |        By Alex "Y_Less" Cole        | 
+[09:25:20]  |                                     | 
+[09:25:20]  ======================================= 
+[09:25:20]  
+[09:25:20] Number of vehicle models: 89
+[09:25:20] plugin.bcrypt: Version check failed.
+[09:25:39] [connection] 192.168.0.14:61597 requests connection cookie.
+[09:25:40] [connection] incoming connection: 192.168.0.14:61597 id: 0
+[09:25:40] [join] 123_123 has joined the server (0:192.168.0.14)
+[09:25:44] Input text je 123123 
+
+[09:25:44] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[09:26:29] [part] 123_123 has left the server (0:1)
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:28:08] filterscripts = ""  (string)
+[19:28:08] 
+[19:28:08] Server Plugins
+[19:28:08] --------------
+[19:28:08]  Loading plugin: Whirlpool.dll
+[19:28:08]  
+[19:28:08]  ==================
+[19:28:08]  
+[19:28:08]   Whirlpool loaded
+[19:28:08]  
+[19:28:08]  ==================
+[19:28:08]  
+[19:28:08]   Loaded.
+[19:28:08]  Loading plugin: mysql.dll
+[19:28:08]  >> plugin.mysql: R41-4 successfully loaded.
+[19:28:08]   Loaded.
+[19:28:08]  Loading plugin: sscanf.dll
+[19:28:08] 
+
+[19:28:08]  ===============================
+
+[19:28:08]       sscanf plugin loaded.     
+
+[19:28:08]          Version:  2.8.3        
+
+[19:28:08]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:28:08]  ===============================
+
+[19:28:08]   Loaded.
+[19:28:08]  Loading plugin: streamer.dll
+[19:28:08] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:28:08]   Loaded.
+[19:28:08]  Loading plugin: bcrypt-samp.dll
+[19:28:08]   plugin.bcrypt v2.2.3 was loaded.
+[19:28:08]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:28:08]   Loaded.
+[19:28:08]  Loaded 5 plugins.
+
+[19:28:08] 
+[19:28:08] Filterscripts
+[19:28:08] ---------------
+[19:28:08]   Loaded 0 filterscripts.
+
+[19:28:08] AMX (43221664) loaded
+[19:28:08]  
+[19:28:08]  
+[19:28:08]  
+[19:28:08]  ======================================= 
+[19:28:08]  |                                     | 
+[19:28:08]  |        YSI version 4.00.0001        | 
+[19:28:08]  |        By Alex "Y_Less" Cole        | 
+[19:28:08]  |                                     | 
+[19:28:08]  ======================================= 
+[19:28:08]  
+[19:28:09] Number of vehicle models: 89
+[19:28:09] plugin.bcrypt: Version check failed.
+[19:28:31] [connection] 192.168.0.14:51010 requests connection cookie.
+[19:28:32] [connection] incoming connection: 192.168.0.14:51010 id: 0
+[19:28:32] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:28:34] Input text je 123123 
+
+[19:28:34] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:29:46] filterscripts = ""  (string)
+[19:29:46] 
+[19:29:46] Server Plugins
+[19:29:46] --------------
+[19:29:46]  Loading plugin: Whirlpool.dll
+[19:29:46]  
+[19:29:46]  ==================
+[19:29:46]  
+[19:29:46]   Whirlpool loaded
+[19:29:46]  
+[19:29:46]  ==================
+[19:29:46]  
+[19:29:46]   Loaded.
+[19:29:46]  Loading plugin: mysql.dll
+[19:29:46]  >> plugin.mysql: R41-4 successfully loaded.
+[19:29:46]   Loaded.
+[19:29:46]  Loading plugin: sscanf.dll
+[19:29:46] 
+
+[19:29:46]  ===============================
+
+[19:29:46]       sscanf plugin loaded.     
+
+[19:29:46]          Version:  2.8.3        
+
+[19:29:46]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:29:46]  ===============================
+
+[19:29:46]   Loaded.
+[19:29:46]  Loading plugin: streamer.dll
+[19:29:46] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:29:46]   Loaded.
+[19:29:46]  Loading plugin: bcrypt-samp.dll
+[19:29:46]   plugin.bcrypt v2.2.3 was loaded.
+[19:29:46]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:29:46]   Loaded.
+[19:29:46]  Loaded 5 plugins.
+
+[19:29:46] 
+[19:29:46] Filterscripts
+[19:29:46] ---------------
+[19:29:46]   Loaded 0 filterscripts.
+
+[19:29:46] AMX (43549344) loaded
+[19:29:46]  
+[19:29:46]  
+[19:29:46]  
+[19:29:46]  ======================================= 
+[19:29:46]  |                                     | 
+[19:29:46]  |        YSI version 4.00.0001        | 
+[19:29:46]  |        By Alex "Y_Less" Cole        | 
+[19:29:46]  |                                     | 
+[19:29:46]  ======================================= 
+[19:29:46]  
+[19:29:46] Number of vehicle models: 89
+[19:29:46] plugin.bcrypt: Version check failed.
+[19:29:55] [connection] 192.168.0.14:52438 requests connection cookie.
+[19:29:56] [connection] incoming connection: 192.168.0.14:52438 id: 0
+[19:29:57] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:29:59] Input text je 123123 
+
+[19:29:59] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 1 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 8 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:04] A vas id je 8 
+
+[19:30:04] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:05] Vlasnik je 0 
+
+[19:30:05] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:06] A vas id je 8 
+
+[19:30:06] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+[19:30:07] Vlasnik je 0 
+
+[19:30:07] A vas id je 8 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:31:27] filterscripts = ""  (string)
+[19:31:27] 
+[19:31:27] Server Plugins
+[19:31:27] --------------
+[19:31:27]  Loading plugin: Whirlpool.dll
+[19:31:27]  
+[19:31:27]  ==================
+[19:31:27]  
+[19:31:27]   Whirlpool loaded
+[19:31:27]  
+[19:31:27]  ==================
+[19:31:27]  
+[19:31:27]   Loaded.
+[19:31:27]  Loading plugin: mysql.dll
+[19:31:27]  >> plugin.mysql: R41-4 successfully loaded.
+[19:31:27]   Loaded.
+[19:31:27]  Loading plugin: sscanf.dll
+[19:31:27] 
+
+[19:31:27]  ===============================
+
+[19:31:27]       sscanf plugin loaded.     
+
+[19:31:27]          Version:  2.8.3        
+
+[19:31:27]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:31:27]  ===============================
+
+[19:31:27]   Loaded.
+[19:31:27]  Loading plugin: streamer.dll
+[19:31:27] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:31:27]   Loaded.
+[19:31:27]  Loading plugin: bcrypt-samp.dll
+[19:31:27]   plugin.bcrypt v2.2.3 was loaded.
+[19:31:27]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:31:27]   Loaded.
+[19:31:27]  Loaded 5 plugins.
+
+[19:31:27] 
+[19:31:27] Filterscripts
+[19:31:27] ---------------
+[19:31:27]   Loaded 0 filterscripts.
+
+[19:31:27] AMX (44204704) loaded
+[19:31:27]  
+[19:31:27]  
+[19:31:27]  
+[19:31:27]  ======================================= 
+[19:31:27]  |                                     | 
+[19:31:27]  |        YSI version 4.00.0001        | 
+[19:31:27]  |        By Alex "Y_Less" Cole        | 
+[19:31:27]  |                                     | 
+[19:31:27]  ======================================= 
+[19:31:27]  
+[19:31:28] Number of vehicle models: 89
+[19:31:28] plugin.bcrypt: Version check failed.
+[19:31:49] [connection] 192.168.0.14:63079 requests connection cookie.
+[19:31:50] [connection] incoming connection: 192.168.0.14:63079 id: 0
+[19:31:50] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:31:52] Input text je 123123 
+
+[19:31:52] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:34:14] Prosao je proveru 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:35:42] filterscripts = ""  (string)
+[19:35:42] 
+[19:35:42] Server Plugins
+[19:35:42] --------------
+[19:35:42]  Loading plugin: Whirlpool.dll
+[19:35:42]  
+[19:35:42]  ==================
+[19:35:42]  
+[19:35:42]   Whirlpool loaded
+[19:35:42]  
+[19:35:42]  ==================
+[19:35:42]  
+[19:35:42]   Loaded.
+[19:35:42]  Loading plugin: mysql.dll
+[19:35:42]  >> plugin.mysql: R41-4 successfully loaded.
+[19:35:42]   Loaded.
+[19:35:42]  Loading plugin: sscanf.dll
+[19:35:42] 
+
+[19:35:42]  ===============================
+
+[19:35:42]       sscanf plugin loaded.     
+
+[19:35:42]          Version:  2.8.3        
+
+[19:35:42]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:35:42]  ===============================
+
+[19:35:42]   Loaded.
+[19:35:42]  Loading plugin: streamer.dll
+[19:35:42] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:35:42]   Loaded.
+[19:35:42]  Loading plugin: bcrypt-samp.dll
+[19:35:42]   plugin.bcrypt v2.2.3 was loaded.
+[19:35:42]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:35:42]   Loaded.
+[19:35:42]  Loaded 5 plugins.
+
+[19:35:42] 
+[19:35:42] Filterscripts
+[19:35:42] ---------------
+[19:35:42]   Loaded 0 filterscripts.
+
+[19:35:42] AMX (43221664) loaded
+[19:35:42]  
+[19:35:42]  
+[19:35:42]  
+[19:35:42]  ======================================= 
+[19:35:42]  |                                     | 
+[19:35:42]  |        YSI version 4.00.0001        | 
+[19:35:42]  |        By Alex "Y_Less" Cole        | 
+[19:35:42]  |                                     | 
+[19:35:42]  ======================================= 
+[19:35:42]  
+[19:35:42] Number of vehicle models: 89
+[19:35:43] plugin.bcrypt: Version check failed.
+[19:35:52] [connection] 192.168.0.14:58364 requests connection cookie.
+[19:35:53] [connection] incoming connection: 192.168.0.14:58364 id: 0
+[19:35:53] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:35:56] Input text je 123123 
+
+[19:35:56] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:36:43] Vlasnik je 1 
+
+[19:36:43] Vas ID je 8 
+
+[19:36:44] Rezultat je 1
+[19:36:44] Prosao proveru
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:37:32] filterscripts = ""  (string)
+[19:37:32] 
+[19:37:32] Server Plugins
+[19:37:32] --------------
+[19:37:32]  Loading plugin: Whirlpool.dll
+[19:37:32]  
+[19:37:32]  ==================
+[19:37:32]  
+[19:37:32]   Whirlpool loaded
+[19:37:32]  
+[19:37:32]  ==================
+[19:37:32]  
+[19:37:32]   Loaded.
+[19:37:32]  Loading plugin: mysql.dll
+[19:37:32]  >> plugin.mysql: R41-4 successfully loaded.
+[19:37:32]   Loaded.
+[19:37:32]  Loading plugin: sscanf.dll
+[19:37:32] 
+
+[19:37:32]  ===============================
+
+[19:37:32]       sscanf plugin loaded.     
+
+[19:37:32]          Version:  2.8.3        
+
+[19:37:32]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:37:32]  ===============================
+
+[19:37:32]   Loaded.
+[19:37:32]  Loading plugin: streamer.dll
+[19:37:32] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:37:32]   Loaded.
+[19:37:32]  Loading plugin: bcrypt-samp.dll
+[19:37:32]   plugin.bcrypt v2.2.3 was loaded.
+[19:37:32]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:37:32]   Loaded.
+[19:37:32]  Loaded 5 plugins.
+
+[19:37:32] 
+[19:37:32] Filterscripts
+[19:37:32] ---------------
+[19:37:32]   Loaded 0 filterscripts.
+
+[19:37:32] AMX (44335776) loaded
+[19:37:32]  
+[19:37:32]  
+[19:37:32]  
+[19:37:32]  ======================================= 
+[19:37:32]  |                                     | 
+[19:37:32]  |        YSI version 4.00.0001        | 
+[19:37:32]  |        By Alex "Y_Less" Cole        | 
+[19:37:32]  |                                     | 
+[19:37:32]  ======================================= 
+[19:37:32]  
+[19:37:32] Number of vehicle models: 89
+[19:37:32] plugin.bcrypt: Version check failed.
+[19:37:44] [connection] 192.168.0.14:54172 requests connection cookie.
+[19:37:45] [connection] incoming connection: 192.168.0.14:54172 id: 0
+[19:37:45] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:37:47] Input text je 123123 
+
+[19:37:47] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:37:54] Vlasnik je 1 
+
+[19:37:54] Vas ID je 8 
+
+[19:37:54] Rezultat je 1
+[19:37:54] Prosao proveru
+[19:37:56] Vlasnik je 1 
+
+[19:37:56] Vas ID je 8 
+
+[19:37:56] Rezultat je 1
+[19:37:56] Prosao proveru
+[19:38:18] [part] 123_123 has left the server (0:1)
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:40:45] filterscripts = ""  (string)
+[19:40:45] 
+[19:40:45] Server Plugins
+[19:40:45] --------------
+[19:40:45]  Loading plugin: Whirlpool.dll
+[19:40:45]  
+[19:40:45]  ==================
+[19:40:45]  
+[19:40:45]   Whirlpool loaded
+[19:40:45]  
+[19:40:45]  ==================
+[19:40:45]  
+[19:40:45]   Loaded.
+[19:40:45]  Loading plugin: mysql.dll
+[19:40:45]  >> plugin.mysql: R41-4 successfully loaded.
+[19:40:45]   Loaded.
+[19:40:45]  Loading plugin: sscanf.dll
+[19:40:45] 
+
+[19:40:45]  ===============================
+
+[19:40:45]       sscanf plugin loaded.     
+
+[19:40:45]          Version:  2.8.3        
+
+[19:40:45]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:40:45]  ===============================
+
+[19:40:45]   Loaded.
+[19:40:45]  Loading plugin: streamer.dll
+[19:40:45] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:40:45]   Loaded.
+[19:40:45]  Loading plugin: bcrypt-samp.dll
+[19:40:45]   plugin.bcrypt v2.2.3 was loaded.
+[19:40:45]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:40:45]   Loaded.
+[19:40:45]  Loaded 5 plugins.
+
+[19:40:45] 
+[19:40:45] Filterscripts
+[19:40:45] ---------------
+[19:40:45]   Loaded 0 filterscripts.
+
+[19:40:45] AMX (43483808) loaded
+[19:40:45]  
+[19:40:45]  
+[19:40:45]  
+[19:40:45]  ======================================= 
+[19:40:45]  |                                     | 
+[19:40:45]  |        YSI version 4.00.0001        | 
+[19:40:45]  |        By Alex "Y_Less" Cole        | 
+[19:40:45]  |                                     | 
+[19:40:45]  ======================================= 
+[19:40:45]  
+[19:40:45] Number of vehicle models: 89
+[19:40:45] plugin.bcrypt: Version check failed.
+[19:41:07] [connection] 192.168.0.14:58742 requests connection cookie.
+[19:41:08] [connection] incoming connection: 192.168.0.14:58742 id: 0
+[19:41:08] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:41:09] Input text je 123123 
+
+[19:41:09] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:46:16] filterscripts = ""  (string)
+[19:46:16] 
+[19:46:16] Server Plugins
+[19:46:16] --------------
+[19:46:16]  Loading plugin: Whirlpool.dll
+[19:46:16]  
+[19:46:16]  ==================
+[19:46:16]  
+[19:46:16]   Whirlpool loaded
+[19:46:16]  
+[19:46:16]  ==================
+[19:46:16]  
+[19:46:16]   Loaded.
+[19:46:16]  Loading plugin: mysql.dll
+[19:46:16]  >> plugin.mysql: R41-4 successfully loaded.
+[19:46:16]   Loaded.
+[19:46:16]  Loading plugin: sscanf.dll
+[19:46:16] 
+
+[19:46:16]  ===============================
+
+[19:46:16]       sscanf plugin loaded.     
+
+[19:46:16]          Version:  2.8.3        
+
+[19:46:16]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:46:16]  ===============================
+
+[19:46:16]   Loaded.
+[19:46:16]  Loading plugin: streamer.dll
+[19:46:16] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:46:16]   Loaded.
+[19:46:16]  Loading plugin: bcrypt-samp.dll
+[19:46:16]   plugin.bcrypt v2.2.3 was loaded.
+[19:46:16]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:46:16]   Loaded.
+[19:46:16]  Loaded 5 plugins.
+
+[19:46:16] 
+[19:46:16] Filterscripts
+[19:46:16] ---------------
+[19:46:16]   Loaded 0 filterscripts.
+
+[19:46:16] AMX (43221664) loaded
+[19:46:16]  
+[19:46:16]  
+[19:46:16]  
+[19:46:16]  ======================================= 
+[19:46:16]  |                                     | 
+[19:46:16]  |        YSI version 4.00.0001        | 
+[19:46:16]  |        By Alex "Y_Less" Cole        | 
+[19:46:16]  |                                     | 
+[19:46:16]  ======================================= 
+[19:46:16]  
+[19:46:16] Number of vehicle models: 89
+[19:46:16] plugin.bcrypt: Version check failed.
+[19:46:31] [connection] 192.168.0.14:55425 requests connection cookie.
+[19:46:32] [connection] incoming connection: 192.168.0.14:55425 id: 0
+[19:46:32] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:46:35] Input text je 123123 
+
+[19:46:35] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:46:51] Vozilo u koje ulazite je 115 
+
+[19:47:00] Zakljucano je 1 
+
+[19:47:02] Zakljucano je 0 
+
+[19:47:03] Vozilo u koje ulazite je 115 
+
+[19:47:04] Vozilo u koje ulazite je 115 
+
+[19:47:04] Vozilo u koje ulazite je 115 
+
+[19:47:05] Vozilo u koje ulazite je 115 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:48:25] filterscripts = ""  (string)
+[19:48:25] 
+[19:48:25] Server Plugins
+[19:48:25] --------------
+[19:48:25]  Loading plugin: Whirlpool.dll
+[19:48:25]  
+[19:48:25]  ==================
+[19:48:25]  
+[19:48:25]   Whirlpool loaded
+[19:48:25]  
+[19:48:25]  ==================
+[19:48:25]  
+[19:48:25]   Loaded.
+[19:48:25]  Loading plugin: mysql.dll
+[19:48:25]  >> plugin.mysql: R41-4 successfully loaded.
+[19:48:25]   Loaded.
+[19:48:25]  Loading plugin: sscanf.dll
+[19:48:25] 
+
+[19:48:25]  ===============================
+
+[19:48:25]       sscanf plugin loaded.     
+
+[19:48:25]          Version:  2.8.3        
+
+[19:48:25]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:48:25]  ===============================
+
+[19:48:25]   Loaded.
+[19:48:25]  Loading plugin: streamer.dll
+[19:48:25] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:48:25]   Loaded.
+[19:48:25]  Loading plugin: bcrypt-samp.dll
+[19:48:25]   plugin.bcrypt v2.2.3 was loaded.
+[19:48:25]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:48:25]   Loaded.
+[19:48:25]  Loaded 5 plugins.
+
+[19:48:25] 
+[19:48:25] Filterscripts
+[19:48:25] ---------------
+[19:48:25]   Loaded 0 filterscripts.
+
+[19:48:25] AMX (43418272) loaded
+[19:48:26]  
+[19:48:26]  
+[19:48:26]  
+[19:48:26]  ======================================= 
+[19:48:26]  |                                     | 
+[19:48:26]  |        YSI version 4.00.0001        | 
+[19:48:26]  |        By Alex "Y_Less" Cole        | 
+[19:48:26]  |                                     | 
+[19:48:26]  ======================================= 
+[19:48:26]  
+[19:48:26] Number of vehicle models: 89
+[19:48:26] plugin.bcrypt: Version check failed.
+[19:48:35] [connection] 192.168.0.14:53773 requests connection cookie.
+[19:48:36] [connection] incoming connection: 192.168.0.14:53773 id: 0
+[19:48:36] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:48:40] Input text je 123123 
+
+[19:48:40] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:48:53] Zakljucano je 1 
+
+[19:48:53] ID je 1 
+
+[19:48:55] Zakljucano je 0 
+
+[19:48:55] ID je 1 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:50:24] filterscripts = ""  (string)
+[19:50:24] 
+[19:50:24] Server Plugins
+[19:50:24] --------------
+[19:50:24]  Loading plugin: Whirlpool.dll
+[19:50:24]  
+[19:50:24]  ==================
+[19:50:24]  
+[19:50:24]   Whirlpool loaded
+[19:50:24]  
+[19:50:24]  ==================
+[19:50:24]  
+[19:50:24]   Loaded.
+[19:50:24]  Loading plugin: mysql.dll
+[19:50:24]  >> plugin.mysql: R41-4 successfully loaded.
+[19:50:24]   Loaded.
+[19:50:24]  Loading plugin: sscanf.dll
+[19:50:24] 
+
+[19:50:24]  ===============================
+
+[19:50:24]       sscanf plugin loaded.     
+
+[19:50:24]          Version:  2.8.3        
+
+[19:50:24]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:50:24]  ===============================
+
+[19:50:24]   Loaded.
+[19:50:24]  Loading plugin: streamer.dll
+[19:50:24] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:50:24]   Loaded.
+[19:50:24]  Loading plugin: bcrypt-samp.dll
+[19:50:24]   plugin.bcrypt v2.2.3 was loaded.
+[19:50:24]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:50:24]   Loaded.
+[19:50:24]  Loaded 5 plugins.
+
+[19:50:24] 
+[19:50:24] Filterscripts
+[19:50:24] ---------------
+[19:50:24]   Loaded 0 filterscripts.
+
+[19:50:24] AMX (43221664) loaded
+[19:50:24]  
+[19:50:24]  
+[19:50:24]  
+[19:50:24]  ======================================= 
+[19:50:24]  |                                     | 
+[19:50:24]  |        YSI version 4.00.0001        | 
+[19:50:24]  |        By Alex "Y_Less" Cole        | 
+[19:50:24]  |                                     | 
+[19:50:24]  ======================================= 
+[19:50:24]  
+[19:50:24] Number of vehicle models: 89
+[19:50:24] plugin.bcrypt: Version check failed.
+[19:50:40] [connection] 192.168.0.14:55191 requests connection cookie.
+[19:50:41] [connection] incoming connection: 192.168.0.14:55191 id: 0
+[19:50:41] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:50:44] Input text je 123123 
+
+[19:50:44] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:51:01] Vozilo u koje ulazite je 115 
+
+[19:51:03] Zakljucano je 0 
+
+[19:51:03] ID je 115 
+
+[19:51:04] Vozilo u koje ulazite je 115 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:54:06] filterscripts = ""  (string)
+[19:54:06] 
+[19:54:06] Server Plugins
+[19:54:06] --------------
+[19:54:06]  Loading plugin: Whirlpool.dll
+[19:54:06]  
+[19:54:06]  ==================
+[19:54:06]  
+[19:54:06]   Whirlpool loaded
+[19:54:06]  
+[19:54:06]  ==================
+[19:54:06]  
+[19:54:06]   Loaded.
+[19:54:06]  Loading plugin: mysql.dll
+[19:54:06]  >> plugin.mysql: R41-4 successfully loaded.
+[19:54:06]   Loaded.
+[19:54:06]  Loading plugin: sscanf.dll
+[19:54:06] 
+
+[19:54:06]  ===============================
+
+[19:54:06]       sscanf plugin loaded.     
+
+[19:54:06]          Version:  2.8.3        
+
+[19:54:06]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:54:06]  ===============================
+
+[19:54:06]   Loaded.
+[19:54:06]  Loading plugin: streamer.dll
+[19:54:06] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:54:06]   Loaded.
+[19:54:06]  Loading plugin: bcrypt-samp.dll
+[19:54:06]   plugin.bcrypt v2.2.3 was loaded.
+[19:54:06]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:54:06]   Loaded.
+[19:54:06]  Loaded 5 plugins.
+
+[19:54:06] 
+[19:54:06] Filterscripts
+[19:54:06] ---------------
+[19:54:06]   Loaded 0 filterscripts.
+
+[19:54:06] AMX (43287200) loaded
+[19:54:06]  
+[19:54:06]  
+[19:54:06]  
+[19:54:06]  ======================================= 
+[19:54:06]  |                                     | 
+[19:54:06]  |        YSI version 4.00.0001        | 
+[19:54:06]  |        By Alex "Y_Less" Cole        | 
+[19:54:06]  |                                     | 
+[19:54:06]  ======================================= 
+[19:54:06]  
+[19:54:06] Number of vehicle models: 89
+[19:54:06] plugin.bcrypt: Version check failed.
+[19:54:07] [connection] 192.168.0.14:57565 requests connection cookie.
+[19:54:08] [connection] incoming connection: 192.168.0.14:57565 id: 0
+[19:54:08] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:54:11] Input text je 123123 
+
+[19:54:11] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:54:27] Vozilo u koje ulazite je 116 
+
+[19:55:27] Zakljucano je 1 
+
+[19:55:27] ID je 115 
+
+[19:55:30] Zakljucano je 0 
+
+[19:55:30] ID je 115 
+
+[19:55:30] Vozilo u koje ulazite je 115 
+
+[19:55:32] Zakljucano je 1 
+
+[19:55:32] ID je 115 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[19:57:29] filterscripts = ""  (string)
+[19:57:29] 
+[19:57:29] Server Plugins
+[19:57:29] --------------
+[19:57:29]  Loading plugin: Whirlpool.dll
+[19:57:29]  
+[19:57:29]  ==================
+[19:57:29]  
+[19:57:29]   Whirlpool loaded
+[19:57:29]  
+[19:57:29]  ==================
+[19:57:29]  
+[19:57:29]   Loaded.
+[19:57:29]  Loading plugin: mysql.dll
+[19:57:29]  >> plugin.mysql: R41-4 successfully loaded.
+[19:57:29]   Loaded.
+[19:57:29]  Loading plugin: sscanf.dll
+[19:57:29] 
+
+[19:57:29]  ===============================
+
+[19:57:29]       sscanf plugin loaded.     
+
+[19:57:29]          Version:  2.8.3        
+
+[19:57:29]   (c) 2018 Alex "Y_Less" Cole  
+
+[19:57:29]  ===============================
+
+[19:57:29]   Loaded.
+[19:57:29]  Loading plugin: streamer.dll
+[19:57:29] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[19:57:29]   Loaded.
+[19:57:29]  Loading plugin: bcrypt-samp.dll
+[19:57:29]   plugin.bcrypt v2.2.3 was loaded.
+[19:57:29]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[19:57:29]   Loaded.
+[19:57:29]  Loaded 5 plugins.
+
+[19:57:30] 
+[19:57:30] Filterscripts
+[19:57:30] ---------------
+[19:57:30]   Loaded 0 filterscripts.
+
+[19:57:30] AMX (43549344) loaded
+[19:57:30]  
+[19:57:30]  
+[19:57:30]  
+[19:57:30]  ======================================= 
+[19:57:30]  |                                     | 
+[19:57:30]  |        YSI version 4.00.0001        | 
+[19:57:30]  |        By Alex "Y_Less" Cole        | 
+[19:57:30]  |                                     | 
+[19:57:30]  ======================================= 
+[19:57:30]  
+[19:57:30] Number of vehicle models: 89
+[19:57:34] [connection] 192.168.0.14:57787 requests connection cookie.
+[19:57:35] [connection] incoming connection: 192.168.0.14:57787 id: 0
+[19:57:35] [join] 123_123 has joined the server (0:192.168.0.14)
+[19:57:37] Input text je 123123 
+
+[19:57:37] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[19:57:39] Vozilo u koje ulazite je 115 
+
+[19:57:40] plugin.bcrypt: Version check failed.
+[19:57:43] Cena vozila je 0 
+
+[19:57:43] Vas novac je 0 
+
+[19:57:43] Vas novac je 0 
+
+[19:58:15] Vozilo u koje ulazite je 115 
+
+[19:58:15] Vozilo u koje ulazite je 115 
+
+[19:58:15] Vozilo u koje ulazite je 115 
+
+[19:58:15] Vozilo u koje ulazite je 115 
+
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[20:00:14] filterscripts = ""  (string)
+[20:00:14] 
+[20:00:14] Server Plugins
+[20:00:14] --------------
+[20:00:14]  Loading plugin: Whirlpool.dll
+[20:00:14]  
+[20:00:14]  ==================
+[20:00:14]  
+[20:00:14]   Whirlpool loaded
+[20:00:14]  
+[20:00:14]  ==================
+[20:00:14]  
+[20:00:14]   Loaded.
+[20:00:14]  Loading plugin: mysql.dll
+[20:00:14]  >> plugin.mysql: R41-4 successfully loaded.
+[20:00:14]   Loaded.
+[20:00:14]  Loading plugin: sscanf.dll
+[20:00:14] 
+
+[20:00:14]  ===============================
+
+[20:00:14]       sscanf plugin loaded.     
+
+[20:00:14]          Version:  2.8.3        
+
+[20:00:14]   (c) 2018 Alex "Y_Less" Cole  
+
+[20:00:14]  ===============================
+
+[20:00:14]   Loaded.
+[20:00:14]  Loading plugin: streamer.dll
+[20:00:14] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[20:00:14]   Loaded.
+[20:00:14]  Loading plugin: bcrypt-samp.dll
+[20:00:14]   plugin.bcrypt v2.2.3 was loaded.
+[20:00:14]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[20:00:14]   Loaded.
+[20:00:14]  Loaded 5 plugins.
+
+[20:00:14] 
+[20:00:14] Filterscripts
+[20:00:14] ---------------
+[20:00:14]   Loaded 0 filterscripts.
+
+[20:00:14] AMX (43221664) loaded
+[20:00:14]  
+[20:00:14]  
+[20:00:14]  
+[20:00:14]  ======================================= 
+[20:00:14]  |                                     | 
+[20:00:14]  |        YSI version 4.00.0001        | 
+[20:00:14]  |        By Alex "Y_Less" Cole        | 
+[20:00:14]  |                                     | 
+[20:00:14]  ======================================= 
+[20:00:14]  
+[20:00:14] Number of vehicle models: 89
+[20:00:14] plugin.bcrypt: Version check failed.
+[20:00:33] [connection] 192.168.0.14:49926 requests connection cookie.
+[20:00:34] [connection] incoming connection: 192.168.0.14:49926 id: 0
+[20:00:34] [join] 123_123 has joined the server (0:192.168.0.14)
+[20:00:36] Input text je 123123 
+
+[20:00:36] Password je $2a$12$LELhQlHAYiX3akWzbSr1auYqYLZJ67HOJFmnybI7MocMYs.xnfTtq 
+
+[20:00:38] Vozilo u koje ulazite je 115 
+
+[20:00:45] [part] 123_123 has left the server (0:1)
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[20:04:52] filterscripts = ""  (string)
+[20:04:52] 
+[20:04:52] Server Plugins
+[20:04:52] --------------
+[20:04:52]  Loading plugin: Whirlpool.dll
+[20:04:52]  
+[20:04:52]  ==================
+[20:04:52]  
+[20:04:52]   Whirlpool loaded
+[20:04:52]  
+[20:04:52]  ==================
+[20:04:52]  
+[20:04:52]   Loaded.
+[20:04:52]  Loading plugin: mysql.dll
+[20:04:52]  >> plugin.mysql: R41-4 successfully loaded.
+[20:04:52]   Loaded.
+[20:04:52]  Loading plugin: sscanf.dll
+[20:04:52] 
+
+[20:04:52]  ===============================
+
+[20:04:52]       sscanf plugin loaded.     
+
+[20:04:52]          Version:  2.8.3        
+
+[20:04:52]   (c) 2018 Alex "Y_Less" Cole  
+
+[20:04:52]  ===============================
+
+[20:04:52]   Loaded.
+[20:04:52]  Loading plugin: streamer.dll
+[20:04:52] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[20:04:52]   Loaded.
+[20:04:52]  Loading plugin: bcrypt-samp.dll
+[20:04:52]   plugin.bcrypt v2.2.3 was loaded.
+[20:04:52]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[20:04:52]   Loaded.
+[20:04:52]  Loaded 5 plugins.
+
+[20:04:52] 
+[20:04:52] Filterscripts
+[20:04:52] ---------------
+[20:04:52]   Loaded 0 filterscripts.
+
+[20:04:52] AMX (43221664) loaded
+[20:04:52]  
+[20:04:52]  
+[20:04:52]  
+[20:04:52]  ======================================= 
+[20:04:52]  |                                     | 
+[20:04:52]  |        YSI version 4.00.0001        | 
+[20:04:52]  |        By Alex "Y_Less" Cole        | 
+[20:04:52]  |                                     | 
+[20:04:52]  ======================================= 
+[20:04:52]  
+[20:04:52] Number of vehicle models: 89
+[20:04:52] plugin.bcrypt: Version check failed.
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[20:05:09] filterscripts = ""  (string)
+[20:05:09] 
+[20:05:09] Server Plugins
+[20:05:09] --------------
+[20:05:09]  Loading plugin: Whirlpool.dll
+[20:05:09]  
+[20:05:09]  ==================
+[20:05:09]  
+[20:05:09]   Whirlpool loaded
+[20:05:09]  
+[20:05:09]  ==================
+[20:05:09]  
+[20:05:09]   Loaded.
+[20:05:09]  Loading plugin: mysql.dll
+[20:05:09]  >> plugin.mysql: R41-4 successfully loaded.
+[20:05:09]   Loaded.
+[20:05:09]  Loading plugin: sscanf.dll
+[20:05:09] 
+
+[20:05:09]  ===============================
+
+[20:05:09]       sscanf plugin loaded.     
+
+[20:05:09]          Version:  2.8.3        
+
+[20:05:09]   (c) 2018 Alex "Y_Less" Cole  
+
+[20:05:09]  ===============================
+
+[20:05:09]   Loaded.
+[20:05:09]  Loading plugin: streamer.dll
+[20:05:09] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[20:05:09]   Loaded.
+[20:05:09]  Loading plugin: bcrypt-samp.dll
+[20:05:09]   plugin.bcrypt v2.2.3 was loaded.
+[20:05:09]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[20:05:09]   Loaded.
+[20:05:09]  Loaded 5 plugins.
+
+[20:05:09] 
+[20:05:09] Filterscripts
+[20:05:09] ---------------
+[20:05:09]   Loaded 0 filterscripts.
+
+[20:05:09] AMX (43221664) loaded
+[20:05:09]  
+[20:05:09]  
+[20:05:09]  
+[20:05:09]  ======================================= 
+[20:05:09]  |                                     | 
+[20:05:09]  |        YSI version 4.00.0001        | 
+[20:05:09]  |        By Alex "Y_Less" Cole        | 
+[20:05:09]  |                                     | 
+[20:05:09]  ======================================= 
+[20:05:09]  
+[20:05:09] Number of vehicle models: 89
+[20:05:09] plugin.bcrypt: Version check failed.
+[20:05:32] [connection] 192.168.0.14:53500 requests connection cookie.
+[20:05:33] [connection] incoming connection: 192.168.0.14:53500 id: 0
+[20:05:33] [join] 123_123 has joined the server (0:192.168.0.14)
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[20:06:20] filterscripts = ""  (string)
+[20:06:20] 
+[20:06:20] Server Plugins
+[20:06:20] --------------
+[20:06:20]  Loading plugin: Whirlpool.dll
+[20:06:20]  
+[20:06:20]  ==================
+[20:06:20]  
+[20:06:20]   Whirlpool loaded
+[20:06:20]  
+[20:06:20]  ==================
+[20:06:20]  
+[20:06:20]   Loaded.
+[20:06:20]  Loading plugin: mysql.dll
+[20:06:20]  >> plugin.mysql: R41-4 successfully loaded.
+[20:06:20]   Loaded.
+[20:06:20]  Loading plugin: sscanf.dll
+[20:06:20] 
+
+[20:06:20]  ===============================
+
+[20:06:20]       sscanf plugin loaded.     
+
+[20:06:20]          Version:  2.8.3        
+
+[20:06:20]   (c) 2018 Alex "Y_Less" Cole  
+
+[20:06:20]  ===============================
+
+[20:06:20]   Loaded.
+[20:06:20]  Loading plugin: streamer.dll
+[20:06:20] 
+
+*** Streamer Plugin v2.9.4 by Incognito loaded ***
+
+[20:06:20]   Loaded.
+[20:06:20]  Loading plugin: bcrypt-samp.dll
+[20:06:20]   plugin.bcrypt v2.2.3 was loaded.
+[20:06:20]   plugin.bcrypt: 4 cores detected, 3 threads will be used.
+[20:06:20]   Loaded.
+[20:06:20]  Loaded 5 plugins.
+
+[20:06:20] 
+[20:06:20] Filterscripts
+[20:06:20] ---------------
+[20:06:20]   Loaded 0 filterscripts.
+
+[20:06:20] AMX (43614880) loaded
+[20:06:20]  
+[20:06:20]  
+[20:06:20]  
+[20:06:20]  ======================================= 
+[20:06:20]  |                                     | 
+[20:06:20]  |        YSI version 4.00.0001        | 
+[20:06:20]  |        By Alex "Y_Less" Cole        | 
+[20:06:20]  |                                     | 
+[20:06:20]  ======================================= 
+[20:06:20]  
+[20:06:21] Number of vehicle models: 89
+[20:06:21] plugin.bcrypt: Version check failed.
