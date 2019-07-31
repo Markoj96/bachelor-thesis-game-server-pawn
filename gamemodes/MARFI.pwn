@@ -395,7 +395,7 @@ main()
 #define TEXT_STEALTH_BLUE  												"{0077BB}"
 
 
-
+new Text3D:SaleVehicleLabels[MAX_VEHICLES]; // Labels for sale vehicles
 // ====================================================================================================== Forwards
 forward CheckPlayerData(playerid);
 forward OnPlayerDataChecked(playerid);
@@ -409,7 +409,7 @@ forward OnPasswordChecked(playerid);
 forward AntiRoleplayName(playerid, player_name[]);
 
 forward IsARentVehicle(vehicleid);
-forward IsASalesVehicle(vehicleid);
+forward IsASaleVehicle(vehicleid);
 forward IsAOwnedVehicle(vehicleid);
 forward IsARentVehicle(vehicleid);
 forward IsABike(vehicleid);
@@ -433,6 +433,7 @@ forward SaveVehicle(vehicleid);
 forward SetVehicleComponents(vehicleid);
 forward RemoveVehicleComponents(vehicleid);
 forward SaveVehicleComponents(vehicleid);
+forward GetVehiclePrice(vehicleid);
 forward GetVehicleName(vehicleid, model[], len);
 
 forward LoadVehiclesFuel();
@@ -1004,6 +1005,224 @@ public RemoveVehicleComponents(vehicleid)
 	return 1;
 }
 
+public GetVehiclePrice(vehicleid)
+{
+	new model = GetVehicleModel(vehicleid);
+	if(model == 400) return 3700; // LANDSTALKER
+	else if(model == 401) return 3000; // BRAVURA
+	else if(model == 402) return 5000; // BUFFALO
+	else if(model == 403) return 20000; // LINERUNER
+	else if(model == 404) return 3000; // PERENNIEL
+	else if(model == 405) return 3700; // SENTINEL
+	else if(model == 406) return 9999; // DUMPER (NO SALE)
+	else if(model == 407) return 9999; // FIRETRUCK (NO SALE)
+	else if(model == 408) return 9999; // TRASHMASTER (NO SALE)
+	else if(model == 409) return 10000; // STRETCH
+	else if(model == 410) return 3000; // MANANA
+	else if(model == 411) return 9999; // INFERNUS (DONATE)
+	else if(model == 412) return 2200; // VOODOO
+	else if(model == 413) return 2500; // PONY
+	else if(model == 414) return 9999; // MULE (NO SALE)
+	else if(model == 415) return 9999; // CHEETAH (DONATE)
+	else if(model == 416) return 9999; // AMBULANCE (NO SALE)
+	else if(model == 417) return 9999; // LEVIATHAN (HELICOPTER)
+	else if(model == 418) return 2900; // MOONBEAM
+	else if(model == 419) return 2200; // ESPERANTO
+	else if(model == 420) return 10000; // TAXI
+	else if(model == 421) return 4700; // WASHINGTON
+	else if(model == 422) return 3000; // BOBCAT
+	else if(model == 423) return 10000; // MR WHOOPE
+	else if(model == 424) return 7000; // BF INJECTION
+	else if(model == 425) return 9999; // HUNTER (NO SALE)
+	else if(model == 426) return 4300; // PREMIER
+	else if(model == 427) return 9999; // ENFORCER (NO SALE)
+	else if(model == 428) return 5000; // SECURICAR (NO SALE)
+	else if(model == 429) return 7500; // BANSHEE
+	else if(model == 430) return 9999; // BOAT
+	else if(model == 431) return 9999; // BUS (NO SALE)
+	else if(model == 432) return 9999; // TANK (NO SALE)
+	else if(model == 433) return 9999; // ARMY VEHICLE (NO SALE)
+	else if(model == 434) return 10000; // HOTKNIFE
+	else if(model == 435) return 9999; // TRAILER (NO SALE)
+	else if(model == 436) return 3000; // PREVION
+	else if(model == 437) return 9999; // BUS (NO SALE)
+	else if(model == 438) return 6000; // CABBIE (TAXI)
+	else if(model == 439) return 3000; // STALLION
+	else if(model == 440) return 2500; // RUMPO
+	else if(model == 441) return 9999; // RC BANDIT (NO SALE)
+	else if(model == 442) return 9999; // ROMERO
+	else if(model == 443) return 20000; // PACKER (NO SALE)
+	else if(model == 444) return 9999; // MONSTER (NO SALE)
+	else if(model == 445) return 4300; // ADMIRAL
+	else if(model == 446) return 9999; // BOAT
+	else if(model == 447) return 9999; // SEASPARROW (HELICOPTER)
+	else if(model == 448) return 9999; // PIZZA
+	else if(model == 449) return 9999; // TRAM (NO SALE)
+	else if(model == 450) return 9999; // TRAILER (NO SALE)
+	else if(model == 451) return 9999; // TURISMO (DONATE)
+	else if(model == 452) return 9999; // SPEEDER (BOAT)
+	else if(model == 453) return 9999; // REEFER (BOAT)
+	else if(model == 454) return 9999; // TROPIC (BOAT)
+	else if(model == 455) return 10000; // FLATBED (NO SALE)
+	else if(model == 456) return 10000; // YANKEE (NO SALE)
+	else if(model == 457) return 9999; // CADDY (NO SALE)
+	else if(model == 458) return 4700; // SOLAIR
+	else if(model == 459) return 9999; // TOPFUN VAN
+	else if(model == 460) return 9999; // SKIPPER (AIRPLANE)
+	else if(model == 461) return 3800; // PCJ-600 (BIKE)
+	else if(model == 462) return 1500; // FAGGIO (BIKE)
+	else if(model == 463) return 3700; // FREEWAY (BIKE)
+	else if(model == 464) return 9999; // RC BARON (NO SALE)
+	else if(model == 465) return 9999; // RC RAIDER (NO SALE)
+	else if(model == 466) return 3000; // GLENDALE
+	else if(model == 467) return 3000; // OCEANIC
+	else if(model == 468) return 3000; // SANCHEZ (BIKE)
+	else if(model == 469) return 9999; // SPARROW (HELICOPTER)
+	else if(model == 470) return 7000; // PATRIOT (NO SALE)
+	else if(model == 471) return 2700; // QUAD (BIKE)
+	else if(model == 472) return 9999; // COASTGUARD (BOAT)
+	else if(model == 473) return 9999; // DINGHY (BOAT)
+	else if(model == 474) return 3000; // HERMES
+	else if(model == 475) return 3000; // SABRE
+	else if(model == 476) return 9999; // RUSTLER (AIRPLANE)
+	else if(model == 477) return 9000; // ZR-350
+	else if(model == 478) return 3000; // WALTON
+	else if(model == 479) return 3800; // REGINA
+	else if(model == 480) return 6700; // COMET
+	else if(model == 481) return 650; // BMX (BIKE)
+	else if(model == 482) return 2700; // BURRITO
+	else if(model == 483) return 4000; // CAMPER
+	else if(model == 484) return 9999; // MARQUIS (BOAT)
+	else if(model == 485) return 9999; // BAGGAGE (NO SALE)
+	else if(model == 486) return 9999; // BAGGER (NO SALE)
+	else if(model == 487) return 9999; // MAVERICK (HELICOPTER)
+	else if(model == 488) return 9999; // SAN NEWS MAVERICK (NO SALE)
+	else if(model == 489) return 4000; // RANCHER
+	else if(model == 490) return 9999; // FBI RANCHER (NO SALE)
+	else if(model == 491) return 3300; // VIRGO
+	else if(model == 492) return 4500; // GREENVOD
+	else if(model == 493) return 9999; // JETMAX (BOAT)
+	else if(model == 494) return 9999; // HOTRING (NO SALE)
+	else if(model == 495) return 9000; // SANDKING
+	else if(model == 496) return 1800; // BLISTA COMPACT
+	else if(model == 497) return 9999; // POLICE MAVERICK (NO SALE)
+	else if(model == 498) return 9999; // BOXVILLE (NO SALE)
+	else if(model == 499) return 9999; // BENSON (NO SALE)
+	else if(model == 500) return 3300; // MESA
+	else if(model == 501) return 9999; // RC GOBLIN (NO SALE)
+	else if(model == 502) return 9999; // HOTRING (NO SALE)
+	else if(model == 503) return 9999; // HOTRING (NO SALE)
+	else if(model == 504) return 9999; // BLOODRING RANGER (NO SALE)
+	else if(model == 505) return 7000; // RANCHER
+	else if(model == 506) return 10000; // SUPER GT
+	else if(model == 507) return 4500; // ELEGANT
+	else if(model == 508) return 7500; // JOURNEY (NO SALE)
+	else if(model == 509) return 600; // BIKE (BIKE)
+	else if(model == 510) return 850; // MOUNTAIN BIKE (BIKE)
+	else if(model == 511) return 9999; // BEAGLE (AIRPLANE)
+	else if(model == 512) return 9999; // CROPDUSTER (AIRPLANE)
+	else if(model == 513) return 9999; // STUNTPLANE (AIRPLANE)
+	else if(model == 514) return 9999; // TANKER
+	else if(model == 515) return 9999; // ROADTRAIN
+	else if(model == 516) return 3500; // NEBULA
+	else if(model == 517) return 3500; // MAJESTIC
+	else if(model == 518) return 2500; // BUCCANEER
+	else if(model == 519) return 9999; // SHAMAL (AIRPLANE)
+	else if(model == 520) return 9999; // HYDRA (NO SALE)
+	else if(model == 521) return 4500; // FCR-900 (BIKE)
+	else if(model == 522) return 9999; // NRG (NO SALE)
+	else if(model == 523) return 9999; // PD BIKE (NO SALE)
+	else if(model == 524) return 9999; // TRUCK
+	else if(model == 525) return 9999; // TRUCK
+	else if(model == 526) return 3700; // FORTUNE
+	else if(model == 527) return 3700; // CADRONA
+	else if(model == 528) return 9999; // FBI TRUCK (NO SALE)
+	else if(model == 529) return 4000; // WILLARD
+	else if(model == 530) return 9999; // FORKLIFT (NO SALE)
+	else if(model == 531) return 9999; // TRACTOR (NO SALE)
+	else if(model == 532) return 9999; // COMBINE (NO SALE)
+	else if(model == 533) return 2500; // FELTZER
+	else if(model == 534) return 2800; // REMINGTON
+	else if(model == 535) return 3100; // SLAMVAN
+	else if(model == 536) return 3500; // BLADE
+	else if(model == 537) return 9999; // TRAIN (NO SALE)
+	else if(model == 538) return 9999; // TRAIN (NO SALE)
+	else if(model == 539) return 10000; // VORTEX
+	else if(model == 540) return 2700; // VINCENT
+	else if(model == 541) return 9999; // BULLET (DONATE)
+	else if(model == 542) return 3200; // CLOVER
+	else if(model == 543) return 3000; // SADLER
+	else if(model == 544) return 9999; // FIRETRUCK (NO SALE)
+	else if(model == 545) return 2000; // HUSTLER
+	else if(model == 546) return 3000; // INTRUDER
+	else if(model == 547) return 3000; // PRIMO
+	else if(model == 548) return 9999; // CARGOBOB (HELICOPTER)
+	else if(model == 549) return 3900; // TAMPA
+	else if(model == 550) return 3000; // SUNRISE
+	else if(model == 551) return 19000; // MERIT
+	else if(model == 552) return 20000; // UTILITY VAN (NO SALE)
+	else if(model == 553) return 200; // NEVADA (AIRPLANE)
+	else if(model == 554) return 3300; // YOSEMITE
+	else if(model == 555) return 3000; // WINDSOR
+	else if(model == 556) return 40000; // MONSTER A (NO SALE)
+	else if(model == 557) return 40000; // MONSTER B (NO SALE)
+	else if(model == 558) return 6000; // URANUS
+	else if(model == 559) return 7000; // JESTER
+	else if(model == 560) return 9500; // STRATUM
+	else if(model == 561) return 6500; // SULTAN
+	else if(model == 562) return 10000; // ELEGY
+	else if(model == 563) return 200; // RAINDANCE (HELICOPTER)
+	else if(model == 564) return 500; // RC TIGER (NO SALE)
+	else if(model == 565) return 7500; // FLASH
+	else if(model == 566) return 35000; // TAHOMA
+	else if(model == 567) return 4000; // SAVANNA
+	else if(model == 568) return 10000; // BANDITO
+	else if(model == 569) return 5000; // FREIGHT FLAT TRAILER (NO SALE)
+	else if(model == 570) return 5000; // STREAK TRAILER (NO SALE)
+	else if(model == 571) return 3000; // KART
+	else if(model == 572) return 15000; // MOWER (NO SALE)
+	else if(model == 553) return 40000; // DUNE
+	else if(model == 574) return 15000; // SWEEPER (NO SALE)
+	else if(model == 575) return 19000; // BROADWAY
+	else if(model == 576) return 19000; // TORNADO
+	else if(model == 577) return 200; // AT400 (AIRPLANE)
+	else if(model == 578) return 5000; // DFT-30 (NO SALE)
+	else if(model == 579) return 17000; // HUNTLEY
+	else if(model == 580) return 4000; // STAFFORD
+	else if(model == 581) return 3200; // BF-400 (BIKE)
+	else if(model == 582) return 20000; // NEWSVAN (NO SALE)
+	else if(model == 583) return 15000; // TUG (NO SALE)
+	else if(model == 584) return 35000; // PETROL TRAILER (NO SALE)
+	else if(model == 585) return 35000; // EMPEROR
+	else if(model == 586) return 2700; // WAYFARER (BIKE)
+	else if(model == 587) return 3500; // EUROS
+	else if(model == 588) return 10000; // HOTDOG
+	else if(model == 589) return 3000; // CLUB
+	else if(model == 590) return 35000; // FREIGHT BOX TRAILER (NO SALE)
+	else if(model == 591) return 35000; // ARTICLE TRAILER (NO SALE)
+	else if(model == 592) return 200; // ANDROMADA (AIRPLANE)
+	else if(model == 593) return 200; // DODO
+	else if(model == 594) return 500; // RC CAM (NO SALE)
+	else if(model == 595) return 200; // LAUNCH (BOAT)
+	else if(model == 596) return 25000; // POLICE CAR (LSPD) (NO SALE)
+	else if(model == 597) return 25000; // POLICE CAR (SFPD) (NO SALE)
+	else if(model == 598) return 25000; // POLICE CAR (LVPD) (NO SALE)
+	else if(model == 599) return 25000; // POLICE RANGER (NO SALE)
+	else if(model == 600) return 26000; // PICADOR
+	else if(model == 601) return 40000; // S.W.A.T. (NO SALE)
+	else if(model == 602) return 3700; // ALPHA
+	else if(model == 603) return 4500; // PHOENIX
+	else if(model == 604) return 9000; // GLENDALE SHIT (NO SALE)
+	else if(model == 605) return 9000; // SADLER SHIT (NO SALE)
+	else if(model == 606) return 9000; // BAGGAGE TRAILER A (NO SALE)
+	else if(model == 607) return 9000; // BAGGAGE TRAILER B (NO SALE)
+	else if(model == 608) return 9000; // TUG STAIRS TRAILER (NO SALE)
+	else if(model == 609) return 22000; // BOXVILLE (NO SALE)
+	else if(model == 610) return 9000; // FARM TRAILER (NO SALE)
+	else if(model == 611) return 9000; // UTILITY TRAILER  (NO SALE)
+	else return 0;
+}
+
 public GetVehicleName(vehicleid, model[], len)
 {
 	new model_id = GetVehicleModel(vehicleid);
@@ -1265,7 +1484,7 @@ public AntiRoleplayName(playerid, player_name[])
 	return 1;
 }
 
-public IsASalesVehicle(vehicleid)
+public IsASaleVehicle(vehicleid)
 {
 	for(new i = 0; i < sizeof(sale_vehicles); i++)
 	{
@@ -1541,6 +1760,125 @@ public OnGameModeInit()
 	rent_vehicles[22] = AddStaticVehicleEx(462,1175.4000000,-1337.6000000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	rent_vehicles[23] = AddStaticVehicleEx(462,1175.4000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	GlobalVehiclesCounter += 24;
+	
+	//------------------------------------------------------------------------- > SALES VEHICLES
+	//------------------------------------------------------------------------- > COUNT AND SHUTZ
+	sale_vehicles[0] = AddStaticVehicleEx(580,2148.7000000,-1134.1000000,25.5000000,270.0000000, 1, 1, 15); //Stafford
+	sale_vehicles[1] = AddStaticVehicleEx(566,2148.7002000,-1143.2002000,25.0000000,270.0000000, 1, 1, 15); //Tahoma
+	sale_vehicles[2] = AddStaticVehicleEx(529,2148.7002000,-1148.2002000,24.2000000,270.0000000, 1, 1, 15); //Willard
+	sale_vehicles[3] = AddStaticVehicleEx(445,2148.7002000,-1157.2000000,23.8000000,270.0000000, 1, 1, 15); //Admiral
+	sale_vehicles[4] = AddStaticVehicleEx(516,2148.7002000,-1153.0000000,23.7000000,270.0000000, 1, 1, 15); //Nebula
+	sale_vehicles[5] = AddStaticVehicleEx(401,2148.7002000,-1194.4000000,23.7000000,270.0000000, 1, 1, 15); //Bravura
+	sale_vehicles[6] = AddStaticVehicleEx(410,2148.7002000,-1189.7002000,23.6000000,270.0000000, 1, 1, 15); //Manana
+	sale_vehicles[7] = AddStaticVehicleEx(436,2148.7002000,-1198.9004000,23.8000000,270.0000000, 1, 1, 15); //Previon
+	sale_vehicles[8] = AddStaticVehicleEx(413,2161.3000000,-1148.3000000,24.6000000,90.0000000, 1, 1, 15); //Pony
+	sale_vehicles[9] = AddStaticVehicleEx(418,2161.3000000,-1158.1000000,24.0000000,90.0000000, 1, 1, 15); //Moonbeam
+	sale_vehicles[10] = AddStaticVehicleEx(482,2161.3000000,-1152.9000000,24.1000000,90.0000000, 1, 1, 15); //Burrito
+	sale_vehicles[11] = AddStaticVehicleEx(554,2161.2998000,-1168.1000000,24.0000000,90.0000000, 1, 1, 15); //Yosemite
+	sale_vehicles[12] = AddStaticVehicleEx(543,2161.2998000,-1173.0000000,23.7523200,90.0000000, 1, 1, 15); //Sadler
+	sale_vehicles[13] = AddStaticVehicleEx(546,2148.7000000,-1138.3000000,25.3000000,270.0000000, 1, 1, 15); //Intruder
+	sale_vehicles[14] = AddStaticVehicleEx(422,2161.2998000,-1177.9004000,23.9000000,90.0000000, 1, 1, 15); //Bobcat
+	sale_vehicles[15] = AddStaticVehicleEx(404,2161.2998000,-1192.4000000,23.7000000,90.0000000, 1, 1, 15); //Perrenial
+	sale_vehicles[16] = AddStaticVehicleEx(479,2161.2998000,-1187.5000000,23.7000000,90.0000000, 1, 1, 15); //Regina
+	sale_vehicles[17] = AddStaticVehicleEx(517,2148.7002000,-1175.5996000,23.8000000,270.0000000, 1, 1, 15); //Majestic
+	sale_vehicles[18] = AddStaticVehicleEx(491,2148.7002000,-1170.8000000,23.7000000,270.0000000, 1, 1, 15); //Virgo
+	sale_vehicles[19] = AddStaticVehicleEx(526,2148.7002000,-1180.2000000,23.7000000,270.0000000, 1, 1, 15); //Fortune
+	sale_vehicles[20] = AddStaticVehicleEx(423,2120.5000000,-1128.5996000,25.0000000,315.0000000, 1, 1, 15); //Mr Whoopee
+	sale_vehicles[21] = AddStaticVehicleEx(588,2120.5000000,-1134.5000000,25.3000000,315.0000000, 1, 1, 15); //Hotdog
+	sale_vehicles[22] = AddStaticVehicleEx(420,2134.4004000,-1128.5996000,25.5000000,45.0000000, 1, 1, 15); //Taxi
+	sale_vehicles[23] = AddStaticVehicleEx(438,2134.4004000,-1134.5000000,25.9000000,45.0000000, 1, 1, 15); //Cabbie
+	//------------------------------------------------------------------------- > WANG CARS
+	sale_vehicles[24] = AddStaticVehicleEx(542,-1946.7998000,273.7002000,35.3000000,135.0000000, 2, 2, 15); //Clover
+	sale_vehicles[25] = AddStaticVehicleEx(475,-1946.7002000,269.0996100,35.4000000,135.0000000, 2, 2, 15); //Sabre
+	sale_vehicles[26] = AddStaticVehicleEx(545,-1946.7002000,264.7002000,35.4000000,135.0000000, 2, 2, 15); //Hustler
+	sale_vehicles[27] = AddStaticVehicleEx(533,-1946.7998000,260.0996100,35.3000000,135.0000000, 2, 2, 15); //Feltzer
+	sale_vehicles[28] = AddStaticVehicleEx(496,-1960.7002000,256.2998000,35.3000000,315.0000000, 2, 2, 15); //Blista Compact
+	sale_vehicles[29] = AddStaticVehicleEx(589,-1960.7002000,261.7002000,35.2000000,315.0000000, 2, 2, 15); //Club
+	sale_vehicles[30] = AddStaticVehicleEx(500,-1960.7002000,269.1000100,35.7000000,315.0000000, 2, 2, 15); //Mesa
+	sale_vehicles[31] = AddStaticVehicleEx(579,-1960.7002000,274.7999900,35.6000000,315.0000000, 2, 2, 15); //Huntley
+	sale_vehicles[32] = AddStaticVehicleEx(489,-1960.7002000,283.0996100,35.7498200,315.0000000, 2, 2, 15); //Rancher
+	sale_vehicles[33] = AddStaticVehicleEx(400,-1960.7002000,288.9003900,35.6000000,315.0000000, 2, 2, 15); //Landstalker
+	sale_vehicles[34] = AddStaticVehicleEx(540,-1960.7002000,299.8999900,35.6000000,225.0000000, 2, 2, 15); //Vincent
+	sale_vehicles[35] = AddStaticVehicleEx(412,-1947.0000000,273.5000000,41.0000000,135.0000000, 2, 2, 15); //Voodoo
+	sale_vehicles[36] = AddStaticVehicleEx(419,-1947.0000000,268.7002000,41.0000000,135.0000000, 2, 2, 15); //Esperanto
+	sale_vehicles[37] = AddStaticVehicleEx(518,-1947.0000000,264.0996100,40.8000000,135.0000000, 2, 2, 15); //Buccaneer
+	sale_vehicles[38] = AddStaticVehicleEx(534,-1947.0000000,259.5000000,40.9000000,135.0000000, 2, 2, 15); //Remington
+	sale_vehicles[39] = AddStaticVehicleEx(535,-1956.1000000,256.2000100,40.9000000,0.0000000, 2, 2, 15); //Slamvan
+	sale_vehicles[40] = AddStaticVehicleEx(536,-1953.4004000,293.4003900,40.9000000,45.0000000, 2, 2, 15); //Blade
+	sale_vehicles[41] = AddStaticVehicleEx(567,-1956.0000000,304.2998000,41.0000000,225.0000000, 2, 2, 15); //Savanna
+	sale_vehicles[42] = AddStaticVehicleEx(550,-1956.0000000,264.5000000,41.0000000,315.0000000, 2, 2, 15); //Sunrise
+	//------------------------------------------------------------------------- > OTTO'S CARS
+	sale_vehicles[43] = AddStaticVehicleEx(402,-1647.5000000,1206.0000000,13.6000000,45.0000000, 3, 3, 15); //Buffalo
+	sale_vehicles[44] = AddStaticVehicleEx(477,-1665.3000000,1224.3000000,13.5000000,180.0000000, 3, 3, 15); //ZR-350
+	sale_vehicles[45] = AddStaticVehicleEx(506,-1679.4004000,1209.7002000,13.5000000,267.9950000, 3, 3, 15); //Super GT
+	sale_vehicles[46] = AddStaticVehicleEx(603,-1656.8000000,1215.5000000,13.7000000,130.0000000, 3, 3, 15); //Phoenix
+	sale_vehicles[47] = AddStaticVehicleEx(429,-1667.5000000,1216.0000000,7.0000000,250.0000000, 3, 3, 15); //Banshee
+	sale_vehicles[48] = AddStaticVehicleEx(480,-1669.1000000,1206.1000000,7.1000000,320.0000000, 3, 3, 15); //Comet
+	sale_vehicles[49] = AddStaticVehicleEx(560,-1679.3000000,1210.0000000,21.0000000,270.0000000, 3, 3, 15); //Sultan
+	sale_vehicles[50] = AddStaticVehicleEx(562,-1665.7000000,1223.7000000,20.9000000,180.0000000, 3, 3, 15); //Elegy
+	sale_vehicles[51] = AddStaticVehicleEx(565,-1646.5000000,1205.0000000,20.8000000,74.9980000, 3, 3, 15); //Flash
+	sale_vehicles[52] = AddStaticVehicleEx(559,-1664.4004000,1205.0996000,20.9000000,0.0000000, 3, 3, 15); //Jester
+	sale_vehicles[53] = AddStaticVehicleEx(558,-1655.0000000,1213.2000000,20.9000000,180.0000000, 3, 3, 15); //Uranus
+	sale_vehicles[54] = AddStaticVehicleEx(561,-1658.7000000,1205.6000000,21.1000000,0.0000000, 3, 3, 15); //Stratum
+	//------------------------------------------------------------------------- > DONATE CARS
+	sale_vehicles[55] = AddStaticVehicleEx(411,564.2999900,-1289.5000000,17.0000000,0.0000000, 6, 6, 15); //Infernus
+	sale_vehicles[56] = AddStaticVehicleEx(415,551.2000100,-1263.8000000,17.1000000,215.0000000, 6, 6, 15); //Cheetah
+	sale_vehicles[57] = AddStaticVehicleEx(451,554.2999900,-1289.5000000,17.0000000,0.0000000, 6, 6, 15); //Turismo
+	sale_vehicles[58] = AddStaticVehicleEx(541,543.2000100,-1270.1000000,16.9000000,219.9960000, 6, 6, 15); //Bullet
+	sale_vehicles[59] = AddStaticVehicleEx(495,544.2999900,-1289.5000000,17.8000000,0.0000000, 6, 6, 15); //Sandking
+	//------------------------------------------------------------------------- > BIKES
+	sale_vehicles[60] = AddStaticVehicleEx(462,1904.8000000,-1357.9000000,13.2000000,135.0000000, 16, 16, 15); //Faggio
+	sale_vehicles[61] = AddStaticVehicleEx(463,1909.1000000,-1362.9000000,13.1000000,135.0000000, 16, 16, 15); //Freeway
+	sale_vehicles[62] = AddStaticVehicleEx(468,1913.1000000,-1358.8000000,13.3000000,134.9950000, 16, 16, 15); //Sanchez
+	sale_vehicles[63] = AddStaticVehicleEx(471,1911.7000000,-1365.5000000,13.1000000,135.0000000, 16, 16, 15); //Quad
+	sale_vehicles[64] = AddStaticVehicleEx(521,1920.0000000,-1365.7000000,13.2000000,135.0000000, 16, 16, 15); //FCR-900
+	sale_vehicles[65] = AddStaticVehicleEx(522,1908.9000000,-1354.0000000,13.2000000,180.0000000, 6, 6, 15); //NRG-500
+	sale_vehicles[66] = AddStaticVehicleEx(581,1915.6000000,-1361.3000000,13.2000000,135.0000000, 16, 16, 15); //BF-400
+	sale_vehicles[67] = AddStaticVehicleEx(586,1906.7000000,-1360.5000000,13.1000000,135.0000000, 16, 16, 15); //Wayfarer
+	sale_vehicles[68] = AddStaticVehicleEx(461,1917.9000000,-1363.6000000,13.2000000,135.0000000, 16, 16, 15); //PCJ-600
+	sale_vehicles[69] = AddStaticVehicleEx(481,1883.5000000,-1369.6000000,13.2000000,135.0000000, 16, 16, 15); //BMX
+	sale_vehicles[70] = AddStaticVehicleEx(510,1887.6000000,-1369.7000000,13.3000000,135.0000000, 16, 16, 15); //Mountain Bike
+	//------------------------------------------------------------------------- > BOATS
+	sale_vehicles[71] = AddStaticVehicleEx(493,-2231.7002000,2392.6006000,0.6637900,45.0000000, 6, 6, 15); //Jetmax
+	sale_vehicles[72] = AddStaticVehicleEx(452,-2211.3000000,2413.2000000,0.0000000,45.0000000, 6, 6, 15); //Speeder
+	sale_vehicles[73] = AddStaticVehicleEx(453,-2260.7000000,2421.1001000,0.0000000,225.0000000, 1, 1, 15); //Reefer
+	sale_vehicles[74] = AddStaticVehicleEx(454,-2252.3000000,2429.3000000,0.0000000,225.0000000, 1, 1, 15); //Tropic
+	sale_vehicles[75] = AddStaticVehicleEx(595,-2238.3000000,2440.5000000,0.0000000,225.0000000, 1, 1, 15); //Launch
+	sale_vehicles[76] = AddStaticVehicleEx(484,-2232.7000000,2448.8000000,0.0000000,225.0000000, 1, 1, 15); //Marquis
+	sale_vehicles[77] = AddStaticVehicleEx(473,-2204.8999000,2420.2000000,0.0000000,45.0000000, 1, 1, 15); //Dinghy
+	sale_vehicles[78] = AddStaticVehicleEx(446,-2224.5000000,2400.2002000,0.0000000,45.0000000, 1, 1, 15); //Squalo
+	sale_vehicles[79] = AddStaticVehicleEx(417,-2319.5000000,2323.8000000,0.0000000,180.0000000, 1, 1, 15); //Leviathan
+	sale_vehicles[80] = AddStaticVehicleEx(447,-2319.5000000,2309.5000000,0.0000000,180.0000000, 1, 1, 15); //Seasparrow
+	sale_vehicles[81] = AddStaticVehicleEx(460,-2319.3999000,2297.6001000,0.0000000,180.0000000, 1, 1, 15); //Skimmer
+	//------------------------------------------------------------------------- > AIRPLANES
+	sale_vehicles[82] = AddStaticVehicleEx(469,290.2002000,2535.7002000,16.9000000,180.0000000, 1, 1, 15); //Sparrow
+	sale_vehicles[83] = AddStaticVehicleEx(476,325.7998000,2538.1006000,17.5567800,180.0000000, 1, 1, 15); //Rustler
+	sale_vehicles[84] = AddStaticVehicleEx(512,290.7002000,2474.2002000,17.1000000,0.0000000, 1, 1, 15); //Cropdust
+	sale_vehicles[85] = AddStaticVehicleEx(513,324.5996100,2474.7002000,17.3000000,0.0000000, 1, 1, 15); //Stunt
+	sale_vehicles[86] = AddStaticVehicleEx(593,209.9003900,2474.2002000,17.0000000,0.0000000, 1, 1, 15); //Dodo
+	sale_vehicles[87] = AddStaticVehicleEx(511,244.5000000,2471.5000000,18.0000000,0.0000000, 1, 1, 15); //Beagle
+	sale_vehicles[88] = AddStaticVehicleEx(487,365.1000100,2536.5000000,16.9000000,180.0000000, 6, 6, 15); //Maverick
+	GlobalVehiclesCounter += 89;
+	
+	// Textdraws for vehicles on sale
+	for(new i = 0; i < MAX_VEHICLES; i++)
+	{
+	    if(IsASaleVehicle(i))
+	    {
+	        new Float:X, Float:Y, Float:Z, model_name[32], message[512];
+			
+			GetVehiclePos(i, X, Y, Z);
+			GetVehicleName(i, model_name, sizeof(model_name));
+			
+	        format(message, sizeof(message), "Vozilo na prodaju! \n "TEXT_COLOR_RED"Model"TEXT_COLOR_WHITE": %s ( %d ) \n "TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d$ \n Da kupite ovo vozilo \n udjite u njega i kucajte \n "TEXT_COLOR_RED"/v buy", model_name, GetVehicleModel(i), GetVehiclePrice(i));
+			
+			SaleVehicleLabels[i] = Create3DTextLabel(message, -1, X, Y, Z, 10, 0, 0);
+	        Attach3DTextLabelToVehicle(SaleVehicleLabels[i], i, 0, 0, 0);
+		}
+	}
+	
+	
+	
 	
 	// Load owned vehicles
 	LoadVehicles(); 
@@ -1855,7 +2193,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		
 		if(!IsPlayerInAnyVehicle(playerid)) return 1;
 		VehicleID = GetPlayerVehicleID(playerid);
-		if(IsASalesVehicle(VehicleID)) return 1;
+		if(IsASaleVehicle(VehicleID)) return 1;
 		if(IsARentVehicle(VehicleID) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != VehicleID)) return 1;
 		if(VehicleEngine[VehicleID] == 1) return 1;
 
@@ -2192,6 +2530,28 @@ YCMD:avehicle(playerid, params[], help)
 	return 1;
 }*/
 
+YCMD:amoney(playerid, params[], help)
+{
+	#pragma unused help
+	new player, money, player_name[MAX_PLAYER_NAME], message[128];
+	//if((PlayerInfo[playerid][pAdmin] < 6) || (PlayerInfo[playerid][pAdmin] == 9999)) return SendClientMessage(playerid, BOJA_CRVENA, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /amoney [id/deo imena] [kolicina]");
+
+	PlayerInfo[player][Money] += money;
+	GivePlayerMoney(player, money);
+	
+	SavePlayer(player);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(message, sizeof(message), "Admin %s Vam je dao %d$.", player_name, money);
+	SendClientMessage(player, COLOR_GREEN, message);
+
+	GetPlayerName(player, player_name, sizeof(player_name));
+	format(message, sizeof(message), "Dali ste igracu %s %d$.", player_name, money);
+	SendClientMessage(playerid, COLOR_GREEN, message);
+	return 1;
+}
+
 // Command that respawns all rent vehicles
 // TO:DO - Check if player is admin
 YCMD:respawnujrentvozila(playerid, params[], help)
@@ -2271,7 +2631,7 @@ YCMD:motor(playerid, params[], help)
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
 	VehicleID = GetPlayerVehicleID(playerid);
 	GetVehicleParamsEx(VehicleID, engine, lights, alarm, doors, bonnet, boot, objective);
-	if(IsASalesVehicle(VehicleID)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
+	if(IsASaleVehicle(VehicleID)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
 	if(IsARentVehicle(VehicleID) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != VehicleID)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
 	if(VehicleFuel[VehicleID] == 0) return SendClientMessage(playerid, -1, "GRESKA: Rezervoar je prazan!");
 	if(RefuellingVehicle[playerid] == 1) return SendClientMessage(playerid, -1, "GRESKA: Sipanje goriva u toku!");
@@ -2425,6 +2785,65 @@ YCMD:kaciga(playerid, params[], help)
 	}
 	return 1;
 }
+
+YCMD:v(playerid, params[], help)
+{
+	new command[16];
+	if(sscanf(params, "s[16]", command))
+	{
+		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell[1-3], sellto, park[1-3], lock[1-3], find[1-3], color[1-3], paintjob[1-3], save[1-3], menu");
+	}
+	else
+	{
+		if(strcmp(command, "buy", true) == 0)
+		{
+            new player_name[MAX_PLAYER_NAME], vehicle_id, vehicle_model, model_name[64], new_vehicle_id;
+			
+			GetPlayerName(playerid, player_name, sizeof(player_name));
+			
+			vehicle_id = GetPlayerVehicleID(playerid);
+			vehicle_model = GetVehicleModel(vehicle_id);
+			new_vehicle_id = GlobalVehiclesCounter++;
+			
+			if(!IsASaleVehicle(vehicle_id)) return SendClientMessage(playerid, COLOR_WHITE, "GRESKA: Ovo vozilo nije na prodaju!");
+			//if((vehicle_id == 411 || vehicle_id == 415 || vehicle_id == 451 || vehicle_id == 495 || vehicle_id == 522 || vehicle_id == 541) && PlayerInfo[playerid][Donator] == 9999) return SendClientMessage(playerid, COLOR_WHITE, "GRESKA: Ne mozete kupiti ovo vozilo! Niste donator!");
+			
+			if(GetPlayerMoney(playerid) < GetVehiclePrice(vehicle_id)) return SendClientMessage(playerid, COLOR_WHITE, "GRESKA: Nemate dovoljno novca da bi kupili ovo vozilo!");
+			GetVehicleName(vehicle_model, model_name, sizeof(model_name));
+
+			VehicleInfo[new_vehicle_id][Owned] = 1;
+			VehicleInfo[new_vehicle_id][Owner] = PlayerInfo[playerid][ID];
+			VehicleInfo[new_vehicle_id][Model] = vehicle_model;
+			VehicleInfo[new_vehicle_id][ParkX] = 1590.59;
+			VehicleInfo[new_vehicle_id][ParkY] = -2319.39;
+			VehicleInfo[new_vehicle_id][ParkZ] = 13.3828;
+			VehicleInfo[new_vehicle_id][ParkA] = 80;
+			VehicleInfo[new_vehicle_id][Color1] = 1;
+			VehicleInfo[new_vehicle_id][Color2] = 1;
+			VehicleInfo[new_vehicle_id][Paintjob] = 9999;
+			VehicleInfo[new_vehicle_id][Locked] = 1;
+			VehicleInfo[new_vehicle_id][Registration] = 0;
+			
+			InsertVehicle(PlayerInfo[playerid][ID], vehicle_model);
+			owned_vehicles[new_vehicle_id] = CreateVehicle(vehicle_model, VehicleInfo[new_vehicle_id][ParkX], VehicleInfo[new_vehicle_id][ParkY], VehicleInfo[new_vehicle_id][ParkZ], VehicleInfo[new_vehicle_id][ParkA], VehicleInfo[new_vehicle_id][Color1], VehicleInfo[new_vehicle_id][Color2], -1);
+			
+			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste vozilo. Vozilo je na parkingu, preuzmite ga.");
+            
+			PlayerInfo[playerid][Money] -= GetVehiclePrice(vehicle_id);
+			GivePlayerMoney(playerid, -GetVehiclePrice(vehicle_id));
+			
+			SavePlayer(playerid);
+		}
+		/*else
+		{
+		    SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [komanda]");
+			SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell[1-3], sellto, park[1-3], lock[1-3], find[1-3], color[1-3], paintjob[1-3], save[1-3], menu");
+		}*/
+	}
+	return 1;
+}
+
 
 // Timers
 task TimerPerSec[1000]() 
