@@ -3417,6 +3417,59 @@ YCMD:h(playerid, params[], help)
 
 			return 1;
 		}
+		else if(strcmp(command, "sell", true) == 0)
+		{
+			new id, message[256];
+
+			id = IsPlayerNearHouseEnter(playerid);
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nije vasa kuca!");
+
+			HouseInfo[id][Owned] = 0;
+			HouseInfo[id][Locked] = 1;
+			HouseInfo[id][Slot1] = 9999;
+			HouseInfo[id][Slot1_ammo] = 0;
+			HouseInfo[id][Slot2] = 9999;
+			HouseInfo[id][Slot2_ammo] = 0;
+			HouseInfo[id][Slot3] = 9999;
+			HouseInfo[id][Slot3_ammo] = 0;
+			HouseInfo[id][Materials] = 0;
+			HouseInfo[id][Drugs] = 0;
+
+			DestroyPickup(HouseInfo[id][Icon]);
+			HouseInfo[id][Icon] = CreatePickup(1273, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
+
+			PlayerInfo[playerid][Money] += HouseInfo[id][Price]/2;
+			GivePlayerMoney(playerid, (HouseInfo[id][Price]/2));
+
+			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste kucu.");
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /kupikucu", HouseInfo[id][Price]);
+			Update3DTextLabelText(HouseLabelArray[id], -1, message);
+
+			SaveHouse(id);
+			SavePlayer(playerid);
+			return 1;
+		}
+		else if(strcmp(command, "lock", true) == 0)
+		{
+			new id = IsPlayerNearHouseEnter(playerid);
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu vase kuce!");
+			if(HouseInfo[id][Locked] == 1)
+			{
+				HouseInfo[id][Locked] = 0;
+				GameTextForPlayer(playerid, "Kuca ~g~otkljucana!", 3000, 3);
+				SaveHouse(id);
+			}
+			else
+			{
+				HouseInfo[id][Locked] = 1;
+				GameTextForPlayer(playerid, "Kuca ~r~zakljucana!", 3000, 3);
+				SaveHouse(id);
+			}
+
+			return 1;
+		}
 		/* else
 		{
 		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
