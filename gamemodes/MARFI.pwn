@@ -395,9 +395,6 @@ main()
 #define TEXT_STEALTH_GREEN  											"{33DD11}"
 #define TEXT_STEALTH_PINK  												"{FF22EE}"
 #define TEXT_STEALTH_BLUE  												"{0077BB}"
-
-
-new Text3D:SaleVehicleLabels[MAX_VEHICLES]; // Labels for sale vehicles
 // ====================================================================================================== Forwards
 forward CheckPlayerData(playerid);
 forward OnPlayerDataChecked(playerid);
@@ -443,11 +440,17 @@ forward VehicleStopOffer(playerid, target);
 forward LoadVehiclesFuel();
 forward StartVehicleEngine(playerid, vehicleid);
 forward CheckVehicleFuel();
+
+forward LoadHouses();
+forward OnHousesLoaded();
+forward InsertHouse(house_owner, house_price, house_enterX, house_enterY, house_enterZ, house_enterA, house_exitX, house_exitY, house_exitZ, house_exitA, house_outside_interior, house_outside_virtual_world, house_inside_interior, house_inside_virtual_world, house_icon); 
+forward SaveHouse(house_id);
 // ====================================================================================================== Variables
 new MySQL:mysql;
 
 // Server counters
 new GlobalVehiclesCounter = 1;
+new GlobalHousesCounter = 1;
 new OwnedVehiclesCounter = 0;
 // Textdraws
 new Text:FuelTD[MAX_PLAYERS];
@@ -503,6 +506,38 @@ enum VehicleData
 };
 new VehicleInfo[MAX_VEHICLES][VehicleData];
 
+// House TABLE
+enum HouseData
+{
+	ID,
+	Owned,
+	Owner,
+	Price,
+	Locked,
+	Float:EnterX,
+	Float:EnterY,
+	Float:EnterZ,
+	Float:EnterA,
+	Float:ExitX,
+	Float:ExitY,
+	Float:ExitZ,
+	Float:ExitA,
+	OutsideInterior,
+	OutsideVirtualWorld,
+	InsideInterior,
+	InsideVirtualWorld,
+	Icon,
+	Slot1,
+	Slot1_ammo,
+	Slot2,
+	Slot2_ammo,
+	Slot3,
+	Slot3_ammo,
+	Materials,
+	Drugs
+}
+new HouseInfo[700][HouseData];
+
 // Player
 new IsPlayerRentingVehicle[MAX_PLAYERS];
 new RentedVehicle[MAX_PLAYERS];
@@ -528,6 +563,9 @@ new rent_vehicles[24];
 new sale_vehicles[89];
 new owned_vehicles[sizeof(VehicleInfo)];
 
+
+new Text3D:SaleVehicleLabels[MAX_VEHICLES]; // Labels for sale vehicles
+new Text3D:HouseLabelArray[sizeof(HouseInfo)]; // Labels for houses
 // ====================================================================================================== Functions (Public & Stock)
 // Money AntiCheat
 stock SafeGivePlayerMoney(playerid, money)
@@ -631,6 +669,16 @@ stock GetVehicleRegistration(vehicleid)
 	    case 0: registration = "Ne";
 	}
 	return registration;
+}
+
+stock IsPlayerNearHouseEnter(playerid)
+{
+    for(new i = 0; i < sizeof(HouseInfo); i++)
+    {
+        if(IsPlayerInRangeOfPoint(playerid, 5.0, HouseInfo[i][EnterX], HouseInfo[i][EnterY], HouseInfo[i][EnterZ])) return i;
+    }
+	
+    return -1;
 }
 
 public CheckPlayerData(playerid)
@@ -1482,6 +1530,179 @@ stock GetVehicleOwnerName(vehicleid)
 	return player_name;
 }
 
+public LoadHouses()
+{
+	new query[256];
+	
+	mysql_format(mysql, query, sizeof(query), "SELECT * FROM houses");
+	mysql_tquery(mysql, query, "OnHousesLoaded");
+	
+	return 0;
+}
+
+public OnHousesLoaded()
+{
+	if(cache_num_rows() > 0)
+	{
+		for(new i = 0; i < cache_num_rows(); i++)
+		{
+			cache_get_value_name_int(i, "id", HouseInfo[GlobalHousesCounter][ID]);
+			cache_get_value_name_int(i, "owned", HouseInfo[GlobalHousesCounter][Owned]);
+			cache_get_value_name_int(i, "user_id", HouseInfo[GlobalHousesCounter][Owner]);
+			cache_get_value_name_int(i, "price", HouseInfo[GlobalHousesCounter][Price]);
+			cache_get_value_name_int(i, "locked", HouseInfo[GlobalHousesCounter][Locked]);
+			cache_get_value_name_float(i, "enterX", HouseInfo[GlobalHousesCounter][EnterX]);
+			cache_get_value_name_float(i, "enterY", HouseInfo[GlobalHousesCounter][EnterY]);
+			cache_get_value_name_float(i, "enterZ", HouseInfo[GlobalHousesCounter][EnterZ]);
+			cache_get_value_name_float(i, "enterA", HouseInfo[GlobalHousesCounter][EnterA]);
+			cache_get_value_name_float(i, "exitX", HouseInfo[GlobalHousesCounter][ExitX]);
+			cache_get_value_name_float(i, "exitY", HouseInfo[GlobalHousesCounter][ExitY]);
+			cache_get_value_name_float(i, "exitZ", HouseInfo[GlobalHousesCounter][ExitZ]);
+			cache_get_value_name_float(i, "exitA", HouseInfo[GlobalHousesCounter][ExitA]);
+			cache_get_value_name_int(i, "outside_interior", HouseInfo[GlobalHousesCounter][OutsideInterior]);
+			cache_get_value_name_int(i, "outside_virtual_world", HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
+			cache_get_value_name_int(i, "inside_interior", HouseInfo[GlobalHousesCounter][InsideInterior]);
+			cache_get_value_name_int(i, "inside_virtual_world", HouseInfo[GlobalHousesCounter][InsideVirtualWorld]);
+			cache_get_value_name_int(i, "slot1", HouseInfo[GlobalHousesCounter][Slot1]);
+			cache_get_value_name_int(i, "slot1_ammo", HouseInfo[GlobalHousesCounter][Slot1_ammo]);
+			cache_get_value_name_int(i, "slot2", HouseInfo[GlobalHousesCounter][Slot2]);
+			cache_get_value_name_int(i, "slot2_ammo", HouseInfo[GlobalHousesCounter][Slot2_ammo]);
+			cache_get_value_name_int(i, "slot3", HouseInfo[GlobalHousesCounter][Slot2]);
+			cache_get_value_name_int(i, "slot3_ammo", HouseInfo[GlobalHousesCounter][Slot2_ammo]);
+			cache_get_value_name_int(i, "materials", HouseInfo[GlobalHousesCounter][Materials]);
+			cache_get_value_name_int(i, "drugs", HouseInfo[GlobalHousesCounter][Drugs]);
+			
+			if(HouseInfo[GlobalHousesCounter][Owned] == 0)
+			{
+				new message[256];
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n Da kupite ovu kucu \n kucajte "TEXT_COLOR_RED"/buyhouse", HouseInfo[GlobalHousesCounter][ID], HouseInfo[GlobalHousesCounter][Price]);
+				HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1273, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
+				HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
+				GlobalHousesCounter++;
+			}
+			else
+			{
+				new message[256];
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", HouseInfo[GlobalHousesCounter][Owner], HouseInfo[GlobalHousesCounter][ID]);
+				HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1272, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
+				HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
+				GlobalHousesCounter++;
+			}		
+		}
+	}
+}
+
+public InsertHouse(house_owner, house_price, 
+					house_enterX, house_enterY, house_enterZ, house_enterA,
+					house_exitX, house_exitY, house_exitZ, house_exitA,
+					house_outside_interior, house_outside_virtual_world,
+					house_inside_interior, house_inside_virtual_world, house_icon) 
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "INSERT INTO Houses SET \
+													owned = 0, \
+													user_id = %d, \
+													price = %d, \
+													locked = 1, \
+													enterX = %f, \
+													enterY = %f, \
+													enterZ = %f, \
+													enterA = %f, \
+													exitX = %f, \
+													exitY = %f, \
+													exitZ = %f, \
+													exitA = %f, \
+													outside_interior = %d, \
+													outside_virtual_world = %d, \
+													inside_interior = %d, \
+													inside_virtual_world = %d, \
+													icon = %d, \
+													slot1 = 0, \
+													slot1_ammo = 0, \
+													slot2 = 0, \
+													slot2_ammo = 0, \
+													slot3 = 0, \
+													slot3_ammo = 0, \
+													materials = 0, \
+													drugs = 0",
+													house_owner,
+													house_price,
+													house_enterX,
+													house_enterY,
+													house_enterZ,
+													house_enterA,
+													house_exitX,
+													house_exitY,
+													house_exitZ,
+													house_exitA,
+													house_outside_interior,
+													house_outside_virtual_world,
+													house_inside_interior,
+													house_inside_virtual_world,
+													house_icon);
+	mysql_tquery(mysql, query);
+}
+
+public SaveHouse(house_id)
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "UPDATE Houses \
+												SET owned = %d, \
+													user_id = %d, \
+													price = %d, \
+													locked = 1, \
+													enterX = %f, \
+													enterY = %f, \
+													enterZ = %f, \
+													enterA = %f, \
+													exitX = %f, \
+													exitY = %f, \
+													exitZ = %f, \
+													exitA = %f, \
+													outside_interior = %d, \
+													outside_virtual_world = %d, \
+													inside_interior = %d, \
+													inside_virtual_world = %d, \
+													slot1 = %d, \
+													slot1_ammo = %d, \
+													slot2 = %d, \
+													slot2_ammo = %d, \
+													slot3 = %d, \
+													slot3_ammo = %d, \
+													materials = %d, \
+													drugs = %d \												
+												WHERE id = %d",
+												HouseInfo[house_id][Owned],
+												HouseInfo[house_id][Owner],												
+												HouseInfo[house_id][Price],  
+												HouseInfo[house_id][EnterX], 
+												HouseInfo[house_id][EnterY], 
+												HouseInfo[house_id][EnterZ], 
+												HouseInfo[house_id][EnterA], 
+												HouseInfo[house_id][ExitX],
+												HouseInfo[house_id][ExitY],
+												HouseInfo[house_id][ExitZ],
+												HouseInfo[house_id][ExitA],
+												HouseInfo[house_id][OutsideInterior],
+												HouseInfo[house_id][OutsideVirtualWorld],
+												HouseInfo[house_id][InsideInterior],
+												HouseInfo[house_id][InsideVirtualWorld],
+												HouseInfo[house_id][Slot1],
+												HouseInfo[house_id][Slot1_ammo],
+												HouseInfo[house_id][Slot2],
+												HouseInfo[house_id][Slot2_ammo],
+												HouseInfo[house_id][Slot3],
+												HouseInfo[house_id][Slot3_ammo],
+												HouseInfo[house_id][Materials],
+												HouseInfo[house_id][Drugs],
+												HouseInfo[house_id][ID]);
+	mysql_pquery(mysql, query);
+
+	return 1;
+}
+
 public OnAccountLoad(playerid)
 {
 	if(cache_num_rows() > 0)
@@ -1916,6 +2137,9 @@ public OnGameModeInit()
 	
 	// Load owned vehicles
 	LoadVehicles(); 
+	
+	// Load all houses
+	LoadHouses();
 	
 	SetTimer("CheckVehicleFuel", 60000, true);
 	
@@ -3153,6 +3377,107 @@ YCMD:v(playerid, params[], help)
 	return 1;
 }
 
+YCMD:h(playerid, params[], help)
+{
+	new command[32];
+	if(sscanf(params, "s[32]", command))
+	{
+		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavidrogu, uzmidrogu");
+	}
+	else
+	{
+		if(strcmp(command, "buy", true) == 0)
+		{
+			new player_name[MAX_PLAYER_NAME], id, message[256];
+
+			id = IsPlayerNearHouseEnter(playerid);
+			GetPlayerName(playerid, player_name, sizeof(player_name));
+			
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
+			if(HouseInfo[id][Owned] != 0 || HouseInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ova kuca nije na prodaju!");
+			if(GetPlayerMoney(playerid) < HouseInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca da kupite ovu kucu!");
+
+			PlayerInfo[playerid][Money] -= HouseInfo[id][Price];
+			GivePlayerMoney(playerid, -HouseInfo[id][Price]);
+
+			HouseInfo[id][Owned] = 1;
+			HouseInfo[id][Owner] = PlayerInfo[playerid][ID];
+			HouseInfo[id][Locked] = 0;
+
+			DestroyPickup(HouseInfo[id][Icon]);
+			HouseInfo[id][Icon] = CreatePickup(1272, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
+			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste kucu.");
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", player_name, HouseInfo[id][ID]);
+			Update3DTextLabelText(HouseLabelArray[id], -1, message);
+
+			SaveHouse(id);
+			SavePlayer(playerid);
+
+			return 1;
+		}
+		else if(strcmp(command, "sell", true) == 0)
+		{
+			new id, message[256];
+
+			id = IsPlayerNearHouseEnter(playerid);
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nije vasa kuca!");
+
+			HouseInfo[id][Owned] = 0;
+			HouseInfo[id][Locked] = 1;
+			HouseInfo[id][Slot1] = 9999;
+			HouseInfo[id][Slot1_ammo] = 0;
+			HouseInfo[id][Slot2] = 9999;
+			HouseInfo[id][Slot2_ammo] = 0;
+			HouseInfo[id][Slot3] = 9999;
+			HouseInfo[id][Slot3_ammo] = 0;
+			HouseInfo[id][Materials] = 0;
+			HouseInfo[id][Drugs] = 0;
+
+			DestroyPickup(HouseInfo[id][Icon]);
+			HouseInfo[id][Icon] = CreatePickup(1273, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
+
+			PlayerInfo[playerid][Money] += HouseInfo[id][Price]/2;
+			GivePlayerMoney(playerid, (HouseInfo[id][Price]/2));
+
+			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste kucu.");
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /kupikucu", HouseInfo[id][Price]);
+			Update3DTextLabelText(HouseLabelArray[id], -1, message);
+
+			SaveHouse(id);
+			SavePlayer(playerid);
+			return 1;
+		}
+		else if(strcmp(command, "lock", true) == 0)
+		{
+			new id = IsPlayerNearHouseEnter(playerid);
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu vase kuce!");
+			if(HouseInfo[id][Locked] == 1)
+			{
+				HouseInfo[id][Locked] = 0;
+				GameTextForPlayer(playerid, "Kuca ~g~otkljucana!", 3000, 3);
+				SaveHouse(id);
+			}
+			else
+			{
+				HouseInfo[id][Locked] = 1;
+				GameTextForPlayer(playerid, "Kuca ~r~zakljucana!", 3000, 3);
+				SaveHouse(id);
+			}
+
+			return 1;
+		}
+		/* else
+		{
+		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavidrogu, uzmidrogu");
+		} */
+	}
+	return 1;
+}
 
 // Timers
 task TimerPerSec[1000]() 
