@@ -443,7 +443,8 @@ forward CheckVehicleFuel();
 
 forward LoadHouses();
 forward OnHousesLoaded();
-forward InsertHouse(house_owner, house_price, house_enterX, house_enterY, house_enterZ, house_enterA, house_exitX, house_exitY, house_exitZ, house_exitA, house_outside_interior, house_outside_virtual_world, house_inside_interior, house_inside_virtual_world, house_icon); 
+forward InsertHouse(house_id); 
+forward DeleteHouse(house_id); 
 forward SaveHouse(house_id);
 // ====================================================================================================== Variables
 new MySQL:mysql;
@@ -1530,6 +1531,19 @@ stock GetVehicleOwnerName(vehicleid)
 	return player_name;
 }
 
+stock GetHouseOwnerName(house_id)
+{
+	new query[256], player_name[MAX_PLAYER_NAME];
+	
+	mysql_format(mysql, query, sizeof(query), "SELECT Name \
+												FROM Users \
+												WHERE ID = %d", HouseInfo[house_id][Owner]);
+    mysql_query(mysql, query);
+	cache_get_value_name(0, "Name", player_name);
+	
+	return player_name;
+}
+
 public LoadHouses()
 {
 	new query[256];
@@ -1583,7 +1597,7 @@ public OnHousesLoaded()
 			else
 			{
 				new message[256];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", HouseInfo[GlobalHousesCounter][Owner], HouseInfo[GlobalHousesCounter][ID]);
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(GlobalHousesCounter), HouseInfo[GlobalHousesCounter][ID]);
 				HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1272, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
 				HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
 				GlobalHousesCounter++;
@@ -1592,11 +1606,7 @@ public OnHousesLoaded()
 	}
 }
 
-public InsertHouse(house_owner, house_price, 
-					house_enterX, house_enterY, house_enterZ, house_enterA,
-					house_exitX, house_exitY, house_exitZ, house_exitA,
-					house_outside_interior, house_outside_virtual_world,
-					house_inside_interior, house_inside_virtual_world, house_icon) 
+public InsertHouse(house_id) 
 {
 	new query[512];
 	
@@ -1617,7 +1627,6 @@ public InsertHouse(house_owner, house_price,
 													outside_virtual_world = %d, \
 													inside_interior = %d, \
 													inside_virtual_world = %d, \
-													icon = %d, \
 													slot1 = 0, \
 													slot1_ammo = 0, \
 													slot2 = 0, \
@@ -1626,21 +1635,30 @@ public InsertHouse(house_owner, house_price,
 													slot3_ammo = 0, \
 													materials = 0, \
 													drugs = 0",
-													house_owner,
-													house_price,
-													house_enterX,
-													house_enterY,
-													house_enterZ,
-													house_enterA,
-													house_exitX,
-													house_exitY,
-													house_exitZ,
-													house_exitA,
-													house_outside_interior,
-													house_outside_virtual_world,
-													house_inside_interior,
-													house_inside_virtual_world,
-													house_icon);
+													HouseInfo[house_id][Owner],
+													HouseInfo[house_id][Price],
+													HouseInfo[house_id][EnterX],
+													HouseInfo[house_id][EnterY],
+													HouseInfo[house_id][EnterZ],
+													HouseInfo[house_id][EnterA],
+													HouseInfo[house_id][ExitX],
+													HouseInfo[house_id][ExitY],
+													HouseInfo[house_id][ExitZ],
+													HouseInfo[house_id][ExitA],
+													HouseInfo[house_id][OutsideInterior],
+													HouseInfo[house_id][OutsideVirtualWorld],
+													HouseInfo[house_id][InsideInterior],
+													HouseInfo[house_id][InsideVirtualWorld]);
+	mysql_tquery(mysql, query);
+}
+
+public DeleteHouse(house_id) 
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "DELETE FROM Houses \
+												WHERE id = %d",
+													HouseInfo[house_id][ID]);
 	mysql_tquery(mysql, query);
 }
 
@@ -3377,6 +3395,190 @@ YCMD:v(playerid, params[], help)
 	return 1;
 }
 
+YCMD:makehouse(playerid, params[], help)
+{
+	#pragma unused help
+    // Check for admin level
+
+    new price, player_interior, player_virtual_world, inside_interior, message[512], Float:X, Float:Y, Float:Z, Float:A;
+    if(sscanf(params, "ii", price, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /makehouse [cena] [interior]");
+
+    switch(inside_interior)
+	{
+	    case 0: // CJ House
+		{
+        	HouseInfo[GlobalHousesCounter][InsideInterior] = 3;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2496.05;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1692.73;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1015.75;
+		}
+        case 1: // Safe House 1
+		{
+        	HouseInfo[GlobalHousesCounter][InsideInterior] = 1;
+			HouseInfo[GlobalHousesCounter][ExitX] = 223.04;
+    		HouseInfo[GlobalHousesCounter][ExitY] = 1287.26;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1083.2;
+		}
+		case 2: // Safe House 2
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 4;
+			HouseInfo[GlobalHousesCounter][ExitX] = 260.98;
+    		HouseInfo[GlobalHousesCounter][ExitY] = 1284.55;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1081.3;
+		}
+		case 3: // Safe House 3
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 5;
+			HouseInfo[GlobalHousesCounter][ExitX] = 140.18;
+    		HouseInfo[GlobalHousesCounter][ExitY] = 1366.58;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1084.97;
+		}
+		case 4: // Safe House 4
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 9;
+			HouseInfo[GlobalHousesCounter][ExitX] = 82.95;
+    		HouseInfo[GlobalHousesCounter][ExitY] = 1322.44;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1084.99;
+		}
+		case 7:  // Safe House 7
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 8;
+			HouseInfo[GlobalHousesCounter][ExitX] = -42.85;
+    		HouseInfo[GlobalHousesCounter][ExitY] = 1405.61;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1085.5;
+		}
+		case 8: // Safe House 8
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 6;
+			HouseInfo[GlobalHousesCounter][ExitX] = -68.69;
+    		HouseInfo[GlobalHousesCounter][ExitY] = 1351.97;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1081.28;
+		}
+		case 9: // Safe House 9
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 6;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2333.11;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1077.1;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1050.04;
+		}
+		case 10: // Safe House 10
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 5;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2233.8;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1115.36;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1051.91;
+		}
+		case 11: // Safe House 11
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 8;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2365.3;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1134.92;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1051.91;
+		}
+		case 12: // Safe House 12
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 11;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2282.91;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1140.29;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1051.91;
+		}
+  		case 13: // Safe House 13
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 6;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2196.79;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1204.35;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1050.05;
+		}
+		case 14: // Safe House 14
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 10;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2270.39;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1210.45;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1048.57;
+		}
+		case 15: // Safe House 15
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 6;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2308.79;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1212.88;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1050.3;
+		}
+		case 16: // Safe House 16
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 1;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2217.54;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1076.29;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1051.52;
+		}
+		case 17: // Safe House 17
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 2;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2237.59;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1080.97;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1050.07;
+		}
+		case 18: // Safe House 18
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 9;
+			HouseInfo[GlobalHousesCounter][ExitX] = 2317.82;
+    		HouseInfo[GlobalHousesCounter][ExitY] = -1026.75;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1051.21;
+		}
+		case 19: // Budget Inn Motel Room
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 12;
+			HouseInfo[GlobalHousesCounter][ExitX] = 447.52;
+    		HouseInfo[GlobalHousesCounter][ExitY] = 511.49;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 1001.42;
+		}
+		case 20: // Abandon House
+		{
+		    HouseInfo[GlobalHousesCounter][InsideInterior] = 10;
+			HouseInfo[GlobalHousesCounter][ExitX] = 422.16;
+    		HouseInfo[GlobalHousesCounter][ExitY] = 2536.52;
+    		HouseInfo[GlobalHousesCounter][ExitZ] = 11.01;
+		}
+
+	}
+
+    GetPlayerPos(playerid, X, Y, Z);
+    GetPlayerFacingAngle(playerid, A);
+    player_interior = GetPlayerInterior(playerid);
+    player_virtual_world = GetPlayerVirtualWorld(playerid);
+
+    HouseInfo[GlobalHousesCounter][Owned] = 0;
+    HouseInfo[GlobalHousesCounter][Owner] = PlayerInfo[playerid][ID];
+    HouseInfo[GlobalHousesCounter][Price] = price;
+    HouseInfo[GlobalHousesCounter][EnterX] = X;
+    HouseInfo[GlobalHousesCounter][EnterY] = Y;
+    HouseInfo[GlobalHousesCounter][EnterZ] = Z;
+    HouseInfo[GlobalHousesCounter][EnterA] = A;
+    HouseInfo[GlobalHousesCounter][Locked] = 1;
+    HouseInfo[GlobalHousesCounter][OutsideInterior] = player_interior;
+    HouseInfo[GlobalHousesCounter][OutsideVirtualWorld] = player_virtual_world;
+    HouseInfo[GlobalHousesCounter][InsideVirtualWorld] = GlobalHousesCounter;
+	HouseInfo[GlobalHousesCounter][Slot1] = 0;
+	HouseInfo[GlobalHousesCounter][Slot1_ammo] = 0;
+	HouseInfo[GlobalHousesCounter][Slot2] = 0;
+	HouseInfo[GlobalHousesCounter][Slot2_ammo] = 0;
+	HouseInfo[GlobalHousesCounter][Slot3] = 0;
+	HouseInfo[GlobalHousesCounter][Slot3_ammo] = 0;
+	HouseInfo[GlobalHousesCounter][Materials] = 0;
+	HouseInfo[GlobalHousesCounter][Drugs] = 0;
+
+	InsertHouse(GlobalHousesCounter);
+
+    if(HouseInfo[GlobalHousesCounter][Icon]) DestroyPickup(HouseInfo[GlobalHousesCounter][Icon]);
+    HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1273, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][InsideVirtualWorld]);
+
+	format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_BLUE"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", GlobalHousesCounter, HouseInfo[GlobalHousesCounter][Price]);
+    HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 20.0, HouseInfo[GlobalHousesCounter][InsideVirtualWorld]);
+    
+    GlobalHousesCounter++;
+
+    return 1;
+}
+
 YCMD:h(playerid, params[], help)
 {
 	new command[32];
@@ -3409,7 +3611,7 @@ YCMD:h(playerid, params[], help)
 			HouseInfo[id][Icon] = CreatePickup(1272, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
 			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste kucu.");
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", player_name, HouseInfo[id][ID]);
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(GlobalHousesCounter), HouseInfo[id][ID]);
 			Update3DTextLabelText(HouseLabelArray[id], -1, message);
 
 			SaveHouse(id);
@@ -3444,7 +3646,7 @@ YCMD:h(playerid, params[], help)
 
 			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste kucu.");
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /kupikucu", HouseInfo[id][Price]);
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", HouseInfo[id][Price]);
 			Update3DTextLabelText(HouseLabelArray[id], -1, message);
 
 			SaveHouse(id);
@@ -3477,6 +3679,49 @@ YCMD:h(playerid, params[], help)
 		} */
 	}
 	return 1;
+}
+
+YCMD:deletehouse(playerid, params[], help)
+{
+    #pragma unused help
+    // Check for admin
+
+    new id;
+
+    if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /deletehouse [id]");
+    if(HouseInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ova kuca ima vlasnika!");
+
+    HouseInfo[id][Owned] = 0;
+    HouseInfo[id][Price] = 0;
+    HouseInfo[id][Owner] = 0;
+    HouseInfo[id][Locked] = 0;
+    HouseInfo[id][EnterX] = 0;
+    HouseInfo[id][EnterY] = 0;
+    HouseInfo[id][EnterZ] = 0;
+    HouseInfo[id][EnterA] = 0;
+    HouseInfo[id][ExitX] = 0;
+    HouseInfo[id][ExitY] = 0;
+    HouseInfo[id][ExitZ] = 0;
+    HouseInfo[id][ExitA] = 0;
+    HouseInfo[id][OutsideInterior] = 0;
+    HouseInfo[id][OutsideVirtualWorld] = 0;
+    HouseInfo[id][InsideInterior] = 0;
+    HouseInfo[id][InsideVirtualWorld] = 0;
+    HouseInfo[id][Slot1] = 0;
+	HouseInfo[id][Slot1_ammo] = 0;
+	HouseInfo[id][Slot2] = 0;
+	HouseInfo[id][Slot2_ammo] = 0;
+	HouseInfo[id][Slot3] = 0;
+	HouseInfo[id][Slot3_ammo] = 0;
+	HouseInfo[id][Materials] = 0;
+	HouseInfo[id][Drugs] = 0;
+
+    DeleteHouse(id);
+
+   	DestroyPickup(HouseInfo[id][Icon]);
+    Delete3DTextLabel(HouseLabelArray[id]);
+
+    return 1;
 }
 
 // Timers
