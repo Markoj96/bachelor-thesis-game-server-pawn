@@ -624,7 +624,7 @@ enum BusinessData
 	ID,
     Owned,
     Price,
-    Owner[MAX_PLAYER_NAME],
+    Owner,
     Type,
     Locked,
     Money,
@@ -2142,14 +2142,14 @@ public InsertBusiness(business_id)
 {
 	new query[512];
 	
-	mysql_format(mysql, query, sizeof(query), "INSERT INTO Business SET \
+	mysql_format(mysql, query, sizeof(query), "INSERT INTO Businesses SET \
 													owned = 0, \
 													user_id = %d, \
 													name = %s, \
 													price = %d, \
 													locked = 0, \
 													money = 0, \
-													enter_fee = 0 \
+													enter_fee = 0, \
 													enterX = %f, \
 													enterY = %f, \
 													enterZ = %f, \
@@ -3346,6 +3346,15 @@ public OnGameModeInit()
 
 public OnGameModeExit()
 {
+	for(new i = 0; i < GlobalVehiclesCounter; i++)
+		SaveVehicle(i);
+
+	for(new i = 0; i < GlobalHousesCounter; i++)
+		SaveHouse(i);
+
+	for(new i = 0; i < GlobalBusinessesCounter; i++)
+		SaveBusiness(i);
+
 	return 1;
 }
 
@@ -3453,7 +3462,7 @@ public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 	
 	GetPlayerHealth(playerid, health);
 	if(IsABike(vehicleid)) if(HasHelmet[playerid] != 1) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
-	else if(HasBelt[playerid] != 0) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
+	else if(HasBelt[playerid] != 1) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
 
  	if(VehicleEngine[vehicleid] == 1)
   	{
@@ -3551,7 +3560,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		
 		if(HasBelt[playerid] == 1)
 		{
-		    HasBelt[playerid] = 9999;
+		    HasBelt[playerid] = 0;
 		    format(str, sizeof(str), "Odvezali ste pojas.");
 		    SendClientMessage(playerid, -1, str);
 		    format(str, sizeof(str), "%s odvezuje svoj pojas.", playername);
@@ -3560,7 +3569,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 
 	    if(HasHelmet[playerid] == 1)
 		{
-		    HasHelmet[playerid] = 9999;
+		    HasHelmet[playerid] = 0;
 		    RemovePlayerAttachedObject(playerid, 1);
 		    format(str, sizeof(str), "Skinuli ste kacigu.");
 		    SendClientMessage(playerid, -1, str);
@@ -4923,7 +4932,10 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -185.868988;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            //strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
+			
+			printf("Name je %s", BusinessInfo[GlobalBusinessesCounter][Name]);
         }
         case 2: // 24/7 2
         {
@@ -4932,7 +4944,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -29.271898;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 3: // 24/7 3
         {
@@ -4941,7 +4953,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -89.609596;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 4: // 24/7 4
         {
@@ -4950,7 +4962,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -139.066986;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 5: // 24/7 5
         {
@@ -4959,7 +4971,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -29.277599;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 6: // 24/7 6
         {
@@ -4968,7 +4980,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -55.714897;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 7: // Ammunation 1
         {
@@ -4977,7 +4989,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -40.644398;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.569946;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 8: // Ammunation 2
         {
@@ -4986,7 +4998,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -82.547600;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.539978;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 9: // Ammunation 3
         {
@@ -4995,7 +5007,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -108.071999;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.569946;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 10: // Ammunation 4 (2 floors)
         {
@@ -5004,7 +5016,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -141.431992;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.661987;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 11: // Ammunation 5
         {
@@ -5013,7 +5025,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -167.706985;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.661987;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 12: // Binco
         {
@@ -5022,7 +5034,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -109.019996;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1005.132812;
             format(name, sizeof(name), "Binco");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 13: // DS (Didier Sachs)
         {
@@ -5031,7 +5043,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -166.694992;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.523437;
             format(name, sizeof(name), "DS (Didier Sachs)");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 14: // Prolaps
         {
@@ -5040,7 +5052,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -138.804992;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.507812;
             format(name, sizeof(name), "Prolaps");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 15: // Suburban
         {
@@ -5049,7 +5061,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -48.492397;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.804687;
             format(name, sizeof(name), "Suburban");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 16: // Victim
         {
@@ -5058,7 +5070,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -7.431529;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1002.210937;
             format(name, sizeof(name), "Victim");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 17: // ZIP
         {
@@ -5067,7 +5079,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -93.159156;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.804687;
             format(name, sizeof(name), "ZIP");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 18: // Burg
         {
@@ -5076,7 +5088,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -73.8064;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.507812;
             format(name, sizeof(name), "Burg");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 19: // Cluckin'Bell
         {
@@ -5085,7 +5097,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -65.816848;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.507812;
             format(name, sizeof(name), "Cluckin'Bell");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 20: // Well Stacked Pizza
         {
@@ -5094,7 +5106,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -132.2032;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.4922;
             format(name, sizeof(name), "Well Stacked Pizza");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 21: // Rusty Brown Donuts
         {
@@ -5103,7 +5115,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -191.9550;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.632812;
             format(name, sizeof(name), "Rusty Brown Donuts");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 22: // Dillimore Gas Station
         {
@@ -5112,7 +5124,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -575.605407;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 16.343263;
             format(name, sizeof(name), "Dillimore Gas Station");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 23: // Club
         {
@@ -5121,7 +5133,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -22.722799;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.679687;
             format(name, sizeof(name), "Club");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 24: // Bar
         {
@@ -5130,7 +5142,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -69.150199;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 998.757812;
             format(name, sizeof(name), "Bar");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 25: // Lil' probe inn
         {
@@ -5139,7 +5151,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = 1401.229980;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 27.765625;
             format(name, sizeof(name), "Lil' probe inn");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 26: // Jay's diner
         {
@@ -5148,7 +5160,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -88.428497;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.554687;
             format(name, sizeof(name), "Jay's diner");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 27: // Gant bridge diner
         {
@@ -5157,7 +5169,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -110.104995;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.077209;
             format(name, sizeof(name), "Gant bridge diner");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 28: // World of coq
         {
@@ -5166,7 +5178,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -18.179698;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.132812;
             format(name, sizeof(name), "World of coq");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 29: // Welcome pump
         {
@@ -5175,7 +5187,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -455.680053;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = -25.609874;
             format(name, sizeof(name), "Welcome pump");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
         case 30: // Big spread ranch
         {
@@ -5184,7 +5196,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -28.663099;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.953125;
             format(name, sizeof(name), "Big spread ranch");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
         }
     }
 
@@ -5215,7 +5227,8 @@ YCMD:makebusiness(playerid, params[], help)
     format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis vlasnika !\n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/kupibiznis", BusinessInfo[GlobalBusinessesCounter][Price], BusinessInfo[GlobalBusinessesCounter][ID]);
     BusinessLabelArray[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld]);
 
-    SaveBusiness(id);
+    InsertBusiness(GlobalBusinessesCounter);
+	GlobalBusinessesCounter++;
     return 1;
 }
 
