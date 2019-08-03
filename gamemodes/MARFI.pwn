@@ -410,7 +410,7 @@ forward AntiRoleplayName(playerid, player_name[]);
 forward IsARentVehicle(vehicleid);
 forward IsASaleVehicle(vehicleid);
 forward IsAOwnedVehicle(vehicleid);
-forward IsARentVehicle(vehicleid);
+forward IsALSPoliceCar(vehicleid);
 forward IsABike(vehicleid);
 forward IsABoat(vehicleid);
 forward IsAPlane(vehicleid);
@@ -446,13 +446,31 @@ forward OnHousesLoaded();
 forward InsertHouse(house_id); 
 forward DeleteHouse(house_id); 
 forward SaveHouse(house_id);
+
+forward LoadBusinesses();
+forward OnBusinessesLoaded();
+forward InsertBusiness(business_id);
+forward DeleteBusiness(business_id);
+forward SaveBusiness(business_id);
+
+forward LoadRentVehicles();
+forward LoadSaleVehicles();
+forward LoadLosSantosCityHallExterior();
+forward LoadLosSantosCityHallInterior();
+forward LoadLosSantisParking();
+forward LoadLosSantosAirport();
+forward LoadLosSantosPoliceDepartment();
+forward LoadLosSantosPoliceCars();
+forward LoadLosSantosTaxiJob();
+forward LoadLosSantosSmugglerJob();
 // ====================================================================================================== Variables
 new MySQL:mysql;
 
 // Server counters
 new GlobalVehiclesCounter = 1;
-new GlobalHousesCounter = 1;
 new OwnedVehiclesCounter = 0;
+new GlobalHousesCounter = 1;
+new GlobalBusinessesCounter = 1;
 // Textdraws
 new Text:FuelTD[MAX_PLAYERS];
 
@@ -537,7 +555,35 @@ enum HouseData
 	Materials,
 	Drugs
 }
-new HouseInfo[700][HouseData];
+new HouseInfo[2000][HouseData];
+
+enum BusinessData
+{
+	ID,
+    Owned,
+    Price,
+    Owner[MAX_PLAYER_NAME],
+    Type,
+    Locked,
+    Money,
+    EnterFee,
+    Float:EnterX,
+    Float:EnterY,
+    Float:EnterZ,
+    Float:EnterA,
+    Float:ExitX,
+    Float:ExitY,
+    Float:ExitZ,
+    Float:ExitA,
+    OutsideInterior,
+    OutsideVirtualWorld,
+    InsideInterior,
+    InsideVirtualWorld,
+    Icon,
+    ExitIcon,
+    Name[128]
+}
+new BusinessInfo[100][BusinessData];
 
 // Player
 new IsPlayerRentingVehicle[MAX_PLAYERS];
@@ -563,10 +609,38 @@ new VehicleOfferPrice[MAX_PLAYERS];
 new rent_vehicles[24];
 new sale_vehicles[89];
 new owned_vehicles[sizeof(VehicleInfo)];
+new ls_police_cars[13];
 
+new parking_gate1;
+new parking_gate1_opened;
+new parking_gate2;
+new parking_gate2_opened;
+new cell_room_door;
+new cell_room_door_opened;
+new cell1;
+new cell1_opened;
+new cell2;
+new cell2_opened;
+new cell3;
+new cell3_opened;
+new lspd_door1;
+new lspd_door1_opened;
+new lspd_door2;
+new lspd_door2_opened;
+new lspd_window;
+new lspd_window_opened;
+new lspd_garage;
+new lspd_garage_opened;
+new lspd_garage_door;
+new lspd_garage_door_opened;
+new smuggler_gate1;
+new smuggler_gate1_opened;
+new smuggler_gate2;
+new smuggler_gate2_opened;
 
 new Text3D:SaleVehicleLabels[MAX_VEHICLES]; // Labels for sale vehicles
 new Text3D:HouseLabelArray[sizeof(HouseInfo)]; // Labels for houses
+new Text3D:BusinessLabelArray[sizeof(HouseInfo)]; // Labels for business
 // ====================================================================================================== Functions (Public & Stock)
 // Money AntiCheat
 stock SafeGivePlayerMoney(playerid, money)
@@ -679,6 +753,15 @@ stock IsPlayerNearHouseEnter(playerid)
         if(IsPlayerInRangeOfPoint(playerid, 5.0, HouseInfo[i][EnterX], HouseInfo[i][EnterY], HouseInfo[i][EnterZ])) return i;
     }
 	
+    return -1;
+}
+
+stock IsPlayerNearBusinessEnter(playerid)
+{
+    for(new i = 0; i < sizeof(BusinessInfo); i++)
+    {
+        if(IsPlayerInRangeOfPoint(playerid, 3.0, BusinessInfo[i][EnterX], BusinessInfo[i][EnterY], BusinessInfo[i][EnterZ])) return i;
+    }
     return -1;
 }
 
@@ -1544,6 +1627,19 @@ stock GetHouseOwnerName(house_id)
 	return player_name;
 }
 
+stock GetBusinessOwnerName(business_id)
+{
+	new query[256], player_name[MAX_PLAYER_NAME];
+	
+	mysql_format(mysql, query, sizeof(query), "SELECT Name \
+												FROM Users \
+												WHERE ID = %d", BusinessInfo[business_id][Owner]);
+    mysql_query(mysql, query);
+	cache_get_value_name(0, "Name", player_name);
+	
+	return player_name;
+}
+
 public LoadHouses()
 {
 	new query[256];
@@ -1670,7 +1766,7 @@ public SaveHouse(house_id)
 												SET owned = %d, \
 													user_id = %d, \
 													price = %d, \
-													locked = 1, \
+													locked = %d, \
 													enterX = %f, \
 													enterY = %f, \
 													enterZ = %f, \
@@ -1694,7 +1790,8 @@ public SaveHouse(house_id)
 												WHERE id = %d",
 												HouseInfo[house_id][Owned],
 												HouseInfo[house_id][Owner],												
-												HouseInfo[house_id][Price],  
+												HouseInfo[house_id][Price],
+												HouseInfo[house_id][Locked],
 												HouseInfo[house_id][EnterX], 
 												HouseInfo[house_id][EnterY], 
 												HouseInfo[house_id][EnterZ], 
@@ -1719,6 +1816,169 @@ public SaveHouse(house_id)
 	mysql_pquery(mysql, query);
 
 	return 1;
+}
+
+public LoadBusinesses()
+{
+	new query[256];
+	
+	mysql_format(mysql, query, sizeof(query), "SELECT * FROM businesses");
+	mysql_tquery(mysql, query, "OnBusinessesLoaded");
+	
+	return 0;
+}
+
+public OnBusinessesLoaded()
+{
+	if(cache_num_rows() > 0)
+	{
+		for(new i = 0; i < cache_num_rows(); i++)
+		{
+			cache_get_value_name_int(i, "id", BusinessInfo[GlobalBusinessesCounter][ID]);
+			cache_get_value_name_int(i, "owned", BusinessInfo[GlobalBusinessesCounter][Owned]);
+			cache_get_value_name_int(i, "user_id", BusinessInfo[GlobalBusinessesCounter][Owner]);
+			cache_get_value_name_int(i, "name", BusinessInfo[GlobalBusinessesCounter][Name]);
+			cache_get_value_name_int(i, "price", BusinessInfo[GlobalBusinessesCounter][Price]);
+			cache_get_value_name_int(i, "locked", BusinessInfo[GlobalBusinessesCounter][Locked]);
+			cache_get_value_name_int(i, "money", BusinessInfo[GlobalBusinessesCounter][Money]);
+			cache_get_value_name_int(i, "enter_fee", BusinessInfo[GlobalBusinessesCounter][EnterFee]);
+			cache_get_value_name_int(i, "business_type", BusinessInfo[GlobalBusinessesCounter][Type]);
+			cache_get_value_name_float(i, "enterX", BusinessInfo[GlobalBusinessesCounter][EnterX]);
+			cache_get_value_name_float(i, "enterY", BusinessInfo[GlobalBusinessesCounter][EnterY]);
+			cache_get_value_name_float(i, "enterZ", BusinessInfo[GlobalBusinessesCounter][EnterZ]);
+			cache_get_value_name_float(i, "enterA", BusinessInfo[GlobalBusinessesCounter][EnterA]);
+			cache_get_value_name_float(i, "exitX", BusinessInfo[GlobalBusinessesCounter][ExitX]);
+			cache_get_value_name_float(i, "exitY", BusinessInfo[GlobalBusinessesCounter][ExitY]);
+			cache_get_value_name_float(i, "exitZ", BusinessInfo[GlobalBusinessesCounter][ExitZ]);
+			cache_get_value_name_float(i, "exitA", BusinessInfo[GlobalBusinessesCounter][ExitA]);
+			cache_get_value_name_int(i, "outside_interior", BusinessInfo[GlobalBusinessesCounter][OutsideInterior]);
+			cache_get_value_name_int(i, "outside_virtual_world", BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld]);
+			cache_get_value_name_int(i, "inside_interior", BusinessInfo[GlobalBusinessesCounter][InsideInterior]);
+			cache_get_value_name_int(i, "inside_virtual_world", BusinessInfo[GlobalBusinessesCounter][InsideVirtualWorld]);
+			
+			BusinessInfo[GlobalBusinessesCounter][Icon] = CreatePickup(1274, 1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld]);
+			if(BusinessInfo[GlobalBusinessesCounter][Owned] == 0)
+			{
+				new message[256];
+				format(message, sizeof(message), "Ovaj biznis nema vlasnika!\n"TEXT_COLOR_RED"Ime"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_WHITE"Da kupite biznis, kucajte /b buy", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], BusinessInfo[GlobalBusinessesCounter][Price]);
+				BusinessLabelArray[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
+				GlobalBusinessesCounter++;
+			}
+			if(BusinessInfo[GlobalBusinessesCounter][Owned] == 1)
+			{
+				new message[512];
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Ovaj biznis ima vlasnika!\n "TEXT_COLOR_RED"Ime"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Vlasnik"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Cena ulaza"TEXT_COLOR_WHITE": %d", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], GetBusinessOwnerName(BusinessInfo[GlobalBusinessesCounter][Owner]), BusinessInfo[GlobalBusinessesCounter][EnterFee]);
+				BusinessLabelArray[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
+				GlobalBusinessesCounter++;
+			}	
+		}
+	}
+}
+
+public InsertBusiness(business_id) 
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "INSERT INTO Business SET \
+													owned = 0, \
+													user_id = %d, \
+													name = %s, \
+													price = %d, \
+													locked = 0, \
+													money = 0, \
+													enter_fee = 0 \
+													enterX = %f, \
+													enterY = %f, \
+													enterZ = %f, \
+													enterA = %f, \
+													exitX = %f, \
+													exitY = %f, \
+													exitZ = %f, \
+													exitA = %f, \
+													business_type = %d, \
+													outside_interior = %d, \
+													outside_virtual_world = %d, \
+													inside_interior = %d, \
+													inside_virtual_world = %d",
+													BusinessInfo[business_id][Owner],
+													BusinessInfo[business_id][Name],
+													BusinessInfo[business_id][Price],
+													BusinessInfo[business_id][EnterX],
+													BusinessInfo[business_id][EnterY],
+													BusinessInfo[business_id][EnterZ],
+													BusinessInfo[business_id][EnterA],
+													BusinessInfo[business_id][ExitX],
+													BusinessInfo[business_id][ExitY],
+													BusinessInfo[business_id][ExitZ],
+													BusinessInfo[business_id][ExitA],
+													BusinessInfo[business_id][Type],
+													BusinessInfo[business_id][OutsideInterior],
+													BusinessInfo[business_id][OutsideVirtualWorld],
+													BusinessInfo[business_id][InsideInterior],
+													BusinessInfo[business_id][InsideVirtualWorld]);
+	mysql_tquery(mysql, query);
+}
+
+public SaveBusiness(business_id)
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "UPDATE Businesses \
+												SET owned = %d, \
+													user_id = %d, \
+													name = %s, \
+													price = %d, \
+													locked = %d, \
+													money = %d, \
+													enter_fee = %d, \
+													enterX = %f, \
+													enterY = %f, \
+													enterZ = %f, \
+													enterA = %f, \
+													exitX = %f, \
+													exitY = %f, \
+													exitZ = %f, \
+													exitA = %f, \
+													business_type = %d, \
+													outside_interior = %d, \
+													outside_virtual_world = %d, \
+													inside_interior = %d, \
+													inside_virtual_world = %d \												
+												WHERE id = %d",
+												BusinessInfo[business_id][Owned],
+												BusinessInfo[business_id][Owner],
+												BusinessInfo[business_id][Name],												
+												BusinessInfo[business_id][Price],  
+												BusinessInfo[business_id][Locked],											
+												BusinessInfo[business_id][Money],  											
+												BusinessInfo[business_id][EnterFee],  
+												BusinessInfo[business_id][EnterX], 
+												BusinessInfo[business_id][EnterY], 
+												BusinessInfo[business_id][EnterZ], 
+												BusinessInfo[business_id][EnterA], 
+												BusinessInfo[business_id][ExitX],
+												BusinessInfo[business_id][ExitY],
+												BusinessInfo[business_id][ExitZ],
+												BusinessInfo[business_id][ExitA],
+												BusinessInfo[business_id][Type],
+												BusinessInfo[business_id][OutsideInterior],
+												BusinessInfo[business_id][OutsideVirtualWorld],
+												BusinessInfo[business_id][InsideInterior],
+												BusinessInfo[business_id][InsideVirtualWorld],
+												BusinessInfo[business_id][ID]);
+	mysql_pquery(mysql, query);
+
+	return 1;
+}
+
+public DeleteBusiness(business_id) 
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "DELETE FROM Businesses \
+												WHERE id = %d",
+													BusinessInfo[business_id][ID]);
+	mysql_tquery(mysql, query);
 }
 
 public OnAccountLoad(playerid)
@@ -1786,6 +2046,15 @@ public IsARentVehicle(vehicleid)
    }
    
    return 0;
+}
+
+public IsALSPoliceCar(vehicleid)
+{
+	for(new i = 0; i < sizeof(ls_police_cars); i++)
+	{
+		if(vehicleid == ls_police_cars[i]) return 1;
+	}
+	return 0;
 }
 
 public IsABike(vehicleid)
@@ -1976,37 +2245,8 @@ public OnPlayerRegister(playerid)
 	SendClientMessage(playerid, -1, "Registrovali ste se na server.");
 }
 
-public OnGameModeInit()
+public LoadRentVehicles()
 {
-	AddPlayerClass(0, 1642.2903, -2333.3423, 13.5469, 360.0, 0, 0, 0, 0, 0, 0);
-	
-	// Disable other player markers on radar
-	ShowPlayerMarkers(0);
-	
-	// Shows name, health and armor above player
-	ShowNameTags(1);
-	
-	// Disables stunt bonuses
-	EnableStuntBonusForAll(0);
-	
-	// Disable interior enter and exits
-	DisableInteriorEnterExits();
-	
-	// Manually control vehicle parameters
-	ManualVehicleEngineAndLights();
-
-	new MySQLOpt:MYSQL_OPTIONS = mysql_init_options();
-	mysql_set_option(MYSQL_OPTIONS, SERVER_PORT, 3307);
-	
-	mysql = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_OPTIONS);
-	
-	if(mysql_errno(mysql) != 0 || mysql == MYSQL_INVALID_HANDLE)
-	{
-		print("Connection has failed");
-		SendRconCommand("exit");
-		return 1;
-	}
-	
 	//------------------------------------------------------------------------ > RENT
 	rent_vehicles[0] = AddStaticVehicleEx(462,1560.3000500,-2309.0000000,13.2000000,90.0000000,-1,7,-1); //Faggio
 	rent_vehicles[1] = AddStaticVehicleEx(462,1560.3000500,-2312.3000500,13.2000000,90.0000000,-1,7,-1); //Faggio
@@ -2033,7 +2273,10 @@ public OnGameModeInit()
 	rent_vehicles[22] = AddStaticVehicleEx(462,1175.4000000,-1337.6000000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	rent_vehicles[23] = AddStaticVehicleEx(462,1175.4000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	GlobalVehiclesCounter += 24;
-	
+}
+
+public LoadSaleVehicles()
+{
 	//------------------------------------------------------------------------- > SALES VEHICLES
 	//------------------------------------------------------------------------- > COUNT AND SHUTZ
 	sale_vehicles[0] = AddStaticVehicleEx(580,2148.7000000,-1134.1000000,25.5000000,270.0000000, 1, 1, 15); //Stafford
@@ -2132,6 +2375,650 @@ public OnGameModeInit()
 	sale_vehicles[87] = AddStaticVehicleEx(511,244.5000000,2471.5000000,18.0000000,0.0000000, 1, 1, 15); //Beagle
 	sale_vehicles[88] = AddStaticVehicleEx(487,365.1000100,2536.5000000,16.9000000,180.0000000, 6, 6, 15); //Maverick
 	GlobalVehiclesCounter += 89;
+}
+
+public LoadLosSantosCityHallExterior()
+{
+	//------------------------------------------------------------------------ > CITY HALL EXTERIOR
+	//LEVA STAKLA
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	//POLU-LEVA STAKLA
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	//POLU-DESNA STAKLA
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	//DESNA STAKLA
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	//SREDNJA STAKLA
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	//STAKLO IZNAD ULAZA
+	CreateDynamicObject(10932, 1481.17737, -1787.80005, 27.42870,   0.00000, 0.00000, 0.00000);
+	//PARKING LINIJE
+	CreateDynamicObject(11548, 1551.69885, -1792.77197, 12.55990,   0.00000, -0.10000, 60.00000);
+	CreateDynamicObject(11548, 1406.88232, -1787.57886, 12.55990,   0.00000, 0.08000, 60.00000);
+	//LOGO
+	CreateDynamicObject(18750, 1482.29211, -1771.79895, 131.21419,   90.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1214, 1493.28955, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.28955, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.29053, -1774.95178, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.29053, -1776.14294, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.29053, -1777.30298, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.28955, -1777.26001, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1774.85315, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1776.05005, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1777.25000, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1777.26001, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1774.92468, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1776.11060, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1777.31372, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1777.24023, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1774.82117, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1776.00806, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1777.17651, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1774.92468, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1776.11060, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1777.31372, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.66516, -1774.77393, 115.90000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.66516, -1775.96619, 115.90000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.66516, -1777.13037, 115.90000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1776.36792, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1777.54834, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1778.74841, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1779.94922, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1781.15002, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1775.20764, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1775.01550, 138.84155,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1776.18774, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1777.36816, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1778.52832, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1779.70862, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1780.86890, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1775.31226, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1776.46936, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1777.62671, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1778.78833, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1779.98975, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1781.17114, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1775.21851, 138.84155,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1776.41663, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1777.60364, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1778.77991, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1779.96692, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1781.16724, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1775.21851, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1776.41663, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1777.60364, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1778.77991, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1779.96692, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1781.16724, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1485.93225, -1775.38025, 138.84155,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1485.93225, -1776.56311, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1777.73938, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1778.90308, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1780.07874, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1781.26123, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1775.38025, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1485.93225, -1776.56311, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1777.73938, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1778.90308, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1780.07874, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1781.26123, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1490.70508, -1775.22449, 138.84155,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1776.38635, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1777.54382, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1778.72144, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1779.90271, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1781.08777, 138.84160,   -90.00000, 0.00000, 0.00000);
+	//SVETLA ISPRED ULAZA
+	CreateDynamicObject(19121, 1478.50110, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1473.00256, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1467.77417, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1483.86072, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1489.40112, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1494.56628, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	//SVETLA UNUTAR ULAZA
+	CreateDynamicObject(19121, 1483.87488, -1758.85999, 17.13857,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1478.43518, -1758.85999, 17.13860,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1484.76440, -1772.40796, 18.34751,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1477.38220, -1772.40796, 18.34750,   0.00000, 0.00000, 0.00000);
+	//ZABRANA PRILASKA VOZILA DESNO
+	CreateDynamicObject(1214, 1458.51599, -1750.06982, 12.33903,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1748.78967, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1747.52625, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1746.28516, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1745.02490, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1743.76257, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	//ZABRANA PRILASKA VOZILA LEVO
+	CreateDynamicObject(1214, 1503.89844, -1750.06982, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1748.78967, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1747.52625, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1746.28516, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1745.02490, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1743.76257, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	//ZABRANA PRILASKA VOZILA SREDINA
+	CreateDynamicObject(1214, 1460.15991, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1461.81995, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1463.44409, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1465.14746, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1466.81104, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1468.45654, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1470.13684, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.79626, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1473.46277, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1475.12915, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1476.83020, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1478.51160, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1502.21289, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1500.53125, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1498.86548, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1497.18188, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1495.51855, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.87695, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1492.15625, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.53271, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1488.85718, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.19385, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1485.48303, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1483.86035, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+}
+
+public LoadLosSantosCityHallInterior()
+{
+	//------------------------------------------------------------------------ > CITY HALL INTERIOR
+	CreateDynamicObject(14597, 1481.30005, -1790.00000, 1000.00000, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1998, 1480.77734, -1801.83716, 998.00317, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1671, 1481.66187, -1801.51086, 998.45001, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2002, 1478.89514, -1794.76050, 998.00189, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1703, 1483.65051, -1794.73047, 998.00140, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1703, 1483.65051, -1797.19995, 998.00140, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2165, 1492.10901, -1788.86707, 997.99707, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2165, 1492.10901, -1792.58911, 997.99707, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1671, 1492.97424, -1788.35400, 998.45001, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1671, 1492.97424, -1792.09351, 998.45001, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1703, 1486.85852, -1787.07385, 998.00287, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2002, 1485.01257, -1787.07422, 998.00165, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1742, 1485.68433, -1794.09668, 998.00262, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2167, 1494.88818, -1787.03223, 998.00018, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2167, 1494.88818, -1793.53003, 998.00018, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2162, 1494.90002, -1791.76001, 997.99988, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2161, 1494.89404, -1787.91809, 998.00031, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2200, 1467.87463, -1793.45679, 998.05603, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2200, 1467.87463, -1788.26978, 998.05603, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2165, 1470.40125, -1789.79309, 997.99902, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1671, 1469.63159, -1790.38281, 998.45001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1703, 1475.56055, -1787.05286, 998.00189, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1703, 1473.07947, -1787.05286, 998.00189, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1703, 1477.56091, -1793.39050, 998.00189, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1703, 1475.04028, -1793.39050, 998.00189, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2161, 1479.24011, -1803.14368, 998.00122, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2165, 1469.59387, -1784.65503, 997.99982, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2165, 1469.59387, -1779.11365, 997.99982, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1671, 1468.87854, -1785.19849, 998.50000, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1671, 1468.87854, -1779.66064, 998.50000, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2164, 1476.56250, -1778.75659, 998.00177, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2191, 1475.13440, -1779.22156, 998.00116, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2191, 1473.79224, -1779.22156, 998.00122, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1775, 1477.22473, -1785.76746, 999.09998, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2002, 1476.31274, -1785.66138, 998.00262, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1703, 1475.58594, -1785.65405, 998.00092, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1998, 1493.44971, -1780.25012, 998.11108, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1671, 1494.35266, -1779.92029, 998.50000, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1671, 1492.37451, -1780.01855, 998.50000, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2162, 1494.41821, -1786.14209, 998.00098, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1703, 1487.00610, -1785.65125, 998.00311, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1703, 1489.51160, -1785.65125, 998.00311, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2002, 1485.00830, -1779.26624, 998.00177, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1775, 1487.18140, -1779.13745, 999.09998, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2811, 1488.09302, -1779.14722, 998.00085, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2249, 1493.27954, -1779.03833, 999.59998, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(644, 1490.55432, -1785.28406, 998.32166, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1494.98999, -1782.94543, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1494.98999, -1792.52661, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1489.28638, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1498.92004, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1489.28638, -1786.24402, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1498.92004, -1786.24402, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1484.26904, -1773.57483, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1484.26904, -1799.01794, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1479.43420, -1776.80005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1478.32483, -1773.57483, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1478.32483, -1799.01794, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1479.43420, -1803.21997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1473.27515, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1463.65283, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1473.27002, -1786.23999, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1463.65283, -1786.23999, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1473.27515, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1463.65283, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1473.27515, -1794.00000, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1463.65283, -1794.00000, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1489.28638, -1794.04004, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1489.28638, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, -1794.04004, 999.70001, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1498.92004, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1498.92004, -1794.04004, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1467.61328, -1791.36206, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1467.61328, -1781.35571, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19378, 1483.62744, -1781.74316, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1494.11633, -1781.74341, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1472.89136, -1781.74341, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1483.62744, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1494.11633, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1472.89136, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1483.62744, -1800.98755, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1483.62744, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1494.11633, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1483.62939, -1800.98755, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1494.11633, -1791.37097, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1473.11157, -1791.37097, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1473.11157, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1483.62744, -1791.35107, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(2946, 1484.46436, -1776.86133, 998.01440, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2946, 1478.12231, -1776.86133, 998.01440, 0.00000, 0.00000, -90.00000);
+}
+
+public LoadLosSantisParking()
+{
+	//------------------------------------------------------------------------ > PARKING
+	CreateDynamicObject(19447,1622.9000000,-1146.3900000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1615.7000000,-1146.3900000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (2)
+	CreateDynamicObject(19428,1610.1500000,-1146.1500000,24.5000000,0.0000000,0.0000000,72.0000000); //object(cs_landbit_10_a) (1)
+	CreateDynamicObject(19428,1608.7100000,-1145.5100000,24.5000000,0.0000000,0.0000000,59.9963400); //object(cs_landbit_10_a) (2)
+	CreateDynamicObject(19428,1607.5000000,-1144.5400000,24.5000000,0.0000000,0.0000000,42.6499900); //object(cs_landbit_10_a) (4)
+	CreateDynamicObject(19428,1606.5500000,-1143.2900000,24.5000000,0.0000000,0.0000000,31.5647000); //object(cs_landbit_10_a) (5)
+	CreateDynamicObject(19428,1605.9900000,-1141.8500000,24.5000000,0.0000000,0.0000000,10.7999900); //object(cs_landbit_10_a) (6)
+	CreateDynamicObject(19428,1605.8250000,-1140.3000000,24.5000000,0.0000000,0.0000000,1.2000120); //object(cs_landbit_10_a) (7)
+	CreateDynamicObject(19428,1605.8100000,-1138.7000000,24.5000000,0.0000000,0.0000000,359.7500000); //object(cs_landbit_10_a) (8)
+	CreateDynamicObject(19428,1605.8200000,-1137.1900000,24.5000000,0.0000000,0.0000000,359.2473000); //object(cs_landbit_10_a) (9)
+	CreateDynamicObject(19428,1605.8000000,-1135.6000000,24.5000000,0.0000000,0.0000000,2.2500000); //object(cs_landbit_10_a) (10)
+	CreateDynamicObject(19428,1605.7000000,-1134.0000000,24.5000000,0.0000000,0.0000000,4.9967040); //object(cs_landbit_10_a) (11)
+	CreateDynamicObject(19428,1605.5360000,-1132.4100000,24.5000000,0.0000000,0.0000000,6.7432860); //object(cs_landbit_10_a) (12)
+	CreateDynamicObject(19428,1605.3500000,-1130.8300000,24.5000000,0.0000000,0.0000000,6.7401120); //object(cs_landbit_10_a) (13)
+	CreateDynamicObject(19428,1605.1680000,-1129.3100000,24.5000000,0.0000000,0.0000000,6.7401120); //object(cs_landbit_10_a) (14)
+	CreateDynamicObject(19428,1605.0000000,-1127.8000000,24.5000000,0.0000000,0.0000000,5.7401120); //object(cs_landbit_10_a) (15)
+	CreateDynamicObject(19428,1604.8500000,-1126.3000000,24.5000000,0.0000000,0.0000000,5.7348630); //object(cs_landbit_10_a) (16)
+	CreateDynamicObject(19428,1604.6900000,-1124.7200000,24.5000000,0.0000000,0.0000000,5.7348630); //object(cs_landbit_10_a) (17)
+	CreateDynamicObject(19428,1604.5360000,-1123.2000000,24.5000000,0.0000000,0.0000000,5.7348630); //object(cs_landbit_10_a) (18)
+	CreateDynamicObject(19428,1604.3600000,-1121.6200000,24.5000000,0.0000000,0.0000000,6.7348630); //object(cs_landbit_10_a) (19)
+	CreateDynamicObject(19428,1604.1500000,-1120.0700000,24.5000000,0.0000000,0.0000000,8.4846190); //object(cs_landbit_10_a) (20)
+	CreateDynamicObject(19428,1603.9000000,-1118.5000000,24.5000000,0.0000000,0.0000000,9.4814450); //object(cs_landbit_10_a) (21)
+	CreateDynamicObject(19428,1603.6700000,-1117.0000000,24.5000000,0.0000000,0.0000000,7.9812010); //object(cs_landbit_10_a) (22)
+	CreateDynamicObject(19428,1603.4400000,-1115.4300000,24.5000000,0.0000000,0.0000000,8.7260740); //object(cs_landbit_10_a) (23)
+	CreateDynamicObject(19428,1603.2080000,-1113.9000000,24.5000000,0.0000000,0.0000000,8.4731450); //object(cs_landbit_10_a) (24)
+	CreateDynamicObject(19428,1602.9900000,-1112.4000000,24.5000000,0.0000000,0.0000000,8.2204590); //object(cs_landbit_10_a) (25)
+	CreateDynamicObject(19428,1602.7700000,-1110.8200000,24.5000000,0.0000000,0.0000000,7.7177730); //object(cs_landbit_10_a) (26)
+	CreateDynamicObject(19428,1602.5520000,-1109.2400000,24.5000000,0.0000000,0.0000000,7.9624020); //object(cs_landbit_10_a) (27)
+	CreateDynamicObject(19428,1602.3000000,-1107.7000000,24.5000000,0.0000000,0.0000000,10.7095900); //object(cs_landbit_10_a) (28)
+	CreateDynamicObject(19428,1602.0000000,-1106.1300000,24.5000000,0.0000000,0.0000000,10.9561800); //object(cs_landbit_10_a) (29)
+	CreateDynamicObject(19428,1601.7000000,-1104.6000000,24.5000000,0.0000000,0.0000000,11.2033700); //object(cs_landbit_10_a) (30)
+	CreateDynamicObject(19428,1601.4000000,-1103.0600000,24.5000000,0.0000000,0.0000000,10.9505600); //object(cs_landbit_10_a) (31)
+	CreateDynamicObject(19428,1601.1000000,-1101.5100000,24.5000000,0.0000000,0.0000000,10.9478800); //object(cs_landbit_10_a) (32)
+	CreateDynamicObject(19428,1600.7600000,-1099.9600000,24.5000000,0.0000000,0.0000000,13.6978800); //object(cs_landbit_10_a) (33)
+	CreateDynamicObject(19428,1600.3800000,-1098.4300000,24.5000000,0.0000000,0.0000000,13.9444600); //object(cs_landbit_10_a) (34)
+	CreateDynamicObject(19428,1600.0600000,-1096.8600000,24.5000000,0.0000000,0.0000000,9.1916500); //object(cs_landbit_10_a) (35)
+	CreateDynamicObject(19428,1599.7600000,-1095.3000000,24.5000000,0.0000000,0.0000000,12.6900600); //object(cs_landbit_10_a) (36)
+	CreateDynamicObject(19428,1599.3000000,-1093.7800000,24.5000000,0.0000000,0.0000000,20.9392100); //object(cs_landbit_10_a) (37)
+	CreateDynamicObject(19428,1598.7400000,-1092.2900000,24.5000000,0.0000000,0.0000000,20.1844500); //object(cs_landbit_10_a) (38)
+	CreateDynamicObject(19428,1598.2000000,-1090.8000000,24.5000000,0.0000000,0.0000000,19.6818800); //object(cs_landbit_10_a) (39)
+	CreateDynamicObject(19428,1597.6200000,-1089.3200000,24.5000000,0.0000000,0.0000000,23.1765100); //object(cs_landbit_10_a) (40)
+	CreateDynamicObject(19428,1597.0200000,-1087.8300000,24.5000000,0.0000000,0.0000000,20.6752900); //object(cs_landbit_10_a) (41)
+	CreateDynamicObject(19428,1596.4700000,-1086.3300000,24.5000000,0.0000000,0.0000000,19.6708100); //object(cs_landbit_10_a) (42)
+	CreateDynamicObject(19428,1595.9500000,-1084.8100000,24.5000000,0.0000000,0.0000000,18.1655300); //object(cs_landbit_10_a) (43)
+	CreateDynamicObject(19428,1595.4200000,-1083.3100000,24.5000000,0.0000000,0.0000000,20.6604000); //object(cs_landbit_10_a) (44)
+	CreateDynamicObject(19428,1594.8500000,-1081.8200000,24.5000000,0.0000000,0.0000000,21.4097900); //object(cs_landbit_10_a) (45)
+	CreateDynamicObject(19428,1594.2000000,-1080.4000000,24.5000000,0.0000000,0.0000000,27.6568600); //object(cs_landbit_10_a) (46)
+	CreateDynamicObject(19428,1593.4300000,-1079.0000000,24.5000000,0.0000000,0.0000000,29.9025900); //object(cs_landbit_10_a) (47)
+	CreateDynamicObject(19428,1592.6500000,-1077.6300000,24.5000000,0.0000000,0.0000000,29.3992900); //object(cs_landbit_10_a) (48)
+	CreateDynamicObject(19428,1591.9000000,-1076.2500000,24.5000000,0.0000000,0.0000000,27.6439200); //object(cs_landbit_10_a) (49)
+	CreateDynamicObject(19428,1591.1600000,-1074.8300000,24.5000000,0.0000000,0.0000000,27.3916000); //object(cs_landbit_10_a) (50)
+	CreateDynamicObject(19428,1590.4300000,-1073.4200000,24.5000000,0.0000000,0.0000000,27.3889200); //object(cs_landbit_10_a) (51)
+	CreateDynamicObject(19428,1589.7000000,-1072.0000000,24.5000000,0.0000000,0.0000000,26.8889200); //object(cs_landbit_10_a) (52)
+	CreateDynamicObject(19428,1589.0000000,-1070.6000000,24.5000000,0.0000000,0.0000000,26.1335100); //object(cs_landbit_10_a) (53)
+	CreateDynamicObject(19428,1588.3000000,-1069.2000000,24.5000000,0.0000000,0.0000000,26.8809800); //object(cs_landbit_10_a) (54)
+	CreateDynamicObject(19428,1587.5700000,-1067.8000000,24.5000000,0.0000000,0.0000000,28.1280500); //object(cs_landbit_10_a) (55)
+	CreateDynamicObject(19428,1586.8300000,-1066.4000000,24.5000000,0.0000000,0.0000000,27.6250000); //object(cs_landbit_10_a) (56)
+	CreateDynamicObject(19428,1586.0200000,-1065.0400000,24.5000000,0.0000000,0.0000000,33.8696300); //object(cs_landbit_10_a) (58)
+	CreateDynamicObject(19428,1585.1000000,-1063.7400000,24.5000000,0.0000000,0.0000000,36.8653900); //object(cs_landbit_10_a) (59)
+	CreateDynamicObject(19428,1584.1000000,-1062.5000000,24.5000000,0.0000000,0.0000000,40.8646200); //object(cs_landbit_10_a) (60)
+	CreateDynamicObject(19428,1583.1300000,-1061.3000000,24.5000000,0.0000000,0.0000000,36.8636500); //object(cs_landbit_10_a) (61)
+	CreateDynamicObject(19428,1582.2100000,-1060.0700000,24.5000000,0.0000000,0.0000000,36.8591300); //object(cs_landbit_10_a) (62)
+	CreateDynamicObject(19428,1581.2600000,-1058.8000000,24.5000000,0.0000000,0.0000000,36.8591300); //object(cs_landbit_10_a) (63)
+	CreateDynamicObject(19428,1580.3000000,-1057.5200000,24.5000000,0.0000000,0.0000000,36.6091300); //object(cs_landbit_10_a) (64)
+	CreateDynamicObject(19428,1579.3500000,-1056.2400000,24.5000000,0.0000000,0.0000000,36.6064500); //object(cs_landbit_10_a) (65)
+	CreateDynamicObject(19428,1578.4200000,-1055.0000000,24.5000000,0.0000000,0.0000000,37.3564800); //object(cs_landbit_10_a) (66)
+	CreateDynamicObject(19428,1577.4600000,-1053.7200000,24.5000000,0.0000000,0.0000000,36.6035200); //object(cs_landbit_10_a) (67)
+	CreateDynamicObject(19428,1576.5000000,-1052.4400000,24.5000000,0.0000000,0.0000000,37.1009500); //object(cs_landbit_10_a) (68)
+	CreateDynamicObject(19428,1575.5500000,-1051.1600000,24.5000000,0.0000000,0.0000000,36.1008300); //object(cs_landbit_10_a) (69)
+	CreateDynamicObject(19428,1574.6100000,-1049.9000000,24.5000000,0.0000000,0.0000000,37.0955800); //object(cs_landbit_10_a) (70)
+	CreateDynamicObject(19428,1573.6600000,-1048.6200000,24.5000000,0.0000000,0.0000000,36.0953400); //object(cs_landbit_10_a) (71)
+	CreateDynamicObject(19428,1572.6500000,-1047.4000000,24.5000000,0.0000000,0.0000000,43.3400900); //object(cs_landbit_10_a) (72)
+	CreateDynamicObject(19428,1571.4700000,-1046.3500000,24.5000000,0.0000000,0.0000000,53.0855700); //object(cs_landbit_10_a) (73)
+	CreateDynamicObject(19428,1570.2400000,-1045.4000000,24.5000000,0.0000000,0.0000000,51.5804400); //object(cs_landbit_10_a) (74)
+	CreateDynamicObject(19428,1569.0500000,-1044.4000000,24.5000000,0.0000000,0.0000000,48.3253200); //object(cs_landbit_10_a) (75)
+	CreateDynamicObject(19428,1567.8300000,-1043.3800000,24.5000000,0.0000000,0.0000000,51.8225100); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19428,1566.6100000,-1042.3900000,24.5000000,0.0000000,0.0000000,50.3225100); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19428,1565.4100000,-1041.3900000,24.5000000,0.0000000,0.0000000,50.0673800); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19428,1564.2200000,-1040.3900000,24.5000000,0.0000000,0.0000000,50.0647000); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19428,1563.0500000,-1039.4000000,24.5000000,0.0000000,0.0000000,49.5647300); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19428,1562.6000000,-1039.0200000,24.5000000,0.0000000,0.0000000,49.5593300); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19428,1561.2600000,-1038.2900000,24.5000000,0.0000000,0.0000000,73.0593600); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19428,1559.8000000,-1037.8500000,24.5000000,0.0000000,0.0000000,73.3090800); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19428,1558.2900000,-1037.3800000,24.5000000,0.0000000,0.0000000,72.0562700); //object(cs_landbit_10_a) (76)
+	CreateDynamicObject(19447,1549.0000000,-1034.4000000,24.5000000,0.0000000,0.0000000,72.0000000); //object(cs_detrok13) (3)
+	CreateDynamicObject(19447,1540.2500000,-1031.5800000,24.5000000,0.0000000,0.0000000,72.2489000); //object(cs_detrok13) (4)
+	CreateDynamicObject(19428,1535.2600000,-1029.4800000,24.5000000,0.0000000,0.0000000,33.7500000); //object(cs_landbit_10_a) (3)
+	CreateDynamicObject(19428,1534.7900000,-1028.0560000,24.5000000,0.0000000,0.0000000,2.7449950); //object(cs_landbit_10_a) (57)
+	CreateDynamicObject(19428,1535.0300000,-1026.5450000,24.5000000,0.0000000,0.0000000,338.9911000); //object(cs_landbit_10_a) (77)
+	CreateDynamicObject(19428,1535.6000000,-1025.1000000,24.5000000,0.0000000,0.0000000,337.7386000); //object(cs_landbit_10_a) (78)
+	CreateDynamicObject(19428,1536.2100000,-1023.7000000,24.5000000,0.0000000,0.0000000,335.7334000); //object(cs_landbit_10_a) (79)
+	CreateDynamicObject(19447,1538.5300000,-1018.6000000,24.5000000,0.0000000,0.0000000,335.5000000); //object(cs_detrok13) (8)
+	CreateDynamicObject(19447,1542.5100098,-1009.8300171,24.5000000,0.0000000,0.0000000,335.7000122); //object(cs_detrok13) (9)
+	CreateDynamicObject(19447,1652.5000000,-1146.3900000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1662.1000000,-1146.3900000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1671.7000000,-1146.3900000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1676.7000000,-1146.3900000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19428,1682.2700000,-1146.2000000,24.5000000,0.0000000,0.0000000,284.0000000); //object(cs_landbit_10_a) (80)
+	CreateDynamicObject(19428,1683.6400000,-1145.5200000,24.5000000,0.0000000,0.0000000,308.7466000); //object(cs_landbit_10_a) (81)
+	CreateDynamicObject(19428,1684.6300000,-1144.3500000,24.5000000,0.0000000,0.0000000,330.4933000); //object(cs_landbit_10_a) (82)
+	CreateDynamicObject(19428,1685.3000000,-1142.9400000,24.5000000,0.0000000,0.0000000,338.4907000); //object(cs_landbit_10_a) (83)
+	CreateDynamicObject(19428,1685.7000000,-1141.4200000,24.5000000,0.0000000,0.0000000,351.9888000); //object(cs_landbit_10_a) (85)
+	CreateDynamicObject(19447,1685.8000000,-1135.8400000,24.5000000,0.0000000,0.0000000,0.1000061); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1685.8000000,-1126.3000000,24.5000000,0.0000000,0.0000000,359.9000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1685.8000000,-1116.7000000,24.5000000,0.0000000,0.0000000,0.1456299); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1685.8000000,-1107.1000000,24.5000000,0.0000000,0.0000000,359.8928000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1685.8000000,-1099.9000000,24.5000000,0.0000000,0.0000000,0.1401367); //object(cs_detrok13) (1)
+	CreateDynamicObject(19428,1686.3350000,-1094.5900000,24.5000000,0.0000000,0.0000000,314.0000000); //object(cs_landbit_10_a) (86)
+	CreateDynamicObject(19447,1691.6670000,-1094.1000000,24.5000000,0.0000000,0.0000000,89.5000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1701.2700000,-1094.1400000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1710.9000000,-1094.2000000,24.5000000,0.0000000,0.0000000,89.2999900); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1720.5000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1730.1000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1739.7000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1749.2000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1758.7000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1768.3000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1777.8000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1787.4000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1797.0000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1806.6000000,-1094.2580000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19428,1812.1600000,-1094.2580000,24.5000000,0.0000000,0.0000000,270.0000000); //object(cs_landbit_10_a) (87)
+	CreateDynamicObject(19447,1813.0500000,-1089.5300000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1813.0500000,-1080.0000000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1813.0500000,-1070.5000000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1813.0500000,-1060.9000000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1813.0500000,-1051.3000000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1813.0500000,-1041.7000000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1813.0500000,-1032.1000000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1813.0500000,-1022.5000000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1813.0500000,-1012.9000000,24.5000000,0.0000000,0.0000000,0.0000000); //object(cs_detrok13) (1)
+	CreateDynamicObject(19447,1546.4100000,-1001.2000000,24.5000000,0.0000000,0.0000000,335.6982000); //object(cs_detrok13) (9)
+	CreateDynamicObject(8406,1635.9000000,-1146.1000000,28.4000000,0.0000000,0.0000000,0.0000000); //object(carparksign01_lvs) (1)
+	CreateDynamicObject(4641,1637.7000000,-1144.4000000,24.6000000,0.0000000,0.0000000,180.0000000); //object(paypark_lan04) (1)
+	parking_gate1 = CreateDynamicObject(969,1627.8000000,-1145.9000000,23.1000000,0.0000000,0.0000000,0.0000000); //object(electricgate) (1)
+	parking_gate2 = CreateDynamicObject(969,1647.6000000,-1145.9000000,23.1000000,0.0000000,0.0000000,180.0000000); //object(electricgate) (2)
+}
+
+public LoadLosSantosAirport()
+{
+	//------------------------------------------------------------------------ > SPAWN OBJECTS
+	CreateDynamicObject(984,1565.7399900,-2349.0000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (1)
+	CreateDynamicObject(984,1565.7399900,-2361.7998000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (2)
+	CreateDynamicObject(984,1565.7399900,-2336.1999500,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (4)
+	CreateDynamicObject(984,1565.7399900,-2323.3000500,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (5)
+	CreateDynamicObject(984,1565.7399900,-2311.0000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (6)
+	CreateDynamicObject(9131,1565.7399900,-2367.8689000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (1)
+	CreateDynamicObject(9131,1565.7399900,-2355.3999000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (2)
+	CreateDynamicObject(9131,1565.7399900,-2342.6001000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (3)
+	CreateDynamicObject(9131,1565.7399900,-2329.8000500,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (4)
+	CreateDynamicObject(9131,1565.7399900,-2317.0000000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (5)
+	CreateDynamicObject(9131,1565.7399900,-2305.8000500,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (6)
+	CreateDynamicObject(983,1565.7399900,-2303.0000000,13.2500000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (3)
+	CreateDynamicObject(983,1565.7399900,-2299.8000500,13.2500000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (4)
+	CreateDynamicObject(9131,1565.7399900,-2296.9199200,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (7)
+	CreateDynamicObject(984,1559.6999500,-2367.8999000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (9)
+	CreateDynamicObject(984,1547.0000000,-2367.8999000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (10)
+	CreateDynamicObject(984,1534.1999500,-2367.8999000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (11)
+	CreateDynamicObject(984,1521.4000200,-2367.8999000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (12)
+	CreateDynamicObject(984,1508.5999800,-2367.8999000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (13)
+	CreateDynamicObject(984,1495.8000500,-2367.8999000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (14)
+	CreateDynamicObject(983,1487.8000500,-2367.8999000,13.2500000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (5)
+	CreateDynamicObject(9131,1553.4000200,-2367.8689000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (8)
+	CreateDynamicObject(9131,1540.5999800,-2367.8689000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (9)
+	CreateDynamicObject(9131,1527.6999500,-2367.8689000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (10)
+	CreateDynamicObject(9131,1515.0999800,-2367.8689000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (11)
+	CreateDynamicObject(9131,1502.3000500,-2367.8689000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (12)
+	CreateDynamicObject(9131,1484.8000500,-2367.8689000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (13)
+	CreateDynamicObject(984,1484.8000500,-2361.7998000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (15)
+	CreateDynamicObject(9131,1484.8000500,-2355.3994100,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (14)
+	CreateDynamicObject(984,1484.8000500,-2349.0000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (16)
+	CreateDynamicObject(9131,1484.7889400,-2342.6999500,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (15)
+	CreateDynamicObject(983,1488.0999800,-2342.1999500,13.3000000,0.0000000,0.0000000,280.0000000); //object(fenceshit3) (6)
+	CreateDynamicObject(983,1494.4000200,-2341.1001000,13.3000000,0.0000000,0.0000000,279.7480000); //object(fenceshit3) (8)
+	CreateDynamicObject(9131,1497.8890400,-2340.6001000,13.6000000,0.0000000,0.0000000,8.0000000); //object(shbbyhswall13_lvs) (16)
+	CreateDynamicObject(984,1504.4000200,-2340.4670400,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (17)
+	CreateDynamicObject(9131,1510.8000500,-2340.4670400,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (17)
+	CreateDynamicObject(984,1517.0999800,-2340.4670400,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (18)
+	CreateDynamicObject(9131,1523.6999500,-2340.4670400,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (18)
+	CreateDynamicObject(984,1530.4000200,-2340.4670400,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (19)
+	CreateDynamicObject(9131,1538.6894500,-2340.4668000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (19)
+	CreateDynamicObject(983,1535.1999500,-2340.4670400,13.2500000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (9)
+	CreateDynamicObject(984,1538.6899400,-2333.8000500,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (20)
+	CreateDynamicObject(9131,1538.6669900,-2327.3999000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (20)
+	CreateDynamicObject(984,1538.6899400,-2320.8000500,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (21)
+	CreateDynamicObject(9131,1538.6400100,-2314.3999000,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (21)
+	CreateDynamicObject(984,1538.6700400,-2307.8999000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (22)
+	CreateDynamicObject(983,1538.6700400,-2299.8999000,13.2500000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (10)
+	CreateDynamicObject(9131,1538.6099900,-2296.8730500,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (22)
+	CreateDynamicObject(984,1559.6800500,-2296.8999000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (23)
+	CreateDynamicObject(4639,1540.7450000,-2297.5996100,14.2000000,0.0000000,0.0000000,0.0000000); //object(paypark_lan02) (1)
+	CreateDynamicObject(9131,1542.8800000,-2296.8730500,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (23)
+	CreateDynamicObject(9131,1553.6200000,-2296.9199200,13.6000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (24)
+	CreateDynamicObject(1215,1565.6999500,-2296.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (1)
+	CreateDynamicObject(1215,1565.6999500,-2305.8000500,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (2)
+	CreateDynamicObject(1215,1565.6999500,-2317.0000000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (3)
+	CreateDynamicObject(1215,1565.6999500,-2329.8000500,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (4)
+	CreateDynamicObject(1215,1565.6999500,-2342.6001000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (5)
+	CreateDynamicObject(1215,1565.6999500,-2355.3999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (6)
+	CreateDynamicObject(1215,1565.6999500,-2367.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (7)
+	CreateDynamicObject(1215,1553.5999800,-2296.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (8)
+	CreateDynamicObject(1215,1553.4000200,-2367.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (9)
+	CreateDynamicObject(1215,1540.5999800,-2367.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (10)
+	CreateDynamicObject(1215,1527.6999500,-2367.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (11)
+	CreateDynamicObject(1215,1515.0999800,-2367.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (12)
+	CreateDynamicObject(1215,1502.3000500,-2367.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (13)
+	CreateDynamicObject(1215,1484.8000500,-2367.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (14)
+	CreateDynamicObject(1215,1484.8000500,-2355.3999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (15)
+	CreateDynamicObject(1215,1484.8000500,-2342.6999500,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (16)
+	CreateDynamicObject(1215,1497.8700000,-2340.6001000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (17)
+	CreateDynamicObject(1215,1510.8000500,-2340.4499500,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (18)
+	CreateDynamicObject(1215,1523.6999500,-2340.4499500,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (19)
+	CreateDynamicObject(1215,1538.6700400,-2340.4499500,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (20)
+	CreateDynamicObject(1215,1538.6700400,-2327.3999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (21)
+	CreateDynamicObject(1215,1538.5999800,-2314.3999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (22)
+	CreateDynamicObject(1215,1538.5999800,-2296.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (23)
+	CreateDynamicObject(1215,1542.9000200,-2296.8999000,15.3000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (24)
+	CreateDynamicObject(9339,1590.0999800,-2326.6001000,13.2000000,0.0000000,0.0000000,90.0000000); //object(sfnvilla001_cm) (1)
+	CreateDynamicObject(9339,1616.2149700,-2326.6047400,13.2000000,0.0000000,0.0000000,270.0000000); //object(sfnvilla001_cm) (2)
+	CreateDynamicObject(9339,1633.0000000,-2326.6120600,13.2000000,0.0000000,0.0000000,90.0000000); //object(sfnvilla001_cm) (3)
+	CreateDynamicObject(9339,1646.1999500,-2339.5388200,13.2000000,0.0000000,0.0000000,0.0000000); //object(sfnvilla001_cm) (4)
+	CreateDynamicObject(3858,1638.9000200,-2326.6001000,16.8000000,0.0000000,0.0000000,45.0000000); //object(ottosmash1) (1)
+	CreateDynamicObject(3858,1625.1999500,-2326.6001000,16.8000000,0.0000000,0.0000000,44.9950000); //object(ottosmash1) (2)
+	CreateDynamicObject(3858,1611.4000200,-2326.6001000,16.8000000,0.0000000,0.0000000,44.9950000); //object(ottosmash1) (3)
+	CreateDynamicObject(3858,1597.5999800,-2326.6001000,16.8000000,0.0000000,0.0000000,44.9950000); //object(ottosmash1) (4)
+	CreateDynamicObject(3858,1583.9000200,-2326.6001000,16.8000000,0.0000000,0.0000000,45.0000000); //object(ottosmash1) (7)
+	CreateDynamicObject(3858,1646.1870100,-2333.8889200,16.8000000,0.0000000,0.0000000,315.0000000); //object(ottosmash1) (8)
+}
+
+public LoadLosSantosPoliceDepartment()
+{
+	//------------------------------------------------------------------------ > LSPD
+	CreateDynamicObject(2930, 247.98140, 89.21600, 1005.20001, 0.00000, 0.00000, 0.00000);
+	cell_room_door = CreateDynamicObject(2930, 247.98140, 87.49130, 1005.20001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2930, 266.29559, 77.55000, 1002.59998, 0.00000, 0.00000, 0.00000);
+	cell1 = CreateDynamicObject(2930, 266.29559, 79.27300, 1002.59998, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2930, 266.29559, 82.05180, 1002.59998, 0.00000, 0.00000, 0.00000);
+	cell2 = CreateDynamicObject(2930, 266.29559, 83.77230, 1002.59998, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2930, 266.29559, 86.54900, 1002.59998, 0.00000, 0.00000, 0.00000);
+	cell3 = CreateDynamicObject(2930, 266.29559, 88.26910, 1002.59998, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2603, 262.90793, 87.48180, 1000.44501, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2602, 263.03015, 84.94619, 1000.54480, 0.00000, 0.00000, 135.00000);
+	CreateDynamicObject(2603, 262.90790, 82.97620, 1000.44501, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2602, 263.03021, 80.43490, 1000.54480, 0.00000, 0.00000, 135.00000);
+	CreateDynamicObject(2603, 262.90790, 78.47430, 1000.44501, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2602, 263.03021, 75.97380, 1000.54480, 0.00000, 0.00000, 135.00000);
+	lspd_door1 = CreateDynamicObject(5422, 250.611,63.2995,1003.18,0.00,0.00,00.00); // LSPD Main Door
+	lspd_door2 = CreateDynamicObject(5422, 246.228,72.4962,1003.04,0.00,0.00,90.00); // LSPD Control Room Door
+	lspd_window = CreateDynamicObject(974,250.524,67.650,1002.58,0.00,0.00,90.00); // LSPD Windows
+	
+	lspd_garage = CreateDynamicObject(3037,1589.7000000,-1638.3101000,14.2700000,0.0000000,0.0000000,90.0000000); //object(warehouse_door2b) (2)
+	lspd_garage_door = CreateDynamicObject(2930,1582.4000000,-1638.0500000,15.0000000,0.0000000,0.0000000,90.0000000); //object(chinatgate) (1)
+}
+
+public LoadLosSantosPoliceCars()
+{
+	//------------------------------------------------------------------------ > POLICE VEHICLES
+ 	ls_police_cars[0] = AddStaticVehicleEx(596,1570.3000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	ls_police_cars[1] = AddStaticVehicleEx(596,1574.4000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	ls_police_cars[2] = AddStaticVehicleEx(596,1578.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	ls_police_cars[3] = AddStaticVehicleEx(596,1583.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	ls_police_cars[4] = AddStaticVehicleEx(596,1587.4000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	ls_police_cars[5] = AddStaticVehicleEx(596,1591.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	ls_police_cars[6] = AddStaticVehicleEx(596,1595.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	ls_police_cars[7] = AddStaticVehicleEx(523,1601.5000000,-1704.2000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	ls_police_cars[8] = AddStaticVehicleEx(523,1601.5000000,-1700.2000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	ls_police_cars[9] = AddStaticVehicleEx(523,1601.5000000,-1696.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	ls_police_cars[10] = AddStaticVehicleEx(523,1601.5000000,-1692.0000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	ls_police_cars[11] = AddStaticVehicleEx(523,1601.5000000,-1688.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	ls_police_cars[12] = AddStaticVehicleEx(523,1601.5000000,-1684.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	GlobalVehiclesCounter += 13;
+}
+
+public LoadLosSantosTaxiJob()
+{
+	//------------------------------------------------------------------------ > TAXI JOB
+ 	CreateDynamicObject(983,1102.6000000,-1760.5000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (3)
+	CreateDynamicObject(983,1102.6000000,-1754.1000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (4)
+	CreateDynamicObject(983,1102.6000000,-1766.9000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (6)
+	CreateDynamicObject(983,1102.6000000,-1771.7000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (7)
+	CreateDynamicObject(983,1102.6000000,-1774.9000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (8)
+	CreateDynamicObject(9131,1102.5000000,-1777.8000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (3)
+	CreateDynamicObject(983,1099.0000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (10)
+	CreateDynamicObject(983,1092.6000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (11)
+	CreateDynamicObject(983,1062.2000000,-1777.9000000,13.2500000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (12)
+	CreateDynamicObject(983,1079.8000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (13)
+	CreateDynamicObject(984,1070.2000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (4)
+	CreateDynamicObject(983,1086.2000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (16)
+	CreateDynamicObject(9131,1058.6700000,-1777.8000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (4)
+	CreateDynamicObject(982,1058.6000000,-1765.3000000,13.3000000,0.0000000,0.0000000,0.0000000); //object(fenceshit) (2)
+	CreateDynamicObject(984,1058.6000000,-1746.1000000,13.3000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (5)
+	CreateDynamicObject(983,1058.6000000,-1738.1000000,13.3400000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (17)
+	CreateDynamicObject(9131,1058.6000000,-1735.1000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (5)
+	CreateDynamicObject(9131,1102.5000000,-1751.2399900,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (6)
+	CreateDynamicObject(982,1071.7200000,-1735.1000000,13.4000000,0.0000000,0.0000000,90.0000000); //object(fenceshit) (4)
+	CreateDynamicObject(982,1089.3300000,-1735.1000000,13.4000000,0.0000000,0.0000000,90.0000000); //object(fenceshit) (5)
+	CreateDynamicObject(9131,1102.4500000,-1735.1000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (7)
+	CreateDynamicObject(1215,1102.5000000,-1751.3000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (1)
+	CreateDynamicObject(1215,1102.5000000,-1777.8000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (2)
+	CreateDynamicObject(1215,1058.6000000,-1777.8000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (3)
+	CreateDynamicObject(1215,1058.6000000,-1735.1000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (4)
+	CreateDynamicObject(1215,1102.4000000,-1735.1000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (5)
+}
+
+public LoadLosSantosSmugglerJob()
+{
+	//------------------------------------------------------------------------ > SMUGGLER JOB
+	CreateDynamicObject(1723, 2134.69116, -2281.19971, 19.67160,   0.00000, 0.00000, -135.00000);
+	CreateDynamicObject(1723, 2132.62207, -2283.27466, 19.67160,   0.00000, 0.00000, -135.00000);
+	CreateDynamicObject(3014, 2122.26855, -2268.72998, 19.88750,   0.00000, 0.00000, 45.00000);
+	CreateDynamicObject(3014, 2121.85791, -2269.13989, 19.88750,   0.00000, 0.00000, 45.00000);
+	CreateDynamicObject(3014, 2122.26855, -2268.72998, 20.35000,   0.00000, 0.00000, 45.00000);
+	CreateDynamicObject(3014, 2122.27905, -2268.80127, 20.80000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18885, 2118.75562, -2272.05566, 20.50017,   0.00000, 0.00000, 45.00000);
+	CreateDynamicObject(1999, 2124.67798, -2276.86328, 19.67240,   0.00000, 0.00000, -45.00000);
+	CreateDynamicObject(1671, 2124.71973, -2278.22339, 20.10000,   0.00000, 0.00000, 135.00000);
+	CreateDynamicObject(1999, 2124.36450, -2272.68433, 19.67240,   0.00000, 0.00000, -225.00000);
+	CreateDynamicObject(1671, 2124.41016, -2271.32837, 20.10000,   0.00000, 0.00000, -45.00000);
+	//CreateDynamicObject(2924, 2132.19019, -2277.89160, 20.87981,   0.00000, 0.00000, 135.00000);
+	CreateDynamicObject(2612, 2128.17212, -2274.11011, 21.42070,   0.00000, 0.00000, -45.00000);
+	CreateDynamicObject(2611, 2124.51074, -2270.44287, 21.42070,   0.00000, 0.00000, -45.00000);
+	CreateDynamicObject(335, 2124.56812, -2276.93970, 20.47000,   90.00000, 90.00000, 15.00000);
+	//CreateDynamicObject(2924, 2118.78784, -2274.06763, 20.87981,   0.00000, 0.00000, 135.00000);
+	CreateDynamicObject(2049, 2129.23438, -2283.32104, 21.30740,   0.00000, 0.00000, 135.00000);
+	CreateDynamicObject(2050, 2127.68335, -2281.76440, 21.30740,   0.00000, 0.00000, 135.00000);
+	CreateDynamicObject(2051, 2125.87402, -2279.95752, 21.30740,   0.00000, 0.00000, 135.00000);
+	CreateDynamicObject(2055, 2131.42480, -2277.34888, 21.35780,   0.00000, 0.00000, -45.00000);
+	smuggler_gate1 = CreateDynamicObject(976, 2227.89941, -2209.22607, 12.54400,   0.00000, 0.00000, -45.00000);
+	smuggler_gate2 = CreateDynamicObject(976, 2240.26001, -2221.58179, 12.54400,   0.00000, 0.00000, 135.00000);
+}
+
+public OnGameModeInit()
+{
+	AddPlayerClass(0, 1642.2903, -2333.3423, 13.5469, 360.0, 0, 0, 0, 0, 0, 0);
+	
+	// Disable other player markers on radar
+	ShowPlayerMarkers(0);
+	
+	// Shows name, health and armor above player
+	ShowNameTags(1);
+	
+	// Disables stunt bonuses
+	EnableStuntBonusForAll(0);
+	
+	// Disable interior enter and exits
+	DisableInteriorEnterExits();
+	
+	// Manually control vehicle parameters
+	ManualVehicleEngineAndLights();
+
+	new MySQLOpt:MYSQL_OPTIONS = mysql_init_options();
+	mysql_set_option(MYSQL_OPTIONS, SERVER_PORT, 3307);
+	
+	mysql = mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_OPTIONS);
+	
+	if(mysql_errno(mysql) != 0 || mysql == MYSQL_INVALID_HANDLE)
+	{
+		print("Connection has failed");
+		SendRconCommand("exit");
+		return 1;
+	}
 	
 	// Textdraws for vehicles on sale
 	for(new i = 0; i < MAX_VEHICLES; i++)
@@ -2150,14 +3037,44 @@ public OnGameModeInit()
 		}
 	}
 	
+	// Load city hall exterior
+	LoadLosSantosCityHallExterior();
 	
+	// Load city hall interior
+	LoadLosSantosCityHallInterior();
 	
+	// Load great parking
+	LoadLosSantisParking();
+	
+	// Load los santos airport
+	LoadLosSantosAirport();
+	
+	// Load lspd
+	LoadLosSantosPoliceDepartment();
+	
+	// Load lspd cars
+	LoadLosSantosPoliceCars();
+
+	// Load taxi job exterior
+	LoadLosSantosTaxiJob();
+	
+	// Load smuggler job exterior
+	LoadLosSantosSmugglerJob();
+	
+	// Load rent vehicles
+	LoadRentVehicles();
+	
+	// Load sale vehicles
+	LoadSaleVehicles();
 	
 	// Load owned vehicles
 	LoadVehicles(); 
 	
 	// Load all houses
 	LoadHouses();
+	
+	// Load all businesses
+	LoadBusinesses();
 	
 	SetTimer("CheckVehicleFuel", 60000, true);
 	
@@ -3720,6 +4637,504 @@ YCMD:deletehouse(playerid, params[], help)
 
    	DestroyPickup(HouseInfo[id][Icon]);
     Delete3DTextLabel(HouseLabelArray[id]);
+
+    return 1;
+}
+
+YCMD:makebusiness(playerid, params[], help)
+{
+    #pragma unused help
+    new price, type, id, player_interior, player_virtual_world, name[128], message[256], inside_interior, Float:X, Float:Y, Float:Z, Float:A;
+    // Check for admin
+    if(sscanf(params, "iii", price, type, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /makebusiness [cena] [tip] [interior]");
+
+
+    switch(inside_interior)
+    {
+        case 1: // 24/7 1
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 17;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = -25.884499;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -185.868988;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
+            format(name, sizeof(name), "24/7");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 2: // 24/7 2
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 10;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 6.091180;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -29.271898;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
+            format(name, sizeof(name), "24/7");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 3: // 24/7 3
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 18;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = -30.946699;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -89.609596;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
+            format(name, sizeof(name), "24/7");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 4: // 24/7 4
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 16;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = -25.132599;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -139.066986;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
+            format(name, sizeof(name), "24/7");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 5: // 24/7 5
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 4;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = -27.312300;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -29.277599;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
+            format(name, sizeof(name), "24/7");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 6: // 24/7 6
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 6;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = -26.691599;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -55.714897;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
+            format(name, sizeof(name), "24/7");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 7: // Ammunation 1
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 1;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 286.148987;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -40.644398;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.569946;
+            format(name, sizeof(name), "Ammunation");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 8: // Ammunation 2
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 4;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 286.800995;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -82.547600;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.539978;
+            format(name, sizeof(name), "Ammunation");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 9: // Ammunation 3
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 6;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 296.919983;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -108.071999;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.569946;
+            format(name, sizeof(name), "Ammunation");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 10: // Ammunation 4 (2 floors)
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 7;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 314.820984;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -141.431992;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.661987;
+            format(name, sizeof(name), "Ammunation");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 11: // Ammunation 5
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 6;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 316.524994;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -167.706985;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.661987;
+            format(name, sizeof(name), "Ammunation");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 12: // Binco
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 15;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 207.737991;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -109.019996;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1005.132812;
+            format(name, sizeof(name), "Binco");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 13: // DS (Didier Sachs)
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 14;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 204.332992;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -166.694992;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.523437;
+            format(name, sizeof(name), "DS (Didier Sachs)");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 14: // Prolaps
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 3;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 207.054992;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -138.804992;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.507812;
+            format(name, sizeof(name), "Prolaps");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 15: // Suburban
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 1;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 203.777999;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -48.492397;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.804687;
+            format(name, sizeof(name), "Suburban");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 16: // Victim
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 5;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 226.293991;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -7.431529;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1002.210937;
+            format(name, sizeof(name), "Victim");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 17: // ZIP
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 18;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 161.391006;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -93.159156;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.804687;
+            format(name, sizeof(name), "ZIP");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 18: // Burg
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 10;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 364.0647;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -73.8064;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.507812;
+            format(name, sizeof(name), "Burg");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 19: // Cluckin'Bell
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 9;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 375.962463;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -65.816848;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.507812;
+            format(name, sizeof(name), "Cluckin'Bell");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 20: // Well Stacked Pizza
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 5;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 372.2830;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -132.2032;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.4922;
+            format(name, sizeof(name), "Well Stacked Pizza");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 21: // Rusty Brown Donuts
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 17;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 377.0696;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -191.9550;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.632812;
+            format(name, sizeof(name), "Rusty Brown Donuts");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 22: // Dillimore Gas Station
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 0;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 663.836242;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -575.605407;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 16.343263;
+            format(name, sizeof(name), "Dillimore Gas Station");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 23: // Club
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 17;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 493.390991;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -22.722799;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.679687;
+            format(name, sizeof(name), "Club");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 24: // Bar
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 11;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 501.980987;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -69.150199;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 998.757812;
+            format(name, sizeof(name), "Bar");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 25: // Lil' probe inn
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 18;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = -227.027999;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = 1401.229980;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 27.765625;
+            format(name, sizeof(name), "Lil' probe inn");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 26: // Jay's diner
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 4;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 457.304748;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -88.428497;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.554687;
+            format(name, sizeof(name), "Jay's diner");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 27: // Gant bridge diner
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 5;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 454.973937;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -110.104995;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.077209;
+            format(name, sizeof(name), "Gant bridge diner");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 28: // World of coq
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 1;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 452.489990;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -18.179698;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.132812;
+            format(name, sizeof(name), "World of coq");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 29: // Welcome pump
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 1;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 681.557861;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -455.680053;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = -25.609874;
+            format(name, sizeof(name), "Welcome pump");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+        case 30: // Big spread ranch
+        {
+            BusinessInfo[GlobalBusinessesCounter][InsideInterior] = 3;
+            BusinessInfo[GlobalBusinessesCounter][ExitX] = 1212.019897;
+            BusinessInfo[GlobalBusinessesCounter][ExitY] = -28.663099;
+            BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.953125;
+            format(name, sizeof(name), "Big spread ranch");
+            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name), 128);
+        }
+    }
+
+    GetPlayerPos(playerid, X, Y, Z);
+    GetPlayerFacingAngle(playerid, A);
+    player_interior = GetPlayerInterior(playerid);
+    player_virtual_world = GetPlayerVirtualWorld(playerid);
+
+    BusinessInfo[GlobalBusinessesCounter][Owned] = 0;
+    BusinessInfo[GlobalBusinessesCounter][Owner] = PlayerInfo[playerid][ID];
+    BusinessInfo[GlobalBusinessesCounter][Price] = price;
+    BusinessInfo[GlobalBusinessesCounter][EnterFee] = 0;
+    BusinessInfo[GlobalBusinessesCounter][Money] = 0;
+    BusinessInfo[GlobalBusinessesCounter][Type] = type;
+    BusinessInfo[GlobalBusinessesCounter][EnterX] = X;
+    BusinessInfo[GlobalBusinessesCounter][EnterY] = Y;
+    BusinessInfo[GlobalBusinessesCounter][EnterZ] = Z;
+    BusinessInfo[GlobalBusinessesCounter][EnterA] = A;
+    BusinessInfo[GlobalBusinessesCounter][Locked] = 0;
+    BusinessInfo[GlobalBusinessesCounter][OutsideInterior] = player_interior;
+    BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld] = player_virtual_world;
+    BusinessInfo[GlobalBusinessesCounter][InsideVirtualWorld] = id;
+
+    if(BusinessInfo[GlobalBusinessesCounter][ExitIcon]) DestroyPickup(BusinessInfo[GlobalBusinessesCounter][ExitIcon]);
+    if(BusinessInfo[GlobalBusinessesCounter][Icon]) DestroyPickup(BusinessInfo[GlobalBusinessesCounter][Icon]);
+    BusinessInfo[GlobalBusinessesCounter][Icon] = CreatePickup(1274, 1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld]);
+
+    format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis vlasnika !\n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/kupibiznis", BusinessInfo[GlobalBusinessesCounter][Price], BusinessInfo[GlobalBusinessesCounter][ID]);
+    BusinessLabelArray[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld]);
+
+    SaveBusiness(id);
+    return 1;
+}
+
+YCMD:b(playerid, params[], help)
+{
+	new command[16];
+	if(sscanf(params, "s[16]", command))
+	{
+		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(suiness) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
+	}
+	else
+	{
+		if(strcmp(command, "buy", true) == 0)
+		{
+			new id, player_name[MAX_PLAYER_NAME], message[256];
+			
+			GetPlayerName(playerid, player_name, sizeof(player_name));
+
+			id = IsPlayerNearBusinessEnter(playerid);
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu biznisa!");
+			if(BusinessInfo[id][Owned] != 0 || BusinessInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ovaj biznis nije na prodaju!");
+			if(GetPlayerMoney(playerid) < BusinessInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca da kupite ovaj biznis!");
+
+			PlayerInfo[playerid][Money] -= BusinessInfo[id][Price];
+			GivePlayerMoney(playerid, -BusinessInfo[id][Price]);
+
+			BusinessInfo[id][Locked] = 0;
+			BusinessInfo[id][Owned] = 1;
+			BusinessInfo[id][Owner] = PlayerInfo[playerid][ID];
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis ima vlasnika !\n "TEXT_COLOR_BLUE"Ime biznisa"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Vlasnik"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Cena ulaza"TEXT_COLOR_WHITE": %d \n Da udjete kucajte "TEXT_COLOR_BLUE"/enter", BusinessInfo[id][Name], GetBusinessOwnerName(BusinessInfo[id][Owner]), BusinessInfo[id][EnterFee]);
+			Update3DTextLabelText(BusinessLabelArray[id], -1, message);
+			SaveBusiness(id);
+			SavePlayer(playerid);
+
+			SendClientMessage(playerid, COLOR_RED, "Kupili ste biznis.");
+
+			return 1;
+		}
+		else if(strcmp(command, "sell", true) == 0)
+		{
+			new id, message[256];
+			id = IsPlayerNearBusinessEnter(playerid);
+			// Check if near business
+
+			BusinessInfo[id][Owned] = 0;
+			BusinessInfo[id][Locked] = 1;
+
+			PlayerInfo[playerid][Money] += BusinessInfo[id][Price]/2;
+			GivePlayerMoney(playerid, PlayerInfo[playerid][Money]);
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis nema vlasnika !\n "TEXT_COLOR_BLUE"Ime biznisa"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/buybusiness", BusinessInfo[id][Name], BusinessInfo[id][Price]);
+			Update3DTextLabelText(BusinessLabelArray[id], -1, message);
+
+			SaveBusiness(id);
+			SavePlayer(playerid);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste biznis.");
+			
+			return 1;
+		}
+		else if(!strfind(command, "fee"))
+		{
+			new id, fee, message[128];
+
+			id = IsPlayerNearBusinessEnter(playerid);
+
+			if(sscanf(params, "s[16]i", command, fee)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [fee] [cena]");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+
+			BusinessInfo[id][EnterFee] = fee;
+
+			format(message, sizeof(message), "Promenili ste cenu ulaza na %d.", fee);
+			SaveBusiness(id);
+			
+			SendClientMessage(playerid, COLOR_GREEN, message);
+
+			return 1;
+		}
+		else if(strcmp(command, "lock", true) == 0)
+		{
+			new id = IsPlayerNearBusinessEnter(playerid);
+
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+
+			if(BusinessInfo[id][Locked] == 1)
+			{
+				BusinessInfo[id][Locked] = 0;
+				GameTextForPlayer(playerid, "Biznis ~g~otkljucan!", 3000, 3);
+				SaveBusiness(id);
+			}
+			else
+			{
+				BusinessInfo[id][Locked] = 1;
+				GameTextForPlayer(playerid, "Biznis ~r~otkljucan!", 3000, 3);
+				SaveBusiness(id);
+			}
+
+			return 1;
+		}
+		else if(strcmp(command, "money", true) == 0)
+		{
+			new id, message[128];
+			id = IsPlayerNearBusinessEnter(playerid);
+
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate novca na racunu biznisa!");
+
+			PlayerInfo[playerid][Money] += BusinessInfo[id][Money];
+			GivePlayerMoney(playerid, BusinessInfo[id][Money]);
+
+			format(message, sizeof(message), "Podigli ste %d$ sa racuna biznisa.", BusinessInfo[id][Money]);
+			SendClientMessage(playerid, COLOR_GREEN, message);
+			
+			BusinessInfo[id][Money] = 0;
+			
+			SaveBusiness(id);
+			SavePlayer(playerid);
+
+			return 1;
+		}
+		else if(!strfind(command, "name"))
+		{
+			new id, name[128], message[128];
+
+			id = IsPlayerNearBusinessEnter(playerid);
+
+			if(sscanf(params, "s[16]s[128]", command, name)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [name] [ime]");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+
+			BusinessInfo[id][Name] = name;
+
+			format(message, sizeof(message), "Promenili ste ime biznisa u %s.", name);
+			SaveBusiness(id);
+
+			SendClientMessage(playerid, COLOR_GREEN, message);
+
+			return 1;
+		}
+		else
+		{
+			SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(suiness) [komanda]");
+			SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
+		}
+	}
+	return 1;
+}
+
+YCMD:deletebusiness(playerid, params[], help)
+{
+    #pragma unused help
+    new id;
+
+    // Check for admin
+
+    if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /deletebusiness [id]");
+    if(BusinessInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ovaj biznis ima vlasnika.");
+
+    BusinessInfo[id][Owned] = 0;
+    BusinessInfo[id][Price] = 0;
+    BusinessInfo[id][Type] = 0;
+    BusinessInfo[id][Locked] = 0;
+    BusinessInfo[id][Name] = 0;
+    BusinessInfo[id][Money] = 0;
+    BusinessInfo[id][EnterFee] = 0;
+    BusinessInfo[id][EnterX] = 0;
+    BusinessInfo[id][EnterY] = 0;
+    BusinessInfo[id][EnterZ] = 0;
+    BusinessInfo[id][EnterA] = 0;
+    BusinessInfo[id][ExitX] = 0;
+    BusinessInfo[id][ExitY] = 0;
+    BusinessInfo[id][ExitZ] = 0;
+    BusinessInfo[id][ExitA] = 0;
+    BusinessInfo[id][OutsideInterior] = 0;
+    BusinessInfo[id][OutsideVirtualWorld] = 0;
+
+   	DestroyPickup(BusinessInfo[id][Icon]);
+	Delete3DTextLabel(BusinessLabelArray[id]);
+    DeleteBusiness(id);
 
     return 1;
 }
