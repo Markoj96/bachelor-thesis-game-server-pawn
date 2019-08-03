@@ -485,10 +485,72 @@ enum PlayerData
 	Country, // Country from where players come
 	City, // City where player will spawn
 	Money,  // In-game money of the player
+	Skin,
+	Banned,
+	BannedTime,
+	IdentityCard,
 	Float:SpawnX, // Spawn location, coordinate X
 	Float:SpawnY, // Spawn location, coordinate Y
 	Float:SpawnZ, // Spawn location, coordinate Z
-	Float:SpawnA // Spawn location, angle
+	Float:SpawnA, // Spawn location, angle
+	BankAccount,
+	BankMoney,
+	BankCredit,
+	Admin,
+	Donator,
+	DonatorPoints,
+	Level,
+	Respect,
+	Hours,
+	Playtime,
+	PayCheck,
+	Dead,
+	Kills,
+	Deaths,
+	Job,
+	JobContract,
+	Mobile,
+	MobileNumber,
+	MobileCredit,
+	AddressBook,
+	Tut,
+	OnTut,
+	DetectivePoints,
+	DetectiveLevel,
+	TruckmanPoints,
+	TruckmanLevel,
+	TaxiPoints,
+	TaxiLevel,
+	MechanicPoints,
+	MechanicLevel,
+	Drugs,
+	Materials,
+	OLeader,
+	OMember,
+	ORank,
+	OSkin,
+	Wanted,
+	WantedTimes,
+	Arrested,
+	ArrestedTime,
+	ArrestedTimes,
+	DrivingLicence,
+	FlyingLicence,
+	SailingLicence,
+	Muted,
+	MutedTime,
+	PistolSkill,
+	SilencedSkill,
+	DesertSkill,
+	ShotgunSkill,
+	SawnoffSkill,
+	CombatSkill,
+	UziSkill,
+	MP5Skill,
+	AK47Skill,
+	M4Skill,
+	SniperSkill,
+	FightingStyle
 };
 new PlayerInfo[MAX_PLAYERS][PlayerData];
 
@@ -791,9 +853,71 @@ public OnPlayerDataChecked(playerid)
 		cache_get_value_name_int(0, "age", PlayerInfo[playerid][Age]);
 		cache_get_value_name_int(0, "country", PlayerInfo[playerid][Country]);
 		cache_get_value_name_int(0, "city", PlayerInfo[playerid][City]);
+		cache_get_value_name_int(0, "money", PlayerInfo[playerid][Money]);
+		cache_get_value_name_int(0, "skin", PlayerInfo[playerid][Skin]);
+		cache_get_value_name_int(0, "banned", PlayerInfo[playerid][Banned]);
+		cache_get_value_name_int(0, "banned_time", PlayerInfo[playerid][BannedTime]);
 		cache_get_value_name_float(0, "spawnX", PlayerInfo[playerid][SpawnX]);
 		cache_get_value_name_float(0, "spawnY", PlayerInfo[playerid][SpawnY]);
 		cache_get_value_name_float(0, "spawnZ", PlayerInfo[playerid][SpawnZ]);
+		cache_get_value_name_int(0, "bank_account", PlayerInfo[playerid][BankAccount]);
+		cache_get_value_name_int(0, "bank_money", PlayerInfo[playerid][BankMoney]);
+		cache_get_value_name_int(0, "bank_credit", PlayerInfo[playerid][BankCredit]);
+		cache_get_value_name_int(0, "admin", PlayerInfo[playerid][Admin]);
+		cache_get_value_name_int(0, "donator", PlayerInfo[playerid][Donator]);
+		cache_get_value_name_int(0, "donator_points", PlayerInfo[playerid][DonatorPoints]);
+		cache_get_value_name_int(0, "level", PlayerInfo[playerid][Level]);
+		cache_get_value_name_int(0, "respect", PlayerInfo[playerid][Respect]);
+		cache_get_value_name_int(0, "hours", PlayerInfo[playerid][Hours]);
+		cache_get_value_name_int(0, "play_time", PlayerInfo[playerid][Playtime]);
+		cache_get_value_name_int(0, "paycheck", PlayerInfo[playerid][PayCheck]);
+		cache_get_value_name_int(0, "dead", PlayerInfo[playerid][Dead]);
+		cache_get_value_name_int(0, "kills", PlayerInfo[playerid][Kills]);
+		cache_get_value_name_int(0, "deaths", PlayerInfo[playerid][Deaths]);
+		cache_get_value_name_int(0, "job", PlayerInfo[playerid][Job]);
+		cache_get_value_name_int(0, "job_contract", PlayerInfo[playerid][JobContract]);
+		cache_get_value_name_int(0, "mobile", PlayerInfo[playerid][Mobile]);
+		cache_get_value_name_int(0, "mobile_number", PlayerInfo[playerid][MobileNumber]);
+		cache_get_value_name_int(0, "mobile_credit", PlayerInfo[playerid][MobileCredit]);
+		cache_get_value_name_int(0, "address_book", PlayerInfo[playerid][AddressBook]);
+		cache_get_value_name_int(0, "tut", PlayerInfo[playerid][Tut]);
+		cache_get_value_name_int(0, "on_tut", PlayerInfo[playerid][OnTut]);
+		cache_get_value_name_int(0, "detective_points", PlayerInfo[playerid][DetectivePoints]);
+		cache_get_value_name_int(0, "detective_level", PlayerInfo[playerid][DetectiveLevel]);
+		cache_get_value_name_int(0, "truckman_points", PlayerInfo[playerid][TruckmanPoints]);
+		cache_get_value_name_int(0, "truckman_level", PlayerInfo[playerid][TruckmanLevel]);
+		cache_get_value_name_int(0, "taxi_points", PlayerInfo[playerid][TaxiPoints]);
+		cache_get_value_name_int(0, "taxi_level", PlayerInfo[playerid][TaxiLevel]);
+		cache_get_value_name_int(0, "mechanic_points", PlayerInfo[playerid][MechanicPoints]);
+		cache_get_value_name_int(0, "mechanic_level", PlayerInfo[playerid][MechanicLevel]);
+		cache_get_value_name_int(0, "drugs", PlayerInfo[playerid][Drugs]);
+		cache_get_value_name_int(0, "materials", PlayerInfo[playerid][Materials]);
+		cache_get_value_name_int(0, "org_leader", PlayerInfo[playerid][OLeader]);
+		cache_get_value_name_int(0, "org_member", PlayerInfo[playerid][OMember]);
+		cache_get_value_name_int(0, "org_rank", PlayerInfo[playerid][ORank]);
+		cache_get_value_name_int(0, "org_skin", PlayerInfo[playerid][OSkin]);
+		cache_get_value_name_int(0, "wanted", PlayerInfo[playerid][Wanted]);
+		cache_get_value_name_int(0, "wanted_times", PlayerInfo[playerid][WantedTimes]);
+		cache_get_value_name_int(0, "arrested", PlayerInfo[playerid][Arrested]);
+		cache_get_value_name_int(0, "arrested_time", PlayerInfo[playerid][ArrestedTime]);
+		cache_get_value_name_int(0, "arrested_times", PlayerInfo[playerid][ArrestedTimes]);
+		cache_get_value_name_int(0, "driving_licence", PlayerInfo[playerid][DrivingLicence]);
+		cache_get_value_name_int(0, "flying_licence", PlayerInfo[playerid][FlyingLicence]);
+		cache_get_value_name_int(0, "sailing_licence", PlayerInfo[playerid][SailingLicence]);
+		cache_get_value_name_int(0, "muted", PlayerInfo[playerid][Muted]);
+		cache_get_value_name_int(0, "muted_time", PlayerInfo[playerid][MutedTime]);
+		cache_get_value_name_int(0, "pistol_skill", PlayerInfo[playerid][PistolSkill]);
+		cache_get_value_name_int(0, "silenced_skill", PlayerInfo[playerid][SilencedSkill]);
+		cache_get_value_name_int(0, "desert_skill", PlayerInfo[playerid][DesertSkill]);
+		cache_get_value_name_int(0, "shotgun_skill", PlayerInfo[playerid][ShotgunSkill]);
+		cache_get_value_name_int(0, "sawnoff_skil", PlayerInfo[playerid][SawnoffSkill]);
+		cache_get_value_name_int(0, "combat_skill", PlayerInfo[playerid][CombatSkill]);
+		cache_get_value_name_int(0, "uzi_skill", PlayerInfo[playerid][UziSkill]);
+		cache_get_value_name_int(0, "mp5_skill", PlayerInfo[playerid][MP5Skill]);
+		cache_get_value_name_int(0, "ak47_skill", PlayerInfo[playerid][AK47Skill]);
+		cache_get_value_name_int(0, "m4_skill", PlayerInfo[playerid][M4Skill]);
+		cache_get_value_name_int(0, "sniper_skill", PlayerInfo[playerid][SniperSkill]);
+		cache_get_value_name_int(0, "fighting_style", PlayerInfo[playerid][FightingStyle]);
 		
 		PlayerInfo[playerid][Password] = player_password;
 		player_age = PlayerInfo[playerid][Age];
@@ -826,7 +950,26 @@ public SavePlayer(playerid)
 													money = %d, \
 													spawnX = %f, \
 													spawnY = %f, \
-													spawnZ = %f \												
+													spawnZ = %f, \
+													bank_account = %d, \
+													bank_money = %d, \
+													bank_credit = %d, \
+													admin = %d, \
+													donator = %d, \
+													onator_points = %d, \
+													level = %d, \
+													respect = %d, \
+													hours = %d, \
+													play_time = %d, \
+													paycheck = %d, \
+													dead = %d, \
+													kills = %d, \
+													deaths = %d, \
+													job = %d, \
+													job_contract = %d, \
+													mobile = %d, \
+													mobile_number = %d, \
+													mobile_credit = %d, \													
 												WHERE id = %d",
 												PlayerInfo[playerid][Gender],
 												PlayerInfo[playerid][Age],												
@@ -836,6 +979,126 @@ public SavePlayer(playerid)
 												PlayerInfo[playerid][SpawnX], 
 												PlayerInfo[playerid][SpawnY],  
 												PlayerInfo[playerid][SpawnZ],
+												PlayerInfo[playerid][BankAccount],
+												PlayerInfo[playerid][BankMoney],
+												PlayerInfo[playerid][BankCredit],
+												PlayerInfo[playerid][Admin],
+												PlayerInfo[playerid][Donator],
+												PlayerInfo[playerid][DonatorPoints],
+												PlayerInfo[playerid][Level],
+												PlayerInfo[playerid][Respect],
+												PlayerInfo[playerid][Hours],
+												PlayerInfo[playerid][Playtime],
+												PlayerInfo[playerid][PayCheck],
+												PlayerInfo[playerid][Dead],
+												PlayerInfo[playerid][Kills],
+												PlayerInfo[playerid][Deaths],
+												PlayerInfo[playerid][Job],
+												PlayerInfo[playerid][JobContract],
+												PlayerInfo[playerid][Mobile],
+												PlayerInfo[playerid][MobileNumber],
+												PlayerInfo[playerid][MobileCredit],
+												PlayerInfo[playerid][ID]);
+	mysql_pquery(mysql, query);
+	
+	mysql_format(mysql, query, sizeof(query), "UPDATE Users \
+												SET address_book = %d, \
+													tut = %d, \
+													on_tut = %d, \
+													detective_points = %d, \
+													detective_level = %d, \
+													truckman_points = %d, \
+													truckman_level = %d, \
+													taxi_points = %d, \
+													taxi_level = %d, \
+													mechanic_points = %d, \
+													mechanic_level = %d, \
+													drugs = %d, \
+													materials = %d, \
+													org_leader = %d, \
+													org_member = %d, \
+													org_rank = %d, \
+													org_skin = %d, \
+													wanted = %d, \
+													wanted_times = %d \												
+												WHERE id = %d",
+												PlayerInfo[playerid][AddressBook],
+												PlayerInfo[playerid][Tut],
+												PlayerInfo[playerid][OnTut],
+												PlayerInfo[playerid][DetectivePoints],
+												PlayerInfo[playerid][DetectiveLevel],
+												PlayerInfo[playerid][TruckmanPoints],
+												PlayerInfo[playerid][TruckmanLevel],
+												PlayerInfo[playerid][TaxiPoints],
+												PlayerInfo[playerid][TaxiLevel],
+												PlayerInfo[playerid][MechanicPoints],
+												PlayerInfo[playerid][MechanicLevel],
+												PlayerInfo[playerid][Drugs],
+												PlayerInfo[playerid][Materials],
+												PlayerInfo[playerid][OLeader],
+												PlayerInfo[playerid][OMember],
+												PlayerInfo[playerid][ORank],
+												PlayerInfo[playerid][OSkin],
+												PlayerInfo[playerid][Wanted],
+												PlayerInfo[playerid][WantedTimes],
+												PlayerInfo[playerid][ID]);
+	mysql_pquery(mysql, query);
+	
+	mysql_format(mysql, query, sizeof(query), "UPDATE Users \
+												SET arrested = %d, \
+													arrested_time = %d, \
+													arrested_times = %d, \
+													driving_licence = %d, \
+													flying_licence = %d, \
+													sailing_licence = %d, \
+													muted = %d, \
+													muted_time = %d, \
+													pistol_skill = %d, \
+													silenced_skill = %d, \
+													desert_skill = %d, \
+													shotgun_skill = %d, \
+													sawnoff_skil = %d, \
+													combat_skill = %d, \
+													uzi_skill = %d, \
+													mp5_skill = %d, \
+													ak47_skill = %d, \
+													m4_skill = %d, \
+													sniper_skill = %d, \
+													fighting_style = %d \													
+												WHERE id = %d",
+												PlayerInfo[playerid][Arrested],
+												PlayerInfo[playerid][ArrestedTime],
+												PlayerInfo[playerid][ArrestedTimes],
+												PlayerInfo[playerid][DrivingLicence],
+												PlayerInfo[playerid][FlyingLicence],
+												PlayerInfo[playerid][SailingLicence],
+												PlayerInfo[playerid][Muted],
+												PlayerInfo[playerid][MutedTime],
+												PlayerInfo[playerid][PistolSkill],
+												PlayerInfo[playerid][SilencedSkill],
+												PlayerInfo[playerid][DesertSkill],
+												PlayerInfo[playerid][ShotgunSkill],
+												PlayerInfo[playerid][SawnoffSkill],
+												PlayerInfo[playerid][CombatSkill],
+												PlayerInfo[playerid][UziSkill],
+												PlayerInfo[playerid][MP5Skill],
+												PlayerInfo[playerid][AK47Skill],
+												PlayerInfo[playerid][M4Skill],
+												PlayerInfo[playerid][SniperSkill],
+												PlayerInfo[playerid][FightingStyle],
+												PlayerInfo[playerid][ID]);
+	mysql_pquery(mysql, query);
+	
+	mysql_format(mysql, query, sizeof(query), "UPDATE Users \
+												SET identity_card = %d, \
+													banned = %d, \
+													banned_time = %d, \
+													skin = %d \													
+												WHERE id = %d",
+												PlayerInfo[playerid][IdentityCard],
+												PlayerInfo[playerid][Banned],
+												PlayerInfo[playerid][BannedTime],
+												PlayerInfo[playerid][Skin],
 												PlayerInfo[playerid][ID]);
 	mysql_pquery(mysql, query);
 
@@ -3189,8 +3452,8 @@ public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 	new Float:VehicleHealth,engine, lights, alarm, doors, bonnet, boot, objective;
 	
 	GetPlayerHealth(playerid, health);
-	if(IsABike(vehicleid)) if(HasHelmet[playerid] == 0) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
-	else if(HasBelt[playerid] == 0) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
+	if(IsABike(vehicleid)) if(HasHelmet[playerid] != 1) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
+	else if(HasBelt[playerid] != 0) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
 
  	if(VehicleEngine[vehicleid] == 1)
   	{
@@ -3487,6 +3750,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			if(listitem == 0)
 			{
 				PlayerInfo[playerid][Gender] = 0;
+				PlayerInfo[playerid][Skin] = 170;
 				mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 															SET gender = %d \
 															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);																						
@@ -3498,6 +3762,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			else if(listitem == 1)
 			{
 				PlayerInfo[playerid][Gender] = 1;
+				PlayerInfo[playerid][Skin] = 169;
 				mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 															SET gender = %d \
 															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);
@@ -4486,10 +4751,10 @@ YCMD:makehouse(playerid, params[], help)
 	InsertHouse(GlobalHousesCounter);
 
     if(HouseInfo[GlobalHousesCounter][Icon]) DestroyPickup(HouseInfo[GlobalHousesCounter][Icon]);
-    HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1273, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][InsideVirtualWorld]);
+    HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1273, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
 
 	format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_BLUE"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", GlobalHousesCounter, HouseInfo[GlobalHousesCounter][Price]);
-    HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 20.0, HouseInfo[GlobalHousesCounter][InsideVirtualWorld]);
+    HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 20.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
     
     GlobalHousesCounter++;
 
