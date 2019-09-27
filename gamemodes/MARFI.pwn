@@ -31,6 +31,8 @@ main()
 
 #define DIALOG_BUY_VEHICLE 10 // Vehicle sell(buy) offer
 
+#define DIALOG_BUY_HOUSE 20 //
+
 // Colors
 #define COLOR_GREY 														0xAFAFAFAA
 // System Defined Colors
@@ -400,21 +402,21 @@ forward CheckPlayerData(playerid);
 forward OnPlayerDataChecked(playerid);
 forward SavePlayer(playerid);
 forward OnPlayerSaved(playerid);
-forward OnPlayerRegister(playerid);
+forward OnPlayerRegistered(playerid);
 forward OnAccountLoad(playerid);
 forward OnPasswordHashed(playerid);
 forward OnPasswordChecked(playerid);
 
 forward AntiRoleplayName(playerid, player_name[]);
 
-forward IsARentVehicle(vehicleid);
-forward IsASaleVehicle(vehicleid);
-forward IsAOwnedVehicle(vehicleid);
-forward IsALSPoliceCar(vehicleid);
-forward IsABike(vehicleid);
-forward IsABoat(vehicleid);
-forward IsAPlane(vehicleid);
-forward IsATrain(vehicleid);
+forward IsARentVehicle(vehicle_id);
+forward IsASaleVehicle(vehicle_id);
+forward IsAOwnedVehicle(vehicle_id);
+forward IsALSPoliceCar(vehicle_id);
+forward IsABike(vehicle_id);
+forward IsABoat(vehicle_id);
+forward IsAPlane(vehicle_id);
+forward IsATrain(vehicle_id);
 
 forward IsPlayerNearPump1(playerid);
 forward IsPlayerNearPump2(playerid);
@@ -428,36 +430,39 @@ forward SendRadiusMessage(Float:radius, playerid, string[], color1, color2, colo
 forward LoadVehicles();
 forward OnVehiclesLoaded();
 forward InsertVehicle(vehicle_owner, vehicle_model);
-forward SaveVehicle(vehicleid);
-forward SetVehicleComponents(vehicleid);
-forward RemoveVehicleComponents(vehicleid);
-forward SaveVehicleComponents(vehicleid);
-forward GetVehiclePrice(vehicleid);
-forward GetVehicleName(vehicleid, model[], len);
-
+forward OnVehicleInserted(vehicle_id);
+forward SaveVehicle(vehicle_id);
+forward SetVehicleComponents(vehicle_id);
+forward RemoveVehicleComponents(vehicle_id);
+forward SaveVehicleComponents(vehicle_id);
+forward GetVehiclePrice(vehicle_id);
+forward GetVehicleName(vehicle_id, model[], len);
 forward VehicleStopOffer(playerid, target);
-
 forward LoadVehiclesFuel();
-forward StartVehicleEngine(playerid, vehicleid);
+forward StartVehicleEngine(playerid, vehicle_id);
 forward CheckVehicleFuel();
 
 forward LoadHouses();
 forward OnHousesLoaded();
 forward InsertHouse(house_id); 
+forward OnHouseInserted(house_id);
 forward DeleteHouse(house_id); 
 forward SaveHouse(house_id);
+forward HouseStopOffer(playerid, target);
 
 forward LoadBusinesses();
 forward OnBusinessesLoaded();
 forward InsertBusiness(business_id);
+forward OnBusinessInserted(business_id);
 forward DeleteBusiness(business_id);
 forward SaveBusiness(business_id);
+forward BusinessStopOffer(playerid, target);
 
 forward LoadRentVehicles();
 forward LoadSaleVehicles();
 forward LoadLosSantosCityHallExterior();
 forward LoadLosSantosCityHallInterior();
-forward LoadLosSantisParking();
+forward LoadLosSantosParking();
 forward LoadLosSantosAirport();
 forward LoadLosSantosPoliceDepartment();
 forward LoadLosSantosPoliceCars();
@@ -667,42 +672,29 @@ new VehicleForOffer[MAX_PLAYERS];
 new VehiclePlayerOffer[MAX_PLAYERS];
 new VehicleOfferPrice[MAX_PLAYERS];
 
+// House
+new HouseSellOffer[MAX_PLAYERS];
+new HouseBuyOffer[MAX_PLAYERS];
+new HouseForOffer[MAX_PLAYERS];
+new HousePlayerOffer[MAX_PLAYERS];
+new HouseOfferPrice[MAX_PLAYERS];
+
+//Business
+new BusinessSellOffer[MAX_PLAYERS];
+new BusinessBuyOffer[MAX_PLAYERS];
+new BusinessForOffer[MAX_PLAYERS];
+new BusinessPlayerOffer[MAX_PLAYERS];
+new BusinessOfferPrice[MAX_PLAYERS];
+
 // Adding vehicles
 new rent_vehicles[24];
 new sale_vehicles[89];
 new owned_vehicles[sizeof(VehicleInfo)];
 new ls_police_cars[13];
 
-new parking_gate1;
-new parking_gate1_opened;
-new parking_gate2;
-new parking_gate2_opened;
-new cell_room_door;
-new cell_room_door_opened;
-new cell1;
-new cell1_opened;
-new cell2;
-new cell2_opened;
-new cell3;
-new cell3_opened;
-new lspd_door1;
-new lspd_door1_opened;
-new lspd_door2;
-new lspd_door2_opened;
-new lspd_window;
-new lspd_window_opened;
-new lspd_garage;
-new lspd_garage_opened;
-new lspd_garage_door;
-new lspd_garage_door_opened;
-new smuggler_gate1;
-new smuggler_gate1_opened;
-new smuggler_gate2;
-new smuggler_gate2_opened;
-
 new Text3D:SaleVehicleLabels[MAX_VEHICLES]; // Labels for sale vehicles
 new Text3D:HouseLabelArray[sizeof(HouseInfo)]; // Labels for houses
-new Text3D:BusinessLabelArray[sizeof(HouseInfo)]; // Labels for business
+new Text3D:BusinessLabels[sizeof(HouseInfo)]; // Labels for business
 // ====================================================================================================== Functions (Public & Stock)
 // Money AntiCheat
 stock SafeGivePlayerMoney(playerid, money)
@@ -797,10 +789,10 @@ stock GetPlayerCity(playerid)
     return city;
 }
 
-stock GetVehicleRegistration(vehicleid)
+stock GetVehicleRegistration(vehicle_id)
 {
 	new registration[4];
-	switch(VehicleInfo[vehicleid][Registration])
+	switch(VehicleInfo[vehicle_id][Registration])
 	{
 	    case 1: registration = "Da";
 	    case 0: registration = "Ne";
@@ -956,7 +948,7 @@ public SavePlayer(playerid)
 													bank_credit = %d, \
 													admin = %d, \
 													donator = %d, \
-													onator_points = %d, \
+													donator_points = %d, \
 													level = %d, \
 													respect = %d, \
 													hours = %d, \
@@ -969,7 +961,7 @@ public SavePlayer(playerid)
 													job_contract = %d, \
 													mobile = %d, \
 													mobile_number = %d, \
-													mobile_credit = %d, \													
+													mobile_credit = %d \													
 												WHERE id = %d",
 												PlayerInfo[playerid][Gender],
 												PlayerInfo[playerid][Age],												
@@ -1115,14 +1107,14 @@ public OnPasswordHashed(playerid)
 	new query[256], playername[MAX_PLAYER_NAME];
 	
     bcrypt_get_hash(PlayerInfo[playerid][Password]);
-	PlayerInfo[playerid][Password][2] = 'a'; // Hardcode -> $2a instead of $2y | BCrypt in rails cannot provide $2y
+	PlayerInfo[playerid][Password][2] = 'a'; // Hardcode -> $2a instead of $2y | BCrypt in rails cannot provehicle_ide $2y
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
 	
 	mysql_format(mysql, query, sizeof(query), "INSERT INTO Users SET \
 												name = '%e', \
 												password_digest = '%e'", playername, PlayerInfo[playerid][Password]);
-	mysql_tquery(mysql, query, "OnPlayerRegister", "i", playerid);
+	mysql_tquery(mysql, query, "OnPlayerRegistered", "i", playerid);
 	
 	ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Pol", ""TEXT_COLOR_WHITE"Musko\nZensko", "U redu", "Izadji");
 }
@@ -1278,7 +1270,7 @@ public InsertVehicle(vehicle_owner, vehicle_model)
 	mysql_tquery(mysql, query);
 }
 
-public SaveVehicle(vehicleid)
+public SaveVehicle(vehicle_id)
 {
 	new query[512];
 	
@@ -1309,120 +1301,125 @@ public SaveVehicle(vehicleid)
 													vent_right = %d, \
 													vent_left = %d \												
 												WHERE id = %d",
-												VehicleInfo[vehicleid][Owned],
-												VehicleInfo[vehicleid][Owner],												
-												VehicleInfo[vehicleid][ParkX], 
-												VehicleInfo[vehicleid][ParkY], 
-												VehicleInfo[vehicleid][ParkZ], 
-												VehicleInfo[vehicleid][ParkA], 
-												VehicleInfo[vehicleid][Color1], 
-												VehicleInfo[vehicleid][Color2], 
-												VehicleInfo[vehicleid][Paintjob],
-												VehicleInfo[vehicleid][Locked],
-												VehicleInfo[vehicleid][Registration],
-												VehicleInfo[vehicleid][Spoiler],
-												VehicleInfo[vehicleid][Hood],
-												VehicleInfo[vehicleid][Roof],
-												VehicleInfo[vehicleid][Side_skirt],
-												VehicleInfo[vehicleid][Lamps],
-												VehicleInfo[vehicleid][Nitro],
-												VehicleInfo[vehicleid][Exhaust],
-												VehicleInfo[vehicleid][Wheels],
-												VehicleInfo[vehicleid][Stereo],
-												VehicleInfo[vehicleid][Hydraulics],
-												VehicleInfo[vehicleid][Front_bumper],
-												VehicleInfo[vehicleid][Rear_bumper],
-												VehicleInfo[vehicleid][Vent_right],
-												VehicleInfo[vehicleid][Vent_left],
-												VehicleInfo[vehicleid][ID]);
-	mysql_pquery(mysql, query);
+												VehicleInfo[vehicle_id][Owned],
+												VehicleInfo[vehicle_id][Owner],												
+												VehicleInfo[vehicle_id][ParkX], 
+												VehicleInfo[vehicle_id][ParkY], 
+												VehicleInfo[vehicle_id][ParkZ], 
+												VehicleInfo[vehicle_id][ParkA], 
+												VehicleInfo[vehicle_id][Color1], 
+												VehicleInfo[vehicle_id][Color2], 
+												VehicleInfo[vehicle_id][Paintjob],
+												VehicleInfo[vehicle_id][Locked],
+												VehicleInfo[vehicle_id][Registration],
+												VehicleInfo[vehicle_id][Spoiler],
+												VehicleInfo[vehicle_id][Hood],
+												VehicleInfo[vehicle_id][Roof],
+												VehicleInfo[vehicle_id][Side_skirt],
+												VehicleInfo[vehicle_id][Lamps],
+												VehicleInfo[vehicle_id][Nitro],
+												VehicleInfo[vehicle_id][Exhaust],
+												VehicleInfo[vehicle_id][Wheels],
+												VehicleInfo[vehicle_id][Stereo],
+												VehicleInfo[vehicle_id][Hydraulics],
+												VehicleInfo[vehicle_id][Front_bumper],
+												VehicleInfo[vehicle_id][Rear_bumper],
+												VehicleInfo[vehicle_id][Vent_right],
+												VehicleInfo[vehicle_id][Vent_left],
+												VehicleInfo[vehicle_id][ID]);
+	mysql_pquery(mysql, query, "OnVehicleInserted", "i", vehicle_id);
 
 	return 1;
 }
 
-public SaveVehicleComponents(vehicleid)
+public OnVehicleInserted(vehicle_id)
+{
+	VehicleInfo[vehicle_id][ID] = cache_insert_id();
+}
+
+public SaveVehicleComponents(vehicle_id)
 {
 	new spoiler, hood, roof, side_skirt, lamps, nitro, exhaust, wheels, stereo, hydraulics, front_bumper, rear_bumper, left_vent, right_vent;
 	
-	spoiler = GetVehicleComponentInSlot(vehicleid, 0);
-	hood = GetVehicleComponentInSlot(vehicleid, 1);
-	roof = GetVehicleComponentInSlot(vehicleid, 2);
-	side_skirt = GetVehicleComponentInSlot(vehicleid, 3);
-	lamps = GetVehicleComponentInSlot(vehicleid, 4);
-	nitro = GetVehicleComponentInSlot(vehicleid, 5);
-	exhaust = GetVehicleComponentInSlot(vehicleid, 6);
-	wheels = GetVehicleComponentInSlot(vehicleid, 7);
-	stereo = GetVehicleComponentInSlot(vehicleid, 8);
-	hydraulics = GetVehicleComponentInSlot(vehicleid, 9);
-	front_bumper = GetVehicleComponentInSlot(vehicleid, 10);
-	rear_bumper = GetVehicleComponentInSlot(vehicleid, 11);
-	right_vent = GetVehicleComponentInSlot(vehicleid, 12);
-	left_vent = GetVehicleComponentInSlot(vehicleid, 13);
+	spoiler = GetVehicleComponentInSlot(vehicle_id, 0);
+	hood = GetVehicleComponentInSlot(vehicle_id, 1);
+	roof = GetVehicleComponentInSlot(vehicle_id, 2);
+	side_skirt = GetVehicleComponentInSlot(vehicle_id, 3);
+	lamps = GetVehicleComponentInSlot(vehicle_id, 4);
+	nitro = GetVehicleComponentInSlot(vehicle_id, 5);
+	exhaust = GetVehicleComponentInSlot(vehicle_id, 6);
+	wheels = GetVehicleComponentInSlot(vehicle_id, 7);
+	stereo = GetVehicleComponentInSlot(vehicle_id, 8);
+	hydraulics = GetVehicleComponentInSlot(vehicle_id, 9);
+	front_bumper = GetVehicleComponentInSlot(vehicle_id, 10);
+	rear_bumper = GetVehicleComponentInSlot(vehicle_id, 11);
+	right_vent = GetVehicleComponentInSlot(vehicle_id, 12);
+	left_vent = GetVehicleComponentInSlot(vehicle_id, 13);
 
-	if(spoiler != 0) { VehicleInfo[vehicleid][Spoiler] = spoiler; }
-	if(hood != 0) { VehicleInfo[vehicleid][Hood] = hood; }
-	if(roof != 0) { VehicleInfo[vehicleid][Roof] = roof; }
-	if(side_skirt != 0) { VehicleInfo[vehicleid][Side_skirt] = side_skirt; }
-	if(lamps != 0) { VehicleInfo[vehicleid][Lamps] = lamps; }
-	if(nitro != 0) { VehicleInfo[vehicleid][Nitro] = nitro; }
-	if(exhaust != 0) { VehicleInfo[vehicleid][Exhaust] = exhaust; }
-	if(wheels != 0) { VehicleInfo[vehicleid][Wheels] = wheels; }
-	if(stereo != 0) { VehicleInfo[vehicleid][Stereo] = stereo; }
-	if(hydraulics != 0) { VehicleInfo[vehicleid][Hydraulics] = hydraulics; }
-	if(front_bumper != 0) { VehicleInfo[vehicleid][Front_bumper] = front_bumper; }
-	if(rear_bumper != 0) { VehicleInfo[vehicleid][Rear_bumper] = rear_bumper; }
-	if(right_vent != 0) { VehicleInfo[vehicleid][Vent_right] = right_vent; }
-	if(left_vent != 0) { VehicleInfo[vehicleid][Vent_left] = left_vent; }
+	if(spoiler != 0) { VehicleInfo[vehicle_id][Spoiler] = spoiler; }
+	if(hood != 0) { VehicleInfo[vehicle_id][Hood] = hood; }
+	if(roof != 0) { VehicleInfo[vehicle_id][Roof] = roof; }
+	if(side_skirt != 0) { VehicleInfo[vehicle_id][Side_skirt] = side_skirt; }
+	if(lamps != 0) { VehicleInfo[vehicle_id][Lamps] = lamps; }
+	if(nitro != 0) { VehicleInfo[vehicle_id][Nitro] = nitro; }
+	if(exhaust != 0) { VehicleInfo[vehicle_id][Exhaust] = exhaust; }
+	if(wheels != 0) { VehicleInfo[vehicle_id][Wheels] = wheels; }
+	if(stereo != 0) { VehicleInfo[vehicle_id][Stereo] = stereo; }
+	if(hydraulics != 0) { VehicleInfo[vehicle_id][Hydraulics] = hydraulics; }
+	if(front_bumper != 0) { VehicleInfo[vehicle_id][Front_bumper] = front_bumper; }
+	if(rear_bumper != 0) { VehicleInfo[vehicle_id][Rear_bumper] = rear_bumper; }
+	if(right_vent != 0) { VehicleInfo[vehicle_id][Vent_right] = right_vent; }
+	if(left_vent != 0) { VehicleInfo[vehicle_id][Vent_left] = left_vent; }
 	
-	SaveVehicle(vehicleid);
-	
-	return 1;
-}
-
-public SetVehicleComponents(vehicleid)
-{
-	if(VehicleInfo[vehicleid][Spoiler] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Spoiler]); }
-	if(VehicleInfo[vehicleid][Hood] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Hood]); }
-	if(VehicleInfo[vehicleid][Roof] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Roof]); }
-	if(VehicleInfo[vehicleid][Side_skirt] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Side_skirt]); }
-	if(VehicleInfo[vehicleid][Lamps] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Lamps]); }
-	if(VehicleInfo[vehicleid][Nitro] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Nitro]); }
-	if(VehicleInfo[vehicleid][Exhaust] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Exhaust]); }
-	if(VehicleInfo[vehicleid][Wheels] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Wheels]); }
-	if(VehicleInfo[vehicleid][Stereo] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Stereo]); }
-	if(VehicleInfo[vehicleid][Hydraulics] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Hydraulics]); }
-	if(VehicleInfo[vehicleid][Front_bumper] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Front_bumper]); }
-	if(VehicleInfo[vehicleid][Rear_bumper] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Rear_bumper]); }
-	if(VehicleInfo[vehicleid][Vent_right] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Vent_right]); }
-	if(VehicleInfo[vehicleid][Vent_left] >= 0) { AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][Vent_left]); }
+	SaveVehicle(vehicle_id);
 	
 	return 1;
 }
 
-public RemoveVehicleComponents(vehicleid)
+public SetVehicleComponents(vehicle_id)
 {
-    VehicleInfo[vehicleid][Spoiler] = 0;
-    VehicleInfo[vehicleid][Hood] = 0;
-    VehicleInfo[vehicleid][Roof] = 0;
-    VehicleInfo[vehicleid][Side_skirt] = 0;
-    VehicleInfo[vehicleid][Lamps] = 0;
-    VehicleInfo[vehicleid][Nitro] = 0;
-    VehicleInfo[vehicleid][Exhaust] = 0;
-    VehicleInfo[vehicleid][Wheels] = 0;
-    VehicleInfo[vehicleid][Stereo] = 0;
-    VehicleInfo[vehicleid][Hydraulics] = 0;
-    VehicleInfo[vehicleid][Front_bumper] = 0;
-    VehicleInfo[vehicleid][Rear_bumper] = 0;
-    VehicleInfo[vehicleid][Vent_right] = 0;
-    VehicleInfo[vehicleid][Vent_left] = 0;
+	if(VehicleInfo[vehicle_id][Spoiler] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Spoiler]); }
+	if(VehicleInfo[vehicle_id][Hood] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Hood]); }
+	if(VehicleInfo[vehicle_id][Roof] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Roof]); }
+	if(VehicleInfo[vehicle_id][Side_skirt] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Side_skirt]); }
+	if(VehicleInfo[vehicle_id][Lamps] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Lamps]); }
+	if(VehicleInfo[vehicle_id][Nitro] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Nitro]); }
+	if(VehicleInfo[vehicle_id][Exhaust] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Exhaust]); }
+	if(VehicleInfo[vehicle_id][Wheels] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Wheels]); }
+	if(VehicleInfo[vehicle_id][Stereo] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Stereo]); }
+	if(VehicleInfo[vehicle_id][Hydraulics] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Hydraulics]); }
+	if(VehicleInfo[vehicle_id][Front_bumper] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Front_bumper]); }
+	if(VehicleInfo[vehicle_id][Rear_bumper] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Rear_bumper]); }
+	if(VehicleInfo[vehicle_id][Vent_right] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Vent_right]); }
+	if(VehicleInfo[vehicle_id][Vent_left] >= 0) { AddVehicleComponent(vehicle_id, VehicleInfo[vehicle_id][Vent_left]); }
 	
-    SaveVehicle(vehicleid);
 	return 1;
 }
 
-public GetVehiclePrice(vehicleid)
+public RemoveVehicleComponents(vehicle_id)
 {
-	new model = GetVehicleModel(vehicleid);
+    VehicleInfo[vehicle_id][Spoiler] = 0;
+    VehicleInfo[vehicle_id][Hood] = 0;
+    VehicleInfo[vehicle_id][Roof] = 0;
+    VehicleInfo[vehicle_id][Side_skirt] = 0;
+    VehicleInfo[vehicle_id][Lamps] = 0;
+    VehicleInfo[vehicle_id][Nitro] = 0;
+    VehicleInfo[vehicle_id][Exhaust] = 0;
+    VehicleInfo[vehicle_id][Wheels] = 0;
+    VehicleInfo[vehicle_id][Stereo] = 0;
+    VehicleInfo[vehicle_id][Hydraulics] = 0;
+    VehicleInfo[vehicle_id][Front_bumper] = 0;
+    VehicleInfo[vehicle_id][Rear_bumper] = 0;
+    VehicleInfo[vehicle_id][Vent_right] = 0;
+    VehicleInfo[vehicle_id][Vent_left] = 0;
+	
+    SaveVehicle(vehicle_id);
+	return 1;
+}
+
+public GetVehiclePrice(vehicle_id)
+{
+	new model = GetVehicleModel(vehicle_id);
 	if(model == 400) return 3700; // LANDSTALKER
 	else if(model == 401) return 3000; // BRAVURA
 	else if(model == 402) return 5000; // BUFFALO
@@ -1619,7 +1616,7 @@ public GetVehiclePrice(vehicleid)
 	else if(model == 593) return 200; // DODO
 	else if(model == 594) return 500; // RC CAM (NO SALE)
 	else if(model == 595) return 200; // LAUNCH (BOAT)
-	else if(model == 596) return 25000; // POLICE CAR (LSPD) (NO SALE)
+	else if(model == 596) return 25000; // POLICE CAR (LShowPlayerDialog) (NO SALE)
 	else if(model == 597) return 25000; // POLICE CAR (SFPD) (NO SALE)
 	else if(model == 598) return 25000; // POLICE CAR (LVPD) (NO SALE)
 	else if(model == 599) return 25000; // POLICE RANGER (NO SALE)
@@ -1638,9 +1635,9 @@ public GetVehiclePrice(vehicleid)
 	else return 0;
 }
 
-public GetVehicleName(vehicleid, model[], len)
+public GetVehicleName(vehicle_id, model[], len)
 {
-	new model_id = GetVehicleModel(vehicleid);
+	new model_id = GetVehicleModel(vehicle_id);
 	if(model_id == 400) return format(model, len, "Landstalker", 0);
 	else if(model_id == 401) return format(model, len, "Bravura", 0);
 	else if(model_id == 402) return format(model, len, "Buffalo", 0);
@@ -1837,10 +1834,10 @@ public GetVehicleName(vehicleid, model[], len)
 	else if(model_id == 593) return format(model, len, "Dodo", 0);
 	else if(model_id == 594) return format(model, len, "RC Cam", 0);
 	else if(model_id == 595) return format(model, len, "Launch", 0);
-	else if(model_id == 596) return format(model, len, "LSPD Patrol Car", 0);
+	else if(model_id == 596) return format(model, len, "LShowPlayerDialog Patrol Car", 0);
 	else if(model_id == 597) return format(model, len, "FBI Patrol Car", 0);
 	else if(model_id == 598) return format(model, len, "NG Patrol Car", 0);
-	else if(model_id == 599) return format(model, len, "LSPD Patrol Ranger", 0);
+	else if(model_id == 599) return format(model, len, "LShowPlayerDialog Patrol Ranger", 0);
 	else if(model_id == 600) return format(model, len, "Picador", 0);
 	else if(model_id == 601) return format(model, len, "S.W.A.T Tank", 0);
     else if(model_id == 602) return format(model, len, "Alpha", 0);
@@ -1857,6 +1854,7 @@ public VehicleStopOffer(playerid, target)
  	VehicleForOffer[playerid] = 9999;
 	VehiclePlayerOffer[playerid] = 9999;
 	VehicleOfferPrice[playerid] = 0;
+
 	VehicleSellOffer[target] = 9999;
 	VehicleBuyOffer[target] = 9999;
  	VehicleForOffer[target] = 9999;
@@ -1864,13 +1862,43 @@ public VehicleStopOffer(playerid, target)
 	VehicleOfferPrice[target] = 0;
 }
 
-stock GetVehicleOwnerName(vehicleid)
+public HouseStopOffer(playerid, target)
+{
+    HouseSellOffer[playerid] = 9999;
+	HouseBuyOffer[playerid] = 9999;
+ 	HouseForOffer[playerid] = 9999;
+	HousePlayerOffer[playerid] = 9999;
+	HouseOfferPrice[playerid] = 0;
+
+	HouseSellOffer[target] = 9999;
+	HouseBuyOffer[target] = 9999;
+ 	HouseForOffer[target] = 9999;
+	HousePlayerOffer[target] = 9999;
+	HouseOfferPrice[target] = 0;
+}
+
+public BusinessStopOffer(playerid, target)
+{
+    BusinessSellOffer[playerid] = 9999;
+	BusinessBuyOffer[playerid] = 9999;
+ 	BusinessForOffer[playerid] = 9999;
+	BusinessPlayerOffer[playerid] = 9999;
+	BusinessOfferPrice[playerid] = 0;
+
+	BusinessSellOffer[target] = 9999;
+	BusinessBuyOffer[target] = 9999;
+ 	BusinessForOffer[target] = 9999;
+	BusinessPlayerOffer[target] = 9999;
+	BusinessOfferPrice[target] = 0;
+}
+
+stock GetVehicleOwnerName(vehicle_id)
 {
 	new query[256], player_name[MAX_PLAYER_NAME];
 	
 	mysql_format(mysql, query, sizeof(query), "SELECT Name \
 												FROM Users \
-												WHERE ID = %d", VehicleInfo[vehicleid][Owner]);
+												WHERE ID = %d", VehicleInfo[vehicle_id][Owner]);
     mysql_query(mysql, query);
 	cache_get_value_name(0, "Name", player_name);
 	
@@ -2008,7 +2036,20 @@ public InsertHouse(house_id)
 													HouseInfo[house_id][OutsideVirtualWorld],
 													HouseInfo[house_id][InsideInterior],
 													HouseInfo[house_id][InsideVirtualWorld]);
-	mysql_tquery(mysql, query);
+	mysql_tquery(mysql, query, "OnHouseInserted", "i", house_id);
+}
+
+public OnHouseInserted(house_id)
+{
+	new message[512];
+	
+	HouseInfo[house_id][ID] = cache_insert_id();
+	
+	if(HouseInfo[house_id][Icon]) DestroyPickup(HouseInfo[house_id][Icon]);
+    HouseInfo[house_id][Icon] = CreatePickup(1273, 1, HouseInfo[house_id][EnterX], HouseInfo[house_id][EnterY], HouseInfo[house_id][EnterZ], HouseInfo[house_id][OutsideVirtualWorld]);
+
+	format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_BLUE"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", house_id, HouseInfo[house_id][Price]);
+    HouseLabelArray[house_id] = Create3DTextLabel(message, -1, HouseInfo[house_id][EnterX], HouseInfo[house_id][EnterY], HouseInfo[house_id][EnterZ], 20.0, HouseInfo[house_id][OutsideVirtualWorld]);
 }
 
 public DeleteHouse(house_id) 
@@ -2124,14 +2165,14 @@ public OnBusinessesLoaded()
 			{
 				new message[256];
 				format(message, sizeof(message), "Ovaj biznis nema vlasnika!\n"TEXT_COLOR_RED"Ime"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_WHITE"Da kupite biznis, kucajte /b buy", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], BusinessInfo[GlobalBusinessesCounter][Price]);
-				BusinessLabelArray[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
+				BusinessLabels[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
 				GlobalBusinessesCounter++;
 			}
 			if(BusinessInfo[GlobalBusinessesCounter][Owned] == 1)
 			{
 				new message[512];
 				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Ovaj biznis ima vlasnika!\n "TEXT_COLOR_RED"Ime"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Vlasnik"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Cena ulaza"TEXT_COLOR_WHITE": %d", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], GetBusinessOwnerName(BusinessInfo[GlobalBusinessesCounter][Owner]), BusinessInfo[GlobalBusinessesCounter][EnterFee]);
-				BusinessLabelArray[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
+				BusinessLabels[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
 				GlobalBusinessesCounter++;
 			}	
 		}
@@ -2179,7 +2220,22 @@ public InsertBusiness(business_id)
 													BusinessInfo[business_id][OutsideVirtualWorld],
 													BusinessInfo[business_id][InsideInterior],
 													BusinessInfo[business_id][InsideVirtualWorld]);
-	mysql_tquery(mysql, query);
+	mysql_tquery(mysql, query, "OnBusinessInserted", "i", business_id);
+}
+
+public OnBusinessInserted(business_id)
+{
+	new message[256];
+
+	BusinessInfo[business_id][ID] = cache_insert_id();
+	
+	if(BusinessInfo[business_id][ExitIcon]) DestroyPickup(BusinessInfo[business_id][ExitIcon]);
+    if(BusinessInfo[business_id][Icon]) DestroyPickup(BusinessInfo[business_id][Icon]);
+    BusinessInfo[business_id][Icon] = CreatePickup(1274, 1, BusinessInfo[business_id][EnterX], BusinessInfo[business_id][EnterY], BusinessInfo[business_id][EnterZ], BusinessInfo[business_id][OutsideVirtualWorld]);
+
+    format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis vlasnika !\n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/kupibiznis", BusinessInfo[business_id][Price], BusinessInfo[business_id][ID]);
+    BusinessLabels[business_id] = Create3DTextLabel(message, -1, BusinessInfo[business_id][EnterX], BusinessInfo[business_id][EnterY], BusinessInfo[business_id][EnterZ], 20.0, BusinessInfo[business_id][OutsideVirtualWorld]);
+
 }
 
 public SaveBusiness(business_id)
@@ -2280,49 +2336,49 @@ public AntiRoleplayName(playerid, player_name[])
 	return 1;
 }
 
-public IsASaleVehicle(vehicleid)
+public IsASaleVehicle(vehicle_id)
 {
 	for(new i = 0; i < sizeof(sale_vehicles); i++)
 	{
-	    if(vehicleid == sale_vehicles[i]) return 1;
+	    if(vehicle_id == sale_vehicles[i]) return 1;
 	}
 	
 	return 0;
 }
 
-public IsAOwnedVehicle(vehicleid)
+public IsAOwnedVehicle(vehicle_id)
 {
    for(new i = 0; i < sizeof(owned_vehicles); i++)
    {
-      if(vehicleid == owned_vehicles[i]) return 1;
+      if(vehicle_id == owned_vehicles[i]) return 1;
    }
    
    return 0;
 }
 
 
-public IsARentVehicle(vehicleid)
+public IsARentVehicle(vehicle_id)
 {
    for(new i = 0; i < sizeof(rent_vehicles); i++)
    {
-      if(vehicleid == rent_vehicles[i]) return 1;
+      if(vehicle_id == rent_vehicles[i]) return 1;
    }
    
    return 0;
 }
 
-public IsALSPoliceCar(vehicleid)
+public IsALSPoliceCar(vehicle_id)
 {
 	for(new i = 0; i < sizeof(ls_police_cars); i++)
 	{
-		if(vehicleid == ls_police_cars[i]) return 1;
+		if(vehicle_id == ls_police_cars[i]) return 1;
 	}
 	return 0;
 }
 
-public IsABike(vehicleid)
+public IsABike(vehicle_id)
 {
-    new model_id = GetVehicleModel(vehicleid);
+    new model_id = GetVehicleModel(vehicle_id);
 	
 	if(model_id == 448 
 		|| model_id == 461 
@@ -2345,9 +2401,9 @@ public IsABike(vehicleid)
 	return 0;
 }
 
-public IsABoat(vehicleid)
+public IsABoat(vehicle_id)
 {
-    new model_id = GetVehicleModel(vehicleid);
+    new model_id = GetVehicleModel(vehicle_id);
 	
 	if(model_id == 430 
 		|| model_id == 446 
@@ -2365,9 +2421,9 @@ public IsABoat(vehicleid)
 	return 0;
 }
 
-public IsAPlane(vehicleid)
+public IsAPlane(vehicle_id)
 {
-    new model_id = GetVehicleModel(vehicleid);
+    new model_id = GetVehicleModel(vehicle_id);
 	
 	if(model_id == 460 
 		|| model_id == 464 
@@ -2388,9 +2444,9 @@ public IsAPlane(vehicleid)
 	return 0;
 }
 
-public IsATrain(vehicleid)
+public IsATrain(vehicle_id)
 {
-	new model_id = GetVehicleModel(vehicleid);
+	new model_id = GetVehicleModel(vehicle_id);
 	
 	if(model_id == 449 
 		|| model_id == 537 
@@ -2449,14 +2505,14 @@ public SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color
 	return 1;
 }
 
-public StartVehicleEngine(playerid, vehicleid)
+public StartVehicleEngine(playerid, vehicle_id)
 {
 	new engine, lights, alarm, doors, bonnet, boot, objective, playername[MAX_PLAYER_NAME], str[128];
 	
-	GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(vehicleid, 1, 1, alarm, doors, bonnet, boot, objective);
+	GetVehicleParamsEx(vehicle_id, engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(vehicle_id, 1, 1, alarm, doors, bonnet, boot, objective);
 
-	VehicleEngine[vehicleid] = 1;
+	VehicleEngine[vehicle_id] = 1;
 	StartingVehicleEngine[playerid] = 0;
 	TogglePlayerControllable(playerid, 1);
 
@@ -2493,15 +2549,15 @@ public AntiFreezePlayer(playerid)
 	//FUEL
 	if(RefuellingVehicle[playerid] == 1)
 	{
-	   	new VehicleID = GetPlayerVehicleID(playerid);
-	   	VehicleFuel[VehicleID] += RefillLitre[playerid];
+	   	new vehicle_id = GetPlayerVehicleID(playerid);
+	   	VehicleFuel[vehicle_id] += RefillLitre[playerid];
 	   	RefuellingVehicle[playerid] = 9999;
 	   	//PlayerInfo[playerid][pMoney] -= RefillLitre[playerid]*5;
 	   	//GivePlayerMoney(playerid, -RefillLitre[playerid]*5);
 	}
 }
 
-public OnPlayerRegister(playerid)
+public OnPlayerRegistered(playerid)
 {
 	PlayerInfo[playerid][ID] = cache_insert_id();
 	printf("Korisnik se registrovao %d", PlayerInfo[playerid][ID]);
@@ -2640,285 +2696,7 @@ public LoadSaleVehicles()
 	GlobalVehiclesCounter += 89;
 }
 
-public LoadLosSantosCityHallExterior()
-{
-	//------------------------------------------------------------------------ > CITY HALL EXTERIOR
-	//LEVA STAKLA
-	CreateDynamicObject(1649, 1492.21497, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1492.21497, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1492.21497, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1492.21497, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1492.21497, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1492.21497, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1492.21497, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1492.21497, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
-	//POLU-LEVA STAKLA
-	CreateDynamicObject(1649, 1486.63000, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1486.63000, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1486.63000, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1486.63000, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1486.63000, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1486.63000, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1486.63000, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1486.63000, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
-	//POLU-DESNA STAKLA
-	CreateDynamicObject(1649, 1475.68994, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1475.68994, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1475.68994, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1475.68994, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1475.68994, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1475.68994, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1475.68994, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1475.68994, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
-	//DESNA STAKLA
-	CreateDynamicObject(1649, 1470.16699, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1470.16699, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1470.16699, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1470.16699, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1470.16699, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1470.16699, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1470.16699, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1470.16699, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
-	//SREDNJA STAKLA
-	CreateDynamicObject(1649, 1481.18542, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1481.18542, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1481.18542, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1481.18542, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1649, 1481.18542, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1649, 1481.18542, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
-	//STAKLO IZNAD ULAZA
-	CreateDynamicObject(10932, 1481.17737, -1787.80005, 27.42870,   0.00000, 0.00000, 0.00000);
-	//PARKING LINIJE
-	CreateDynamicObject(11548, 1551.69885, -1792.77197, 12.55990,   0.00000, -0.10000, 60.00000);
-	CreateDynamicObject(11548, 1406.88232, -1787.57886, 12.55990,   0.00000, 0.08000, 60.00000);
-	//LOGO
-	CreateDynamicObject(18750, 1482.29211, -1771.79895, 131.21419,   90.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1214, 1493.28955, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1493.28955, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1493.29053, -1774.95178, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1493.29053, -1776.14294, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1493.29053, -1777.30298, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1493.28955, -1777.26001, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1487.60620, -1774.85315, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1487.60620, -1776.05005, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1487.60620, -1777.25000, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1487.60620, -1777.26001, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1487.60620, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1487.60620, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1484.02209, -1774.92468, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1484.02209, -1776.11060, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1484.02209, -1777.31372, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1484.02209, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1484.02209, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1484.02209, -1777.24023, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1477.03503, -1774.82117, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1477.03503, -1776.00806, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1477.03503, -1777.17651, 115.97470,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1477.03503, -1774.92468, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1477.03503, -1776.11060, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1477.03503, -1777.31372, 120.00000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.66516, -1774.77393, 115.90000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.66516, -1775.96619, 115.90000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.66516, -1777.13037, 115.90000,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.48608, -1776.36792, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.48608, -1777.54834, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.48608, -1778.74841, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.48608, -1779.94922, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.48608, -1781.15002, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.48608, -1775.20764, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1775.01550, 138.84155,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1776.18774, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1777.36816, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1778.52832, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1779.70862, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1780.86890, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1775.31226, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1776.46936, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1777.62671, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1778.78833, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1779.98975, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1474.86658, -1781.17114, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1775.21851, 138.84155,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1776.41663, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1777.60364, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1778.77991, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1779.96692, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1781.16724, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1775.21851, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1776.41663, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1777.60364, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1778.77991, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1779.96692, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1480.75903, -1781.16724, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1485.93225, -1775.38025, 138.84155,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1485.93225, -1776.56311, 138.84160,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1777.73938, 138.84160,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1778.90308, 138.84160,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1780.07874, 138.84160,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1781.26123, 138.84160,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1775.38025, 135.41119,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1485.93225, -1776.56311, 135.41119,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1777.73938, 135.41119,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1778.90308, 135.41119,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1780.07874, 135.41119,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1485.93225, -1781.26123, 135.41119,   -90.00000, 0.00000, 0.24000);
-	CreateDynamicObject(1214, 1490.70508, -1775.22449, 138.84155,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1490.70508, -1776.38635, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1490.70508, -1777.54382, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1490.70508, -1778.72144, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1490.70508, -1779.90271, 138.84160,   -90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1490.70508, -1781.08777, 138.84160,   -90.00000, 0.00000, 0.00000);
-	//SVETLA ISPRED ULAZA
-	CreateDynamicObject(19121, 1478.50110, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19121, 1473.00256, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19121, 1467.77417, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19121, 1483.86072, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19121, 1489.40112, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19121, 1494.56628, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
-	//SVETLA UNUTAR ULAZA
-	CreateDynamicObject(19121, 1483.87488, -1758.85999, 17.13857,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19121, 1478.43518, -1758.85999, 17.13860,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19121, 1484.76440, -1772.40796, 18.34751,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19121, 1477.38220, -1772.40796, 18.34750,   0.00000, 0.00000, 0.00000);
-	//ZABRANA PRILASKA VOZILA DESNO
-	CreateDynamicObject(1214, 1458.51599, -1750.06982, 12.33903,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1458.51599, -1748.78967, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1458.51599, -1747.52625, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1458.51599, -1746.28516, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1458.51599, -1745.02490, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1458.51599, -1743.76257, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1458.51599, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	//ZABRANA PRILASKA VOZILA LEVO
-	CreateDynamicObject(1214, 1503.89844, -1750.06982, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1503.89844, -1748.78967, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1503.89844, -1747.52625, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1503.89844, -1746.28516, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1503.89844, -1745.02490, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1503.89844, -1743.76257, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1503.89844, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	//ZABRANA PRILASKA VOZILA SREDINA
-	CreateDynamicObject(1214, 1460.15991, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1461.81995, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1463.44409, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1465.14746, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1466.81104, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1468.45654, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1470.13684, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1471.79626, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1473.46277, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1475.12915, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1476.83020, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1478.51160, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1502.21289, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1500.53125, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1498.86548, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1497.18188, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1495.51855, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1493.87695, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1492.15625, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1490.53271, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1488.85718, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1487.19385, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1485.48303, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1214, 1483.86035, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
-}
-
-public LoadLosSantosCityHallInterior()
-{
-	//------------------------------------------------------------------------ > CITY HALL INTERIOR
-	CreateDynamicObject(14597, 1481.30005, -1790.00000, 1000.00000, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(1998, 1480.77734, -1801.83716, 998.00317, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1671, 1481.66187, -1801.51086, 998.45001, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(2002, 1478.89514, -1794.76050, 998.00189, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(1703, 1483.65051, -1794.73047, 998.00140, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(1703, 1483.65051, -1797.19995, 998.00140, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(2165, 1492.10901, -1788.86707, 997.99707, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(2165, 1492.10901, -1792.58911, 997.99707, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(1671, 1492.97424, -1788.35400, 998.45001, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(1671, 1492.97424, -1792.09351, 998.45001, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(1703, 1486.85852, -1787.07385, 998.00287, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2002, 1485.01257, -1787.07422, 998.00165, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1742, 1485.68433, -1794.09668, 998.00262, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(2167, 1494.88818, -1787.03223, 998.00018, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(2167, 1494.88818, -1793.53003, 998.00018, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(2162, 1494.90002, -1791.76001, 997.99988, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(2161, 1494.89404, -1787.91809, 998.00031, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(2200, 1467.87463, -1793.45679, 998.05603, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(2200, 1467.87463, -1788.26978, 998.05603, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(2165, 1470.40125, -1789.79309, 997.99902, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(1671, 1469.63159, -1790.38281, 998.45001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(1703, 1475.56055, -1787.05286, 998.00189, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1703, 1473.07947, -1787.05286, 998.00189, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1703, 1477.56091, -1793.39050, 998.00189, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1703, 1475.04028, -1793.39050, 998.00189, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(2161, 1479.24011, -1803.14368, 998.00122, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(2165, 1469.59387, -1784.65503, 997.99982, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(2165, 1469.59387, -1779.11365, 997.99982, 0.00000, 0.00000, -90.00000);
-	CreateDynamicObject(1671, 1468.87854, -1785.19849, 998.50000, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(1671, 1468.87854, -1779.66064, 998.50000, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(2164, 1476.56250, -1778.75659, 998.00177, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2191, 1475.13440, -1779.22156, 998.00116, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2191, 1473.79224, -1779.22156, 998.00122, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1775, 1477.22473, -1785.76746, 999.09998, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(2002, 1476.31274, -1785.66138, 998.00262, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1703, 1475.58594, -1785.65405, 998.00092, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1998, 1493.44971, -1780.25012, 998.11108, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1671, 1494.35266, -1779.92029, 998.50000, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1671, 1492.37451, -1780.01855, 998.50000, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(2162, 1494.41821, -1786.14209, 998.00098, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1703, 1487.00610, -1785.65125, 998.00311, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(1703, 1489.51160, -1785.65125, 998.00311, 0.00000, 0.00000, 180.00000);
-	CreateDynamicObject(2002, 1485.00830, -1779.26624, 998.00177, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(1775, 1487.18140, -1779.13745, 999.09998, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2811, 1488.09302, -1779.14722, 998.00085, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2249, 1493.27954, -1779.03833, 999.59998, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(644, 1490.55432, -1785.28406, 998.32166, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19446, 1494.98999, -1782.94543, 999.70001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19446, 1494.98999, -1792.52661, 999.70001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19446, 1489.28638, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1498.92004, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1489.28638, -1786.24402, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1498.92004, -1786.24402, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1484.26904, -1773.57483, 999.70001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19446, 1484.26904, -1799.01794, 999.70001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19446, 1479.43420, -1776.80005, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1478.32483, -1773.57483, 999.70001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19446, 1478.32483, -1799.01794, 999.70001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19446, 1479.43420, -1803.21997, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1473.27515, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1463.65283, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1473.27002, -1786.23999, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1463.65283, -1786.23999, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1473.27515, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1463.65283, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1473.27515, -1794.00000, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1463.65283, -1794.00000, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1489.28638, -1794.04004, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1489.28638, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, -1794.04004, 999.70001, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1498.92004, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1498.92004, -1794.04004, 999.70001, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19446, 1467.61328, -1791.36206, 999.70001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19446, 1467.61328, -1781.35571, 999.70001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19378, 1483.62744, -1781.74316, 997.92999, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19378, 1494.11633, -1781.74341, 997.92999, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19378, 1472.89136, -1781.74341, 997.92999, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19378, 1483.62744, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19378, 1494.11633, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19378, 1472.89136, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19378, 1483.62744, -1800.98755, 997.92999, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19380, 1483.62744, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19380, 1494.11633, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19380, 1483.62939, -1800.98755, 1001.45001, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19380, 1494.11633, -1791.37097, 1001.45001, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19380, 1473.11157, -1791.37097, 1001.45001, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19380, 1473.11157, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19380, 1483.62744, -1791.35107, 1001.45001, 0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(2946, 1484.46436, -1776.86133, 998.01440, 0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(2946, 1478.12231, -1776.86133, 998.01440, 0.00000, 0.00000, -90.00000);
-}
-
-public LoadLosSantisParking()
+public LoadLosSantosParking()
 {
 	//------------------------------------------------------------------------ > PARKING
 	CreateDynamicObject(19447,1622.9000000,-1146.3900000,24.5000000,0.0000000,0.0000000,90.0000000); //object(cs_detrok13) (1)
@@ -3055,8 +2833,8 @@ public LoadLosSantisParking()
 	CreateDynamicObject(19447,1546.4100000,-1001.2000000,24.5000000,0.0000000,0.0000000,335.6982000); //object(cs_detrok13) (9)
 	CreateDynamicObject(8406,1635.9000000,-1146.1000000,28.4000000,0.0000000,0.0000000,0.0000000); //object(carparksign01_lvs) (1)
 	CreateDynamicObject(4641,1637.7000000,-1144.4000000,24.6000000,0.0000000,0.0000000,180.0000000); //object(paypark_lan04) (1)
-	parking_gate1 = CreateDynamicObject(969,1627.8000000,-1145.9000000,23.1000000,0.0000000,0.0000000,0.0000000); //object(electricgate) (1)
-	parking_gate2 = CreateDynamicObject(969,1647.6000000,-1145.9000000,23.1000000,0.0000000,0.0000000,180.0000000); //object(electricgate) (2)
+	// parking_gate1 = CreateDynamicObject(969,1627.8000000,-1145.9000000,23.1000000,0.0000000,0.0000000,0.0000000); //object(electricgate) (1)
+	// parking_gate2 = CreateDynamicObject(969,1647.6000000,-1145.9000000,23.1000000,0.0000000,0.0000000,180.0000000); //object(electricgate) (2)
 }
 
 public LoadLosSantosAirport()
@@ -3150,108 +2928,6 @@ public LoadLosSantosAirport()
 	CreateDynamicObject(3858,1646.1870100,-2333.8889200,16.8000000,0.0000000,0.0000000,315.0000000); //object(ottosmash1) (8)
 }
 
-public LoadLosSantosPoliceDepartment()
-{
-	//------------------------------------------------------------------------ > LSPD
-	CreateDynamicObject(2930, 247.98140, 89.21600, 1005.20001, 0.00000, 0.00000, 0.00000);
-	cell_room_door = CreateDynamicObject(2930, 247.98140, 87.49130, 1005.20001, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2930, 266.29559, 77.55000, 1002.59998, 0.00000, 0.00000, 0.00000);
-	cell1 = CreateDynamicObject(2930, 266.29559, 79.27300, 1002.59998, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2930, 266.29559, 82.05180, 1002.59998, 0.00000, 0.00000, 0.00000);
-	cell2 = CreateDynamicObject(2930, 266.29559, 83.77230, 1002.59998, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2930, 266.29559, 86.54900, 1002.59998, 0.00000, 0.00000, 0.00000);
-	cell3 = CreateDynamicObject(2930, 266.29559, 88.26910, 1002.59998, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2603, 262.90793, 87.48180, 1000.44501, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2602, 263.03015, 84.94619, 1000.54480, 0.00000, 0.00000, 135.00000);
-	CreateDynamicObject(2603, 262.90790, 82.97620, 1000.44501, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2602, 263.03021, 80.43490, 1000.54480, 0.00000, 0.00000, 135.00000);
-	CreateDynamicObject(2603, 262.90790, 78.47430, 1000.44501, 0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2602, 263.03021, 75.97380, 1000.54480, 0.00000, 0.00000, 135.00000);
-	lspd_door1 = CreateDynamicObject(5422, 250.611,63.2995,1003.18,0.00,0.00,00.00); // LSPD Main Door
-	lspd_door2 = CreateDynamicObject(5422, 246.228,72.4962,1003.04,0.00,0.00,90.00); // LSPD Control Room Door
-	lspd_window = CreateDynamicObject(974,250.524,67.650,1002.58,0.00,0.00,90.00); // LSPD Windows
-	
-	lspd_garage = CreateDynamicObject(3037,1589.7000000,-1638.3101000,14.2700000,0.0000000,0.0000000,90.0000000); //object(warehouse_door2b) (2)
-	lspd_garage_door = CreateDynamicObject(2930,1582.4000000,-1638.0500000,15.0000000,0.0000000,0.0000000,90.0000000); //object(chinatgate) (1)
-}
-
-public LoadLosSantosPoliceCars()
-{
-	//------------------------------------------------------------------------ > POLICE VEHICLES
- 	ls_police_cars[0] = AddStaticVehicleEx(596,1570.3000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
-	ls_police_cars[1] = AddStaticVehicleEx(596,1574.4000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
-	ls_police_cars[2] = AddStaticVehicleEx(596,1578.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
-	ls_police_cars[3] = AddStaticVehicleEx(596,1583.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
-	ls_police_cars[4] = AddStaticVehicleEx(596,1587.4000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
-	ls_police_cars[5] = AddStaticVehicleEx(596,1591.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
-	ls_police_cars[6] = AddStaticVehicleEx(596,1595.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
-	ls_police_cars[7] = AddStaticVehicleEx(523,1601.5000000,-1704.2000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
-	ls_police_cars[8] = AddStaticVehicleEx(523,1601.5000000,-1700.2000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
-	ls_police_cars[9] = AddStaticVehicleEx(523,1601.5000000,-1696.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
-	ls_police_cars[10] = AddStaticVehicleEx(523,1601.5000000,-1692.0000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
-	ls_police_cars[11] = AddStaticVehicleEx(523,1601.5000000,-1688.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
-	ls_police_cars[12] = AddStaticVehicleEx(523,1601.5000000,-1684.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
-	GlobalVehiclesCounter += 13;
-}
-
-public LoadLosSantosTaxiJob()
-{
-	//------------------------------------------------------------------------ > TAXI JOB
- 	CreateDynamicObject(983,1102.6000000,-1760.5000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (3)
-	CreateDynamicObject(983,1102.6000000,-1754.1000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (4)
-	CreateDynamicObject(983,1102.6000000,-1766.9000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (6)
-	CreateDynamicObject(983,1102.6000000,-1771.7000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (7)
-	CreateDynamicObject(983,1102.6000000,-1774.9000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (8)
-	CreateDynamicObject(9131,1102.5000000,-1777.8000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (3)
-	CreateDynamicObject(983,1099.0000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (10)
-	CreateDynamicObject(983,1092.6000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (11)
-	CreateDynamicObject(983,1062.2000000,-1777.9000000,13.2500000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (12)
-	CreateDynamicObject(983,1079.8000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (13)
-	CreateDynamicObject(984,1070.2000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (4)
-	CreateDynamicObject(983,1086.2000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (16)
-	CreateDynamicObject(9131,1058.6700000,-1777.8000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (4)
-	CreateDynamicObject(982,1058.6000000,-1765.3000000,13.3000000,0.0000000,0.0000000,0.0000000); //object(fenceshit) (2)
-	CreateDynamicObject(984,1058.6000000,-1746.1000000,13.3000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (5)
-	CreateDynamicObject(983,1058.6000000,-1738.1000000,13.3400000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (17)
-	CreateDynamicObject(9131,1058.6000000,-1735.1000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (5)
-	CreateDynamicObject(9131,1102.5000000,-1751.2399900,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (6)
-	CreateDynamicObject(982,1071.7200000,-1735.1000000,13.4000000,0.0000000,0.0000000,90.0000000); //object(fenceshit) (4)
-	CreateDynamicObject(982,1089.3300000,-1735.1000000,13.4000000,0.0000000,0.0000000,90.0000000); //object(fenceshit) (5)
-	CreateDynamicObject(9131,1102.4500000,-1735.1000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (7)
-	CreateDynamicObject(1215,1102.5000000,-1751.3000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (1)
-	CreateDynamicObject(1215,1102.5000000,-1777.8000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (2)
-	CreateDynamicObject(1215,1058.6000000,-1777.8000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (3)
-	CreateDynamicObject(1215,1058.6000000,-1735.1000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (4)
-	CreateDynamicObject(1215,1102.4000000,-1735.1000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (5)
-}
-
-public LoadLosSantosSmugglerJob()
-{
-	//------------------------------------------------------------------------ > SMUGGLER JOB
-	CreateDynamicObject(1723, 2134.69116, -2281.19971, 19.67160,   0.00000, 0.00000, -135.00000);
-	CreateDynamicObject(1723, 2132.62207, -2283.27466, 19.67160,   0.00000, 0.00000, -135.00000);
-	CreateDynamicObject(3014, 2122.26855, -2268.72998, 19.88750,   0.00000, 0.00000, 45.00000);
-	CreateDynamicObject(3014, 2121.85791, -2269.13989, 19.88750,   0.00000, 0.00000, 45.00000);
-	CreateDynamicObject(3014, 2122.26855, -2268.72998, 20.35000,   0.00000, 0.00000, 45.00000);
-	CreateDynamicObject(3014, 2122.27905, -2268.80127, 20.80000,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(18885, 2118.75562, -2272.05566, 20.50017,   0.00000, 0.00000, 45.00000);
-	CreateDynamicObject(1999, 2124.67798, -2276.86328, 19.67240,   0.00000, 0.00000, -45.00000);
-	CreateDynamicObject(1671, 2124.71973, -2278.22339, 20.10000,   0.00000, 0.00000, 135.00000);
-	CreateDynamicObject(1999, 2124.36450, -2272.68433, 19.67240,   0.00000, 0.00000, -225.00000);
-	CreateDynamicObject(1671, 2124.41016, -2271.32837, 20.10000,   0.00000, 0.00000, -45.00000);
-	//CreateDynamicObject(2924, 2132.19019, -2277.89160, 20.87981,   0.00000, 0.00000, 135.00000);
-	CreateDynamicObject(2612, 2128.17212, -2274.11011, 21.42070,   0.00000, 0.00000, -45.00000);
-	CreateDynamicObject(2611, 2124.51074, -2270.44287, 21.42070,   0.00000, 0.00000, -45.00000);
-	CreateDynamicObject(335, 2124.56812, -2276.93970, 20.47000,   90.00000, 90.00000, 15.00000);
-	//CreateDynamicObject(2924, 2118.78784, -2274.06763, 20.87981,   0.00000, 0.00000, 135.00000);
-	CreateDynamicObject(2049, 2129.23438, -2283.32104, 21.30740,   0.00000, 0.00000, 135.00000);
-	CreateDynamicObject(2050, 2127.68335, -2281.76440, 21.30740,   0.00000, 0.00000, 135.00000);
-	CreateDynamicObject(2051, 2125.87402, -2279.95752, 21.30740,   0.00000, 0.00000, 135.00000);
-	CreateDynamicObject(2055, 2131.42480, -2277.34888, 21.35780,   0.00000, 0.00000, -45.00000);
-	smuggler_gate1 = CreateDynamicObject(976, 2227.89941, -2209.22607, 12.54400,   0.00000, 0.00000, -45.00000);
-	smuggler_gate2 = CreateDynamicObject(976, 2240.26001, -2221.58179, 12.54400,   0.00000, 0.00000, 135.00000);
-}
-
 public OnGameModeInit()
 {
 	AddPlayerClass(0, 1642.2903, -2333.3423, 13.5469, 360.0, 0, 0, 0, 0, 0, 0);
@@ -3299,30 +2975,12 @@ public OnGameModeInit()
 	        Attach3DTextLabelToVehicle(SaleVehicleLabels[i], i, 0, 0, 0);
 		}
 	}
-	
-	// Load city hall exterior
-	LoadLosSantosCityHallExterior();
-	
-	// Load city hall interior
-	LoadLosSantosCityHallInterior();
-	
+
 	// Load great parking
-	LoadLosSantisParking();
+	LoadLosSantosParking();
 	
 	// Load los santos airport
 	LoadLosSantosAirport();
-	
-	// Load lspd
-	LoadLosSantosPoliceDepartment();
-	
-	// Load lspd cars
-	LoadLosSantosPoliceCars();
-
-	// Load taxi job exterior
-	LoadLosSantosTaxiJob();
-	
-	// Load smuggler job exterior
-	LoadLosSantosSmugglerJob();
 	
 	// Load rent vehicles
 	LoadRentVehicles();
@@ -3389,6 +3047,12 @@ public OnPlayerConnect(playerid)
 	VehiclePlayerOffer[playerid] = 9999;
 	VehicleOfferPrice[playerid] = 0;
 	
+	HouseSellOffer[playerid] = 9999;
+ 	HouseBuyOffer[playerid] = 9999;
+ 	HouseForOffer[playerid] = 9999;
+	HousePlayerOffer[playerid] = 9999;
+	HouseOfferPrice[playerid] = 0;
+
 	FuelTD[playerid] = TextDrawCreate(526.399963, 412.906738, "Gorivo: 100");
 	TextDrawLetterSize(FuelTD[playerid], 0.449999, 1.600000);
 	TextDrawAlignment(FuelTD[playerid], 1);
@@ -3458,16 +3122,25 @@ public OnVehicleDeath(vehicleid, killerid)
 public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 {
 	new Float:health;
-	new Float:VehicleHealth,engine, lights, alarm, doors, bonnet, boot, objective;
+	new Float:vehicle_health, engine, lights, alarm, doors, bonnet, boot, objective;
 	
 	GetPlayerHealth(playerid, health);
-	if(IsABike(vehicleid)) if(HasHelmet[playerid] != 1) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
-	else if(HasBelt[playerid] != 1) SetPlayerHealth(playerid, floatround(health, floatround_round) -15);
+	if(IsABike(vehicleid))
+	{
+		if(HasHelmet[playerid] != 1)
+		{
+			SetPlayerHealth(playerid, floatround(health, floatround_round) -5);
+		}
+	}
+	else if(HasBelt[playerid] != 1)
+	{
+		SetPlayerHealth(playerid, floatround(health, floatround_round) -5);
+	}
 
  	if(VehicleEngine[vehicleid] == 1)
   	{
-   		GetVehicleHealth(vehicleid, VehicleHealth);
-	    if(VehicleHealth <= 500.0)
+   		GetVehicleHealth(vehicleid, vehicle_health);
+	    if(vehicle_health <= 500.0)
 	    {
 			GetVehicleParamsEx(vehicleid, engine, lights, alarm, doors, bonnet, boot, objective);
   			SetVehicleParamsEx(vehicleid, 0, 0, alarm, doors, bonnet, boot, objective);
@@ -3661,20 +3334,21 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
 	if(newkeys == KEY_YES)
 	{
-		new VehicleID, playername[MAX_PLAYER_NAME], Float:VehicleHealth, str[128];
+		new vehicle_id, playername[MAX_PLAYER_NAME], Float:vehicle_health, str[128];
 		
 		if(!IsPlayerInAnyVehicle(playerid)) return 1;
-		VehicleID = GetPlayerVehicleID(playerid);
-		if(IsASaleVehicle(VehicleID)) return 1;
-		if(IsARentVehicle(VehicleID) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != VehicleID)) return 1;
-		if(VehicleEngine[VehicleID] == 1) return 1;
+		vehicle_id = GetPlayerVehicleID(playerid);
+		if(IsASaleVehicle(vehicle_id)) return 1;
+		if(IsARentVehicle(vehicle_id) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicle_id)) return 1;
+		if(VehicleEngine[vehicle_id] == 1) return 1;
 
-		GetVehicleHealth(VehicleID, VehicleHealth);
-	    if(VehicleHealth <= 500.0) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete upaliti motor vozila. Motor je ostecen!");
+		GetVehicleHealth(vehicle_id, vehicle_health);
+	    if(vehicle_health <= 500.0) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete upaliti motor vozila. Motor je ostecen!");
 	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, -1, "GRESKA: Vec pokusavate da upalite motor vozila!");
-	    StartingVehicleEngine[playerid] = 1;
+	    
+		StartingVehicleEngine[playerid] = 1;
 		TogglePlayerControllable(playerid, 0);
-		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, VehicleID);
+		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicle_id);
 	    GameTextForPlayer(playerid, "~w~Pokretanje motora vozila...", 3500, 3);
 
 	    GetPlayerName(playerid, playername, sizeof(playername));
@@ -3910,7 +3584,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnX] = 1642.2903;
 					PlayerInfo[playerid][SpawnY] = -2333.3423;
 					PlayerInfo[playerid][SpawnZ] = 13.5469;
-					//PlayerInfo[playerid][SpawnA] = 0.0;
+					PlayerInfo[playerid][SpawnA] = 0.0;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
 																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
@@ -3931,7 +3605,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnX] = 1676.4181;
 					PlayerInfo[playerid][SpawnY] = 1447.8713;
 					PlayerInfo[playerid][SpawnZ] = 10.7845;
-					//PlayerInfo[playerid][SpawnA] = 270.4988;
+					PlayerInfo[playerid][SpawnA] = 270.4988;
 					
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
@@ -3948,7 +3622,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnX] = 1410.8577;
 					PlayerInfo[playerid][SpawnY] = -301.6284;
 					PlayerInfo[playerid][SpawnZ] = 14.1484;
-					//PlayerInfo[playerid][SpawnA] = 136.9096;
+					PlayerInfo[playerid][SpawnA] = 136.9096;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
 																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
@@ -4029,6 +3703,67 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				return 1;
 			}
 		}
+
+		case DIALOG_BUY_HOUSE:
+		{
+			if(!response)
+			{
+			    HouseSellOffer[HousePlayerOffer[playerid]] = 9999;
+				HouseBuyOffer[playerid] = 9999;
+			 	HouseForOffer[playerid] = 9999;
+			 	HouseOfferPrice[playerid] = 0;
+				HousePlayerOffer[playerid] = 9999;
+
+				SendClientMessage(playerid, -1, "Odbili ste da kupite kucu!");
+				SendClientMessage(HousePlayerOffer[playerid], -1, "Igrac je odbio ponudu za kucu!");
+			}
+			if(response)
+			{
+			    if(GetPlayerMoney(playerid) < HouseOfferPrice[playerid])
+			    {
+			        HouseSellOffer[HousePlayerOffer[playerid]] = 9999;
+					HouseBuyOffer[playerid] = 9999;
+				 	HouseForOffer[playerid] = 9999;
+				 	HouseOfferPrice[playerid] = 0;
+					HousePlayerOffer[playerid] = 9999;
+
+					SendClientMessage(playerid, -1, "Nemate dovoljno novca da kupite kucu!");
+					SendClientMessage(HousePlayerOffer[playerid], -1, "Igrac nema dovoljno novca da kupi kucu!");
+			    }
+			    else
+			    {
+	       			new player, id, player_name[MAX_PLAYER_NAME], house3dtext[256];
+					GetPlayerName(playerid, player_name, sizeof(player_name));
+					player = HousePlayerOffer[playerid];
+
+					id = HouseForOffer[playerid];
+					HouseInfo[id][Owner] = PlayerInfo[playerid][ID];
+					HouseInfo[id][Locked] = 1;
+
+					PlayerInfo[playerid][Money] -= HouseOfferPrice[playerid];
+					GivePlayerMoney(playerid, -HouseOfferPrice[playerid]);
+
+					PlayerInfo[player][Money] += HouseOfferPrice[playerid];
+					GivePlayerMoney(player, HouseOfferPrice[playerid]);
+
+					SendClientMessage(playerid, -1, "KUPILI STE KUCU!");
+					SendClientMessage(player, -1, "PRODALI STE KUCU!");
+					SavePlayer(player);
+					SavePlayer(playerid);
+					SaveHouse(id);
+
+					format(house3dtext, sizeof(house3dtext), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(HouseInfo[id][ID]), HouseInfo[id][ID]);
+					Update3DTextLabelText(HouseLabelArray[id], -1, house3dtext);
+
+					HouseSellOffer[player] = 9999;
+					HouseBuyOffer[playerid] = 9999;
+				 	HouseForOffer[playerid] = 9999;
+				 	HouseOfferPrice[playerid] = 0;
+			 		HousePlayerOffer[playerid] = 9999;
+				}
+				return 1;
+			}
+		}
 	}
 	return 1;
 }
@@ -4044,7 +3779,7 @@ YCMD:avehicle(playerid, params[], help)
 {
 	#pragma unused help 
 	
-	new VehicleID, vehicle, color1, color2, Float:X, Float:Y, Float:Z;
+	new vehicle_id, vehicle, color1, color2, Float:X, Float:Y, Float:Z;
 	
 	if(sscanf(params, "iii", vehicle, color1, color2))
 	{
@@ -4052,9 +3787,9 @@ YCMD:avehicle(playerid, params[], help)
 	}
 	
 	GetPlayerPos(playerid, X, Y, Z);
-	VehicleID = CreateVehicle(vehicle, X+1, Y+1, Z, 270.0, color1, color2, -1);
-	VehicleEngine[VehicleID] = 0;
-	VehicleFuel[VehicleID] = 30;
+	vehicle_id = CreateVehicle(vehicle, X+1, Y+1, Z, 270.0, color1, color2, -1);
+	VehicleEngine[vehicle_id] = 0;
+	VehicleFuel[vehicle_id] = 30;
 	return 1;
 }
 
@@ -4071,7 +3806,7 @@ YCMD:amoney(playerid, params[], help)
 {
 	#pragma unused help
 	new player, money, player_name[MAX_PLAYER_NAME], message[128];
-	//if((PlayerInfo[playerid][pAdmin] < 6) || (PlayerInfo[playerid][pAdmin] == 9999)) return SendClientMessage(playerid, BOJA_CRVENA, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
+	//if((PlayerInfo[playerid][pAdmin] < 6) || (PlayerInfo[playerid][pAdmin] == 9999)) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
 	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /amoney [id/deo imena] [kolicina]");
 
 	PlayerInfo[player][Money] += money;
@@ -4118,22 +3853,22 @@ YCMD:iznajmivozilo(playerid, params[], help)
 {
 	#pragma unused help
 	
-	new VehicleID;
+	new vehicle_id;
 	
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "[GRESKA]: Niste u vozilu!");
 	
-	VehicleID = GetPlayerVehicleID(playerid);
-	if(!IsARentVehicle(VehicleID)) return SendClientMessage(playerid, -1, "[GRESKA]: Niste u vozilu za iznajmljivanje!");
+	vehicle_id = GetPlayerVehicleID(playerid);
+	if(!IsARentVehicle(vehicle_id)) return SendClientMessage(playerid, -1, "[GRESKA]: Niste u vozilu za iznajmljivanje!");
 	//if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, -1 ,"[GRESKA]: Nemate dovoljno novca da iznajmite vozilo!");
 	if(IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, -1, "[GRESKA]: Vec ste iznajmili neko vozilo!");
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) 
 	{
-		if(RentedVehicle[i] == VehicleID) return SendClientMessage(playerid, -1, "[GRESKA]: Neko je vec iznajmio ovo vozilo!");
+		if(RentedVehicle[i] == vehicle_id) return SendClientMessage(playerid, -1, "[GRESKA]: Neko je vec iznajmio ovo vozilo!");
 	}
 	
 	IsPlayerRentingVehicle[playerid] = 1;
-	RentedVehicle[playerid] = VehicleID;
+	RentedVehicle[playerid] = vehicle_id;
    	TogglePlayerControllable(playerid, 1);
 	
 	SendClientMessage(playerid, -1, "Iznajmili ste vozilo. Da vratite vozilo kucajte: /vrativozilo");
@@ -4145,11 +3880,11 @@ YCMD:vrativozilo(playerid, params[], help)
 {
 	#pragma unused help
 
-	new VehicleID = GetPlayerVehicleID(playerid);
+	new vehicle_id = GetPlayerVehicleID(playerid);
 	
 	if(!IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, -1, "[GRESKA]: Nemate iznajmljeno vozilo.");
 	
-	if(VehicleID == RentedVehicle[playerid]) TogglePlayerControllable(playerid, 1);
+	if(vehicle_id == RentedVehicle[playerid]) TogglePlayerControllable(playerid, 1);
 	SetVehicleToRespawn(RentedVehicle[playerid]);
 	IsPlayerRentingVehicle[playerid] = 0;
 	RentedVehicle[playerid] = 0;
@@ -4163,23 +3898,23 @@ YCMD:motor(playerid, params[], help)
 {
 	#pragma unused help
 	
-	new playername[MAX_PLAYER_NAME], VehicleID, engine, lights, alarm, doors, bonnet, boot, objective, Float:VehicleHealth, str[128];
+	new playername[MAX_PLAYER_NAME], vehicle_id, engine, lights, alarm, doors, bonnet, boot, objective, Float:vehicle_health, str[128];
 	
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
-	VehicleID = GetPlayerVehicleID(playerid);
-	GetVehicleParamsEx(VehicleID, engine, lights, alarm, doors, bonnet, boot, objective);
-	if(IsASaleVehicle(VehicleID)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
-	if(IsARentVehicle(VehicleID) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != VehicleID)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
-	if(VehicleFuel[VehicleID] == 0) return SendClientMessage(playerid, -1, "GRESKA: Rezervoar je prazan!");
+	vehicle_id = GetPlayerVehicleID(playerid);
+	GetVehicleParamsEx(vehicle_id, engine, lights, alarm, doors, bonnet, boot, objective);
+	if(IsASaleVehicle(vehicle_id)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
+	if(IsARentVehicle(vehicle_id) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicle_id)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
+	if(VehicleFuel[vehicle_id] == 0) return SendClientMessage(playerid, -1, "GRESKA: Rezervoar je prazan!");
 	if(RefuellingVehicle[playerid] == 1) return SendClientMessage(playerid, -1, "GRESKA: Sipanje goriva u toku!");
-	if(VehicleEngine[VehicleID] == 0)
+	if(VehicleEngine[vehicle_id] == 0)
 	{
-    	GetVehicleHealth(VehicleID, VehicleHealth);
-	    if(VehicleHealth <= 500.0) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete upaliti motor vozila. Motor je ostecen!");
+    	GetVehicleHealth(vehicle_id, vehicle_health);
+	    if(vehicle_health <= 500.0) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete upaliti motor vozila. Motor je ostecen!");
 	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, -1, "GRESKA: Vec pokusavate da pokrenete motor vozila!");
 	    StartingVehicleEngine[playerid] = 1;
     	TogglePlayerControllable(playerid, 0);
-		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, VehicleID);
+		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicle_id);
 	    GameTextForPlayer(playerid, "~w~Pokretanje motora vozila...", 3500, 3);
 
 	    GetPlayerName(playerid, playername, sizeof(playername));
@@ -4188,8 +3923,8 @@ YCMD:motor(playerid, params[], help)
 	}
 	else
 	{
-	    SetVehicleParamsEx(VehicleID, 0, 0, alarm, doors, bonnet, boot, objective);
-    	VehicleEngine[VehicleID] = 0;
+	    SetVehicleParamsEx(vehicle_id, 0, 0, alarm, doors, bonnet, boot, objective);
+    	VehicleEngine[vehicle_id] = 0;
 
     	SendClientMessage(playerid, -1, "Ugasili ste motor vozila.");
 		
@@ -4204,11 +3939,11 @@ YCMD:sipajgorivo(playerid, params[], help)
 {
 	#pragma unused help
 	
-	new VehicleID, litre, pump1, pump2, pump3;
+	new vehicle_id, litre, pump1, pump2, pump3;
 	
 	if(sscanf(params, "i", litre)) return SendClientMessage(playerid, -1, "KORISCENJE: /sipajgorivo [litara] (x5$)");
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
-	VehicleID = GetPlayerVehicleID(playerid);
+	vehicle_id = GetPlayerVehicleID(playerid);
 	
 	pump1 = IsPlayerNearPump1(playerid);
 	pump2 = IsPlayerNearPump2(playerid);
@@ -4216,10 +3951,10 @@ YCMD:sipajgorivo(playerid, params[], help)
 	
 	if(pump1 != -1 && pump1 != 0)
 	{
-		if(VehicleEngine[VehicleID] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
+		if(VehicleEngine[vehicle_id] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
 		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, -1, "GRESKA: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(VehicleID) && litre + VehicleFuel[VehicleID] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[VehicleID] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
+		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
@@ -4229,10 +3964,10 @@ YCMD:sipajgorivo(playerid, params[], help)
 	}
 	else if(pump2 != -1 && pump2 != 0)
 	{
-		if(VehicleEngine[VehicleID] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
+		if(VehicleEngine[vehicle_id] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
 		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, -1, "GRESKA: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(VehicleID) && litre + VehicleFuel[VehicleID] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[VehicleID] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
+		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
@@ -4242,10 +3977,10 @@ YCMD:sipajgorivo(playerid, params[], help)
 	}
 	else if(pump3 != -1 && pump3 != 0)
 	{
-		if(VehicleEngine[VehicleID] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
+		if(VehicleEngine[vehicle_id] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
 		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, -1, "GRESKA: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(VehicleID) && litre + VehicleFuel[VehicleID] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[VehicleID] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
+		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
@@ -4262,10 +3997,10 @@ YCMD:pojas(playerid, params[], help)
 	#pragma unused help
 	
  	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
-	new str[128], VehicleID = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
+	new str[128], vehicle_id = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	if(IsABike(VehicleID)) return SendClientMessage(playerid, -1, "GRESKA: Na motoru ste, koristite kacigu! (/kaciga)");
+	if(IsABike(vehicle_id)) return SendClientMessage(playerid, -1, "GRESKA: Na motoru ste, koristite kacigu! (/kaciga)");
 	if(HasBelt[playerid] == 0)
 	{
 	    HasBelt[playerid] = 1;
@@ -4294,10 +4029,10 @@ YCMD:kaciga(playerid, params[], help)
 	#pragma unused help
 	
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
-	new str[128], VehicleID = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
+	new str[128], vehicle_id = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	if(!IsABike(VehicleID)) return SendClientMessage(playerid, -1, "GRESKA: Niste na motoru, vezite pojas! (/pojas)");
+	if(!IsABike(vehicle_id)) return SendClientMessage(playerid, -1, "GRESKA: Niste na motoru, vezite pojas! (/pojas)");
 	if(HasHelmet[playerid] == 0)
 	{
 	    HasHelmet[playerid] = 1;
@@ -4456,6 +4191,37 @@ YCMD:v(playerid, params[], help)
 
 			return 1;
 		}
+		else if(!strfind(command, "sellto"))
+		{
+			new player_name[MAX_PLAYER_NAME], vehicle_id, target, price, vehicle[32], Float:X, Float:Y, Float:Z, message[512];
+
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /sellto [id igraca/deo imena] [cena]");
+			if(VehicleSellOffer[playerid] != 9999) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Vec ste ponudili prodaju vozila!");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			vehicle_id = GetPlayerVehicleID(playerid);
+			GetVehiclePos(vehicle_id, X, Y, Z);
+			GetVehicleName(vehicle_id, vehicle, sizeof(vehicle));
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u svom vozilu!");
+			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Igrac nije blizu vas!");
+
+			VehicleSellOffer[playerid] = 1;
+			VehicleBuyOffer[target] = 1;
+			VehicleForOffer[target] = vehicle_id;
+			VehiclePlayerOffer[target] = playerid;
+			VehicleOfferPrice[target] = price;
+
+			SetTimerEx("VehicleStopOffer", 10000, false, "ii", playerid, target);
+			format(message, sizeof(message), "\n"TEXT_COLOR_RED"Vozilo"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Trenutni vlasnik"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Registrovan"TEXT_COLOR_WHITE": %s\n", vehicle, GetVehicleOwnerName(vehicle_id), price, GetVehicleRegistration(vehicle_id));
+			ShowPlayerDialog(target, DIALOG_BUY_VEHICLE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"KUPOVINA VOZILA", message, "Kupi", "Odbij");
+
+			GetPlayerName(target, player_name, sizeof(player_name));
+			format(message, sizeof(message), "Ponudili ste igracu %s da kupi vase vozilo.", player_name);
+			SendClientMessage(playerid, COLOR_GREEN, message);
+
+			GetPlayerName(target, player_name, sizeof(player_name));
+			format(message, sizeof(message), "Igrac %s Vam je ponudio da kupite njegovo vozilo.", player_name);
+			SendClientMessage(target, COLOR_GREEN, message);
+		}
 		else if(strcmp(command, "save", true) == 0)
 		{
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
@@ -4545,38 +4311,6 @@ YCMD:v(playerid, params[], help)
 
 			return 1;
 		}
-		else if(!strfind(command, "sellto"))
-		{
-			new player_name[MAX_PLAYER_NAME], vehicle_id, target, price, vehicle[32], Float:X, Float:Y, Float:Z, message[512];
-
-			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /sellto [id igraca/deo imena] [cena]");
-			if(VehicleSellOffer[playerid] != 9999) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Vec ste ponudili prodaju vozila!");
-			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
-			vehicle_id = GetPlayerVehicleID(playerid);
-			GetVehiclePos(vehicle_id, X, Y, Z);
-			GetVehicleName(vehicle_id, vehicle, sizeof(vehicle));
-			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u svom vozilu!");
-			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Igrac nije blizu vas!");
-
-			VehicleSellOffer[playerid] = 1;
-			VehicleBuyOffer[target] = 1;
-			VehicleForOffer[target] = vehicle_id;
-			VehiclePlayerOffer[target] = playerid;
-			VehicleOfferPrice[target] = price;
-
-			SetTimerEx("VehicleStopOffer", 10000, false, "ii", playerid, target);
-			format(message, sizeof(message), "\n"TEXT_COLOR_RED"Vozilo"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Trenutni vlasnik"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Registrovan"TEXT_COLOR_WHITE": %s\n", vehicle, GetVehicleOwnerName(vehicle_id), price, GetVehicleRegistration(vehicle_id));
-			ShowPlayerDialog(target, DIALOG_BUY_VEHICLE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"KUPOVINA VOZILA", message, "Kupi", "Odbij");
-
-			GetPlayerName(target, player_name, sizeof(player_name));
-			format(message, sizeof(message), "Ponudili ste igracu %s da kupi vase vozilo.", player_name);
-			SendClientMessage(playerid, COLOR_GREEN, message);
-
-			GetPlayerName(target, player_name, sizeof(player_name));
-			format(message, sizeof(message), "Igrac %s Vam je ponudio da kupite njegovo vozilo.", player_name);
-			SendClientMessage(target, COLOR_GREEN, message);
-		}
-
 		/*else
 		{
 		    SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [komanda]");
@@ -4586,12 +4320,296 @@ YCMD:v(playerid, params[], help)
 	return 1;
 }
 
+YCMD:h(playerid, params[], help)
+{
+	new command[32];
+	if(sscanf(params, "s[32]", command))
+	{
+		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavehicle_idrogu, uzmidrogu");
+	}
+	else
+	{
+		if(strcmp(command, "buy", true) == 0)
+		{
+			new player_name[MAX_PLAYER_NAME], id, message[256];
+
+			id = IsPlayerNearHouseEnter(playerid);
+			GetPlayerName(playerid, player_name, sizeof(player_name));
+			
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
+			if(HouseInfo[id][Owned] != 0 || HouseInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ova kuca nije na prodaju!");
+			if(GetPlayerMoney(playerid) < HouseInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca da kupite ovu kucu!");
+
+			PlayerInfo[playerid][Money] -= HouseInfo[id][Price];
+			GivePlayerMoney(playerid, -HouseInfo[id][Price]);
+
+			HouseInfo[id][Owned] = 1;
+			HouseInfo[id][Owner] = PlayerInfo[playerid][ID];
+			HouseInfo[id][Locked] = 0;
+
+			DestroyPickup(HouseInfo[id][Icon]);
+			HouseInfo[id][Icon] = CreatePickup(1272, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
+			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste kucu.");
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(GlobalHousesCounter), HouseInfo[id][ID]);
+			Update3DTextLabelText(HouseLabelArray[id], -1, message);
+
+			SaveHouse(id);
+			SavePlayer(playerid);
+
+			return 1;
+		}
+		else if(strcmp(command, "sell", true) == 0)
+		{
+			new id, message[256];
+
+			id = IsPlayerNearHouseEnter(playerid);
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nije vasa kuca!");
+
+			HouseInfo[id][Owned] = 0;
+			HouseInfo[id][Locked] = 1;
+			HouseInfo[id][Slot1] = 9999;
+			HouseInfo[id][Slot1_ammo] = 0;
+			HouseInfo[id][Slot2] = 9999;
+			HouseInfo[id][Slot2_ammo] = 0;
+			HouseInfo[id][Slot3] = 9999;
+			HouseInfo[id][Slot3_ammo] = 0;
+			HouseInfo[id][Materials] = 0;
+			HouseInfo[id][Drugs] = 0;
+
+			DestroyPickup(HouseInfo[id][Icon]);
+			HouseInfo[id][Icon] = CreatePickup(1273, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
+
+			PlayerInfo[playerid][Money] += HouseInfo[id][Price]/2;
+			GivePlayerMoney(playerid, (HouseInfo[id][Price]/2));
+
+			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste kucu.");
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", HouseInfo[id][Price]);
+			Update3DTextLabelText(HouseLabelArray[id], -1, message);
+
+			SaveHouse(id);
+			SavePlayer(playerid);
+			return 1;
+		}
+		else if(!strfind(command, "sellto"))
+		{
+			new id, target, price, Float:X, Float:Y, Float:Z,player_name[MAX_PLAYER_NAME], str[512];
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, -1, "KORISCENJE: /h(ouse) sellto [id igraca/deo imena] [cena]");
+			if(HouseSellOffer[playerid] != 9999) return SendClientMessage(playerid, -1, "GRESKA: Vec ste ponudili prodaju kuce!");
+			GetPlayerPos(target, X, Y, Z);
+			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, -1, "GRESKA: Igrac nije blizu vas!");
+			id = IsPlayerNearHouseEnter(playerid);
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nije vasa kuca!");
+
+			HouseSellOffer[playerid] = 1;
+			HouseBuyOffer[target] = 1;
+		 	HouseForOffer[target] = id;
+			HousePlayerOffer[target] = playerid;
+			HouseOfferPrice[target] = price;
+			
+			SetTimerEx("HouseStopOffer", 10000, false, "ii", playerid, target);
+			format(str, sizeof(str), "\nIgrac "TEXT_COLOR_RED"%s"TEXT_COLOR_WHITE" Vam je ponudio da kupite kucu.\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Trenutni vlasnik"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d", player_name, HouseInfo[id][ID], GetHouseOwnerName(HouseInfo[id][ID]), HouseOfferPrice[playerid]);
+			ShowPlayerDialog(target, DIALOG_BUY_HOUSE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"KUPOVINA KUCE", str, "Kupi", "Odbij");
+			
+			GetPlayerName(target, player_name, sizeof(player_name));
+			format(str, sizeof(str), "Ponudili ste igracu %s da kupi kucu.", player_name);
+			SendClientMessage(playerid, -1, str);
+			
+			GetPlayerName(playerid, player_name, sizeof(player_name));
+			format(str, sizeof(str), "Igrac %s Vam je ponudio da kupite kucu.", player_name);
+			SendClientMessage(target, -1, str);
+			
+			return 1;
+		}
+		else if(strcmp(command, "lock", true) == 0)
+		{
+			new id = IsPlayerNearHouseEnter(playerid);
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu vase kuce!");
+			if(HouseInfo[id][Locked] == 1)
+			{
+				HouseInfo[id][Locked] = 0;
+				GameTextForPlayer(playerid, "Kuca ~g~otkljucana!", 3000, 3);
+				SaveHouse(id);
+			}
+			else
+			{
+				HouseInfo[id][Locked] = 1;
+				GameTextForPlayer(playerid, "Kuca ~r~zakljucana!", 3000, 3);
+				SaveHouse(id);
+			}
+
+			return 1;
+		}
+		/* else
+		{
+		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavehicle_idrogu, uzmidrogu");
+		} */
+	}
+	return 1;
+}
+
+YCMD:b(playerid, params[], help)
+{
+	new command[16];
+	if(sscanf(params, "s[16]", command))
+	{
+		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
+	}
+	else
+	{
+		if(strcmp(command, "buy", true) == 0)
+		{
+			new id, player_name[MAX_PLAYER_NAME], message[256];
+			
+			GetPlayerName(playerid, player_name, sizeof(player_name));
+
+			id = IsPlayerNearBusinessEnter(playerid);
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu biznisa!");
+			if(BusinessInfo[id][Owned] != 0 || BusinessInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ovaj biznis nije na prodaju!");
+			if(GetPlayerMoney(playerid) < BusinessInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca da kupite ovaj biznis!");
+
+			PlayerInfo[playerid][Money] -= BusinessInfo[id][Price];
+			GivePlayerMoney(playerid, -BusinessInfo[id][Price]);
+
+			BusinessInfo[id][Locked] = 0;
+			BusinessInfo[id][Owned] = 1;
+			BusinessInfo[id][Owner] = PlayerInfo[playerid][ID];
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis ima vlasnika !\n "TEXT_COLOR_BLUE"Ime biznisa"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Vlasnik"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Cena ulaza"TEXT_COLOR_WHITE": %d \n Da udjete kucajte "TEXT_COLOR_BLUE"/enter", BusinessInfo[id][Name], GetBusinessOwnerName(BusinessInfo[id][Owner]), BusinessInfo[id][EnterFee]);
+			Update3DTextLabelText(BusinessLabels[id], -1, message);
+			SaveBusiness(id);
+			SavePlayer(playerid);
+
+			SendClientMessage(playerid, COLOR_RED, "Kupili ste biznis.");
+
+			return 1;
+		}
+		else if(strcmp(command, "sell", true) == 0)
+		{
+			new id, message[256];
+			id = IsPlayerNearBusinessEnter(playerid);
+			// Check if near business
+
+			BusinessInfo[id][Owned] = 0;
+			BusinessInfo[id][Locked] = 1;
+
+			PlayerInfo[playerid][Money] += BusinessInfo[id][Price]/2;
+			GivePlayerMoney(playerid, PlayerInfo[playerid][Money]);
+
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis nema vlasnika !\n "TEXT_COLOR_BLUE"Ime biznisa"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/buybusiness", BusinessInfo[id][Name], BusinessInfo[id][Price]);
+			Update3DTextLabelText(BusinessLabels[id], -1, message);
+
+			SaveBusiness(id);
+			SavePlayer(playerid);
+
+			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste biznis.");
+			
+			return 1;
+		}
+		else if(!strfind(command, "fee"))
+		{
+			new id, fee, message[128];
+
+			id = IsPlayerNearBusinessEnter(playerid);
+
+			if(sscanf(params, "s[16]i", command, fee)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [fee] [cena]");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+
+			BusinessInfo[id][EnterFee] = fee;
+
+			format(message, sizeof(message), "Promenili ste cenu ulaza na %d.", fee);
+			SaveBusiness(id);
+			
+			SendClientMessage(playerid, COLOR_GREEN, message);
+
+			return 1;
+		}
+		else if(strcmp(command, "lock", true) == 0)
+		{
+			new id = IsPlayerNearBusinessEnter(playerid);
+
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+
+			if(BusinessInfo[id][Locked] == 1)
+			{
+				BusinessInfo[id][Locked] = 0;
+				GameTextForPlayer(playerid, "Biznis ~g~otkljucan!", 3000, 3);
+				SaveBusiness(id);
+			}
+			else
+			{
+				BusinessInfo[id][Locked] = 1;
+				GameTextForPlayer(playerid, "Biznis ~r~zakljucan!", 3000, 3);
+				SaveBusiness(id);
+			}
+
+			return 1;
+		}
+		else if(strcmp(command, "money", true) == 0)
+		{
+			new id, message[128];
+			id = IsPlayerNearBusinessEnter(playerid);
+
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate novca na racunu biznisa!");
+
+			PlayerInfo[playerid][Money] += BusinessInfo[id][Money];
+			GivePlayerMoney(playerid, BusinessInfo[id][Money]);
+
+			format(message, sizeof(message), "Podigli ste %d$ sa racuna biznisa.", BusinessInfo[id][Money]);
+			SendClientMessage(playerid, COLOR_GREEN, message);
+			
+			BusinessInfo[id][Money] = 0;
+			
+			SaveBusiness(id);
+			SavePlayer(playerid);
+
+			return 1;
+		}
+		else if(!strfind(command, "name"))
+		{
+			new id, name[128], message[128];
+
+			id = IsPlayerNearBusinessEnter(playerid);
+
+			if(sscanf(params, "s[16]s[128]", command, name)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [name] [ime]");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+
+			BusinessInfo[id][Name] = name;
+
+			format(message, sizeof(message), "Promenili ste ime biznisa u %s.", name);
+			SaveBusiness(id);
+
+			SendClientMessage(playerid, COLOR_GREEN, message);
+
+			return 1;
+		}
+		else
+		{
+			SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [komanda]");
+			SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
+		}
+	}
+	return 1;
+}
+
+// ====================================================================================================== Admin commands
 YCMD:makehouse(playerid, params[], help)
 {
 	#pragma unused help
     // Check for admin level
 
-    new price, player_interior, player_virtual_world, inside_interior, message[512], Float:X, Float:Y, Float:Z, Float:A;
+    new price, player_interior, player_virtual_world, inside_interior, Float:X, Float:Y, Float:Z, Float:A;
     if(sscanf(params, "ii", price, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /makehouse [cena] [interior]");
 
     switch(inside_interior)
@@ -4758,118 +4776,9 @@ YCMD:makehouse(playerid, params[], help)
 	HouseInfo[GlobalHousesCounter][Drugs] = 0;
 
 	InsertHouse(GlobalHousesCounter);
-
-    if(HouseInfo[GlobalHousesCounter][Icon]) DestroyPickup(HouseInfo[GlobalHousesCounter][Icon]);
-    HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1273, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
-
-	format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_BLUE"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", GlobalHousesCounter, HouseInfo[GlobalHousesCounter][Price]);
-    HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 20.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
-    
-    GlobalHousesCounter++;
+	GlobalHousesCounter++;
 
     return 1;
-}
-
-YCMD:h(playerid, params[], help)
-{
-	new command[32];
-	if(sscanf(params, "s[32]", command))
-	{
-		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
-		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavidrogu, uzmidrogu");
-	}
-	else
-	{
-		if(strcmp(command, "buy", true) == 0)
-		{
-			new player_name[MAX_PLAYER_NAME], id, message[256];
-
-			id = IsPlayerNearHouseEnter(playerid);
-			GetPlayerName(playerid, player_name, sizeof(player_name));
-			
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
-			if(HouseInfo[id][Owned] != 0 || HouseInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ova kuca nije na prodaju!");
-			if(GetPlayerMoney(playerid) < HouseInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca da kupite ovu kucu!");
-
-			PlayerInfo[playerid][Money] -= HouseInfo[id][Price];
-			GivePlayerMoney(playerid, -HouseInfo[id][Price]);
-
-			HouseInfo[id][Owned] = 1;
-			HouseInfo[id][Owner] = PlayerInfo[playerid][ID];
-			HouseInfo[id][Locked] = 0;
-
-			DestroyPickup(HouseInfo[id][Icon]);
-			HouseInfo[id][Icon] = CreatePickup(1272, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
-			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste kucu.");
-
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(GlobalHousesCounter), HouseInfo[id][ID]);
-			Update3DTextLabelText(HouseLabelArray[id], -1, message);
-
-			SaveHouse(id);
-			SavePlayer(playerid);
-
-			return 1;
-		}
-		else if(strcmp(command, "sell", true) == 0)
-		{
-			new id, message[256];
-
-			id = IsPlayerNearHouseEnter(playerid);
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
-			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nije vasa kuca!");
-
-			HouseInfo[id][Owned] = 0;
-			HouseInfo[id][Locked] = 1;
-			HouseInfo[id][Slot1] = 9999;
-			HouseInfo[id][Slot1_ammo] = 0;
-			HouseInfo[id][Slot2] = 9999;
-			HouseInfo[id][Slot2_ammo] = 0;
-			HouseInfo[id][Slot3] = 9999;
-			HouseInfo[id][Slot3_ammo] = 0;
-			HouseInfo[id][Materials] = 0;
-			HouseInfo[id][Drugs] = 0;
-
-			DestroyPickup(HouseInfo[id][Icon]);
-			HouseInfo[id][Icon] = CreatePickup(1273, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
-
-			PlayerInfo[playerid][Money] += HouseInfo[id][Price]/2;
-			GivePlayerMoney(playerid, (HouseInfo[id][Price]/2));
-
-			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste kucu.");
-
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", HouseInfo[id][Price]);
-			Update3DTextLabelText(HouseLabelArray[id], -1, message);
-
-			SaveHouse(id);
-			SavePlayer(playerid);
-			return 1;
-		}
-		else if(strcmp(command, "lock", true) == 0)
-		{
-			new id = IsPlayerNearHouseEnter(playerid);
-			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu vase kuce!");
-			if(HouseInfo[id][Locked] == 1)
-			{
-				HouseInfo[id][Locked] = 0;
-				GameTextForPlayer(playerid, "Kuca ~g~otkljucana!", 3000, 3);
-				SaveHouse(id);
-			}
-			else
-			{
-				HouseInfo[id][Locked] = 1;
-				GameTextForPlayer(playerid, "Kuca ~r~zakljucana!", 3000, 3);
-				SaveHouse(id);
-			}
-
-			return 1;
-		}
-		/* else
-		{
-		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
-		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavidrogu, uzmidrogu");
-		} */
-	}
-	return 1;
 }
 
 YCMD:deletehouse(playerid, params[], help)
@@ -4918,7 +4827,7 @@ YCMD:deletehouse(playerid, params[], help)
 YCMD:makebusiness(playerid, params[], help)
 {
     #pragma unused help
-    new price, type, id, player_interior, player_virtual_world, name[128], message[256], inside_interior, Float:X, Float:Y, Float:Z, Float:A;
+    new price, type, id, player_interior, player_virtual_world, name[128], inside_interior, Float:X, Float:Y, Float:Z, Float:A;
     // Check for admin
     if(sscanf(params, "iii", price, type, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /makebusiness [cena] [tip] [interior]");
 
@@ -5220,166 +5129,9 @@ YCMD:makebusiness(playerid, params[], help)
     BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld] = player_virtual_world;
     BusinessInfo[GlobalBusinessesCounter][InsideVirtualWorld] = id;
 
-    if(BusinessInfo[GlobalBusinessesCounter][ExitIcon]) DestroyPickup(BusinessInfo[GlobalBusinessesCounter][ExitIcon]);
-    if(BusinessInfo[GlobalBusinessesCounter][Icon]) DestroyPickup(BusinessInfo[GlobalBusinessesCounter][Icon]);
-    BusinessInfo[GlobalBusinessesCounter][Icon] = CreatePickup(1274, 1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld]);
-
-    format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis vlasnika !\n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/kupibiznis", BusinessInfo[GlobalBusinessesCounter][Price], BusinessInfo[GlobalBusinessesCounter][ID]);
-    BusinessLabelArray[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld]);
-
     InsertBusiness(GlobalBusinessesCounter);
 	GlobalBusinessesCounter++;
     return 1;
-}
-
-YCMD:b(playerid, params[], help)
-{
-	new command[16];
-	if(sscanf(params, "s[16]", command))
-	{
-		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(suiness) [komanda]");
-		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
-	}
-	else
-	{
-		if(strcmp(command, "buy", true) == 0)
-		{
-			new id, player_name[MAX_PLAYER_NAME], message[256];
-			
-			GetPlayerName(playerid, player_name, sizeof(player_name));
-
-			id = IsPlayerNearBusinessEnter(playerid);
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu biznisa!");
-			if(BusinessInfo[id][Owned] != 0 || BusinessInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ovaj biznis nije na prodaju!");
-			if(GetPlayerMoney(playerid) < BusinessInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca da kupite ovaj biznis!");
-
-			PlayerInfo[playerid][Money] -= BusinessInfo[id][Price];
-			GivePlayerMoney(playerid, -BusinessInfo[id][Price]);
-
-			BusinessInfo[id][Locked] = 0;
-			BusinessInfo[id][Owned] = 1;
-			BusinessInfo[id][Owner] = PlayerInfo[playerid][ID];
-
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis ima vlasnika !\n "TEXT_COLOR_BLUE"Ime biznisa"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Vlasnik"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Cena ulaza"TEXT_COLOR_WHITE": %d \n Da udjete kucajte "TEXT_COLOR_BLUE"/enter", BusinessInfo[id][Name], GetBusinessOwnerName(BusinessInfo[id][Owner]), BusinessInfo[id][EnterFee]);
-			Update3DTextLabelText(BusinessLabelArray[id], -1, message);
-			SaveBusiness(id);
-			SavePlayer(playerid);
-
-			SendClientMessage(playerid, COLOR_RED, "Kupili ste biznis.");
-
-			return 1;
-		}
-		else if(strcmp(command, "sell", true) == 0)
-		{
-			new id, message[256];
-			id = IsPlayerNearBusinessEnter(playerid);
-			// Check if near business
-
-			BusinessInfo[id][Owned] = 0;
-			BusinessInfo[id][Locked] = 1;
-
-			PlayerInfo[playerid][Money] += BusinessInfo[id][Price]/2;
-			GivePlayerMoney(playerid, PlayerInfo[playerid][Money]);
-
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis nema vlasnika !\n "TEXT_COLOR_BLUE"Ime biznisa"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/buybusiness", BusinessInfo[id][Name], BusinessInfo[id][Price]);
-			Update3DTextLabelText(BusinessLabelArray[id], -1, message);
-
-			SaveBusiness(id);
-			SavePlayer(playerid);
-
-			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste biznis.");
-			
-			return 1;
-		}
-		else if(!strfind(command, "fee"))
-		{
-			new id, fee, message[128];
-
-			id = IsPlayerNearBusinessEnter(playerid);
-
-			if(sscanf(params, "s[16]i", command, fee)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [fee] [cena]");
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
-
-			BusinessInfo[id][EnterFee] = fee;
-
-			format(message, sizeof(message), "Promenili ste cenu ulaza na %d.", fee);
-			SaveBusiness(id);
-			
-			SendClientMessage(playerid, COLOR_GREEN, message);
-
-			return 1;
-		}
-		else if(strcmp(command, "lock", true) == 0)
-		{
-			new id = IsPlayerNearBusinessEnter(playerid);
-
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
-
-			if(BusinessInfo[id][Locked] == 1)
-			{
-				BusinessInfo[id][Locked] = 0;
-				GameTextForPlayer(playerid, "Biznis ~g~otkljucan!", 3000, 3);
-				SaveBusiness(id);
-			}
-			else
-			{
-				BusinessInfo[id][Locked] = 1;
-				GameTextForPlayer(playerid, "Biznis ~r~otkljucan!", 3000, 3);
-				SaveBusiness(id);
-			}
-
-			return 1;
-		}
-		else if(strcmp(command, "money", true) == 0)
-		{
-			new id, message[128];
-			id = IsPlayerNearBusinessEnter(playerid);
-
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate novca na racunu biznisa!");
-
-			PlayerInfo[playerid][Money] += BusinessInfo[id][Money];
-			GivePlayerMoney(playerid, BusinessInfo[id][Money]);
-
-			format(message, sizeof(message), "Podigli ste %d$ sa racuna biznisa.", BusinessInfo[id][Money]);
-			SendClientMessage(playerid, COLOR_GREEN, message);
-			
-			BusinessInfo[id][Money] = 0;
-			
-			SaveBusiness(id);
-			SavePlayer(playerid);
-
-			return 1;
-		}
-		else if(!strfind(command, "name"))
-		{
-			new id, name[128], message[128];
-
-			id = IsPlayerNearBusinessEnter(playerid);
-
-			if(sscanf(params, "s[16]s[128]", command, name)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [name] [ime]");
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
-
-			BusinessInfo[id][Name] = name;
-
-			format(message, sizeof(message), "Promenili ste ime biznisa u %s.", name);
-			SaveBusiness(id);
-
-			SendClientMessage(playerid, COLOR_GREEN, message);
-
-			return 1;
-		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(suiness) [komanda]");
-			SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
-		}
-	}
-	return 1;
 }
 
 YCMD:deletebusiness(playerid, params[], help)
@@ -5411,13 +5163,705 @@ YCMD:deletebusiness(playerid, params[], help)
     BusinessInfo[id][OutsideVirtualWorld] = 0;
 
    	DestroyPickup(BusinessInfo[id][Icon]);
-	Delete3DTextLabel(BusinessLabelArray[id]);
+	Delete3DTextLabel(BusinessLabels[id]);
     DeleteBusiness(id);
 
     return 1;
 }
 
-// Timers
+YCMD:makeadmin(playerid, params[], help)
+{
+	#pragma unused help
+	new player, level, player_name[MAX_PLAYER_NAME], str[128];
+	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, level)) return SendClientMessage(playerid, -1, "KORISCENJE: /makeadmin [id/deo imena] [level]");
+
+	PlayerInfo[player][Admin] = level;
+	SavePlayer(player);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s Vam je dodelio Admina level %d.", player_name, level);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Dodelili ste igracu %s Admina level %d.", player_name, level);
+	SendClientMessage(playerid, -1, str);
+
+	return 1;
+}
+
+YCMD:makedonator(playerid, params[], help)
+{
+	#pragma unused help
+	new player, points, player_name[MAX_PLAYER_NAME], str[128];
+	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, points)) return SendClientMessage(playerid, -1, "KORISCENJE: /makedonator [id/deo imena] [poeni]");
+
+	if(points == 0)
+	{
+		PlayerInfo[playerid][Donator] = 0;
+		PlayerInfo[playerid][DonatorPoints] = 0;
+	}
+	else
+	{
+		PlayerInfo[player][Donator] = 1;
+		PlayerInfo[player][DonatorPoints] += points;
+ 	}
+	SavePlayer(player);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s Vam je dodelio %d Donator poena.", player_name, points);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Dodelili ste igracu %s %d Donator poena.", player_name, points);
+	SendClientMessage(playerid, -1, str);
+
+	return 1;
+}
+
+YCMD:port(playerid, params[], help)
+{
+    #pragma unused help
+    new target[32], vehicle_id;
+    if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "s[32]", target)) return SendClientMessage(playerid, -1, "KORISCENJE: /port [mesto]");
+    if(strcmp(target, "banka", true) == 0)
+    {
+        if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 589.6011, -1240.2231, 17.8361);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 589.6011, -1240.2231, 17.8361);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "opstina", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 1481.5153,-1740.2601,13.1089);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 1481.5153,-1740.2601,13.1089);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+
+	}
+	else if(strcmp(target, "parking", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 1637.5028, -1151.6288, 23.9063);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 1637.5028, -1151.6288, 23.9063);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "ammunation", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 1364.2379,-1280.8793,13.0893);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 1364.2379,-1280.8793,13.0893);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "autoskola", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, -2026.6176, -100.3294, 35.1641);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, -2026.6176, -100.3294, 35.1641);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "salon1", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 2127.8760,-1119.0120,24.9260);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 2127.8760,-1119.0120,24.9260);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "salon2", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 558.4743,-1252.5942,16.6883);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 558.4743,-1252.5942,16.6883);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "salon3", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 323.1658,2505.4736,16.0548);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 323.1658,2505.4736,16.0548);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "salon4", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, -2225.7283,2376.3650,4.5412);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, -2225.7283,2376.3650,4.5412);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "lShowPlayerDialog", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 1539.3977,-1677.4619,13.1032);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 1539.3977,-1677.4619,13.1032);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "spawn", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 1548.0010, -2291.4651, 13.3828);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 1548.0010, -2291.4651, 13.3828);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "lsgaraza", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 1041.1724, -1031.6471, 32.0555);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, 1041.1724, -1031.6471, 32.0555);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "sfgaraza", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, -2711.0183, 217.4066, 4.1897);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, -2711.0183, 217.4066, 4.1897);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "planina", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, -2358.8628, -2187.9668, 33.6227);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, -2358.8628, -2187.9668, 33.6227);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "vrh", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, -2307.7209, -1658.5023, 483.6776);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, -2307.7209, -1658.5023, 483.6776);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "sf", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, -1656.5377, -541.6462, 10.9824);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, -1656.5377, -541.6462, 10.9824);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "lv", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicle_id = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicle_id, 1707.2388, 1455.0815, 10.4415);
+	  		SetVehicleVirtualWorld(vehicle_id, 0);
+	  		LinkVehicleToInterior(vehicle_id, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, -1707.2388, 1455.0815, 10.4415);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+    return 1;
+}
+
+YCMD:goto(playerid, params[], help)
+{
+    #pragma unused help
+    new player, player_interior, vehicle_id, Float:X, Float:Y, Float:Z;
+    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "KORISCENJE: /goto [id/deo imena]");
+    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, -1, "GRESKA: Pogresan ID!");
+
+    GetPlayerPos(player, X, Y, Z);
+    player_interior = GetPlayerInterior(player);
+
+    if(IsPlayerInAnyVehicle(playerid))
+	{
+		vehicle_id = GetPlayerVehicleID(playerid);
+  		SetVehiclePos(vehicle_id, X-1, Y-1, Z);
+  		LinkVehicleToInterior(vehicle_id, player_interior);
+	}
+    else
+	{
+		SetPlayerPos(playerid, X-1, Y-1, Z);
+		SetPlayerInterior(playerid, player_interior);
+	}
+
+    return 1;
+}
+
+YCMD:gethere(playerid, params[], help)
+{
+    #pragma unused help
+    new player, player_interior, vehicle_id, Float:X, Float:Y, Float:Z;
+    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "KORISCENJE: /time [id/deo imena]");
+    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, -1, "GRESKA: Pogresan ID!");
+
+    GetPlayerPos(playerid, X, Y, Z);
+    player_interior = GetPlayerInterior(playerid);
+
+    if(IsPlayerInAnyVehicle(player))
+	{
+		vehicle_id = GetPlayerVehicleID(player);
+  		SetVehiclePos(vehicle_id, X-1, Y-1, Z);
+  		LinkVehicleToInterior(vehicle_id, player_interior);
+  		SetPlayerInterior(player, player_interior);
+	}
+    else
+    {
+		SetPlayerPos(player, X-1, Y-1, Z);
+		SetPlayerInterior(player, player_interior);
+	}
+
+    return 1;
+}
+
+YCMD:settime(playerid, params[], help)
+{
+	#pragma unused help
+	new hours, player_name[MAX_PLAYER_NAME], str[128];
+ 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "i", hours)) return SendClientMessage(playerid, -1, "KORISCENJE: /settime [sati]");
+
+	SetWorldTime(hours);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s je postavio vreme na %d sati.", player_name, hours);
+	SendClientMessageToAll(-1, str);
+	return 1;
+}
+
+YCMD:setweather(playerid, params[], help)
+{
+    #pragma unused help
+	new weather_id, player_name[MAX_PLAYER_NAME], str[128];
+ 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "i", weather_id)) return SendClientMessage(playerid, -1, "KORISCENJE: /setweather [id vremena]");
+    //if(weather_id < 0 || weather_id > 20) return SendClientMessage(playerid, -1, "GRESKA: ID vremena mora biti izmedju 1 i 20!");
+	SetWeather(weather_id);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s je postavio vreme ID %d.", player_name, weather_id);
+	SendClientMessageToAll(-1, str);
+	return 1;
+}
+
+YCMD:givemoney(playerid, params[], help)
+{
+	#pragma unused help
+	new player, money, player_name[MAX_PLAYER_NAME], str[128];
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, -1, "KORISCENJE: /givemoney [id/deo imena] [kolicina]");
+
+	PlayerInfo[player][Money] += money;
+	GivePlayerMoney(player, money);
+	SavePlayer(player);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s Vam je dao %d$.", player_name, money);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Dali ste igracu %s %d$.", player_name, money);
+	SendClientMessage(playerid, -1, str);
+
+	return 1;
+}
+
+YCMD:setskin(playerid, params[], help)
+{
+	#pragma unused help
+	new player, skin, player_name[MAX_PLAYER_NAME], str[128];
+	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "ri", player, skin)) return SendClientMessage(playerid, -1, "KORISCENJE: /setskin [id/deo imena] [id skina]");
+	if(skin < 1 || skin > 299) return SendClientMessage(playerid, -1, "GRESKA: ID Skina ne moze biti manji od 1 i veci od 299!");
+
+	SetPlayerSkin(player, skin);
+	PlayerInfo[player][Skin] = skin;
+	SavePlayer(playerid);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s Vam je stavio skin ID: %d.", player_name, skin);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Postavili ste igracu %s skin ID: %d.", player_name, skin);
+	SendClientMessage(playerid, -1, str);
+
+	return 1;
+}
+
+// **TO:DO FIX**
+YCMD:setjob(playerid, params[], help)
+{
+	#pragma unused help
+	new player, job, player_name[MAX_PLAYER_NAME], str[128];
+	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, job)) return SendClientMessage(playerid, -1, "KORISCENJE: /ajob [id/deo imena] [id posla]");
+
+	PlayerInfo[player][Job] = job;
+	SavePlayer(playerid);
+
+	// GetPlayerName(playerid, player_name, sizeof(player_name));
+	// format(str, sizeof(str), "Admin %s Vam je dodelio posao: %s.", player_name, PlayerJob(player));
+	// SendClientMessage(player, -1, str);
+
+	// GetPlayerName(player, player_name, sizeof(player_name));
+	// format(str, sizeof(str), "Stavili ste igracu %s posao: %s.", player_name, PlayerJob(player));
+	// SendClientMessage(playerid, -1, str);
+	return 1;
+}
+
+YCMD:setheatlh(playerid, params[], help)
+{
+	#pragma unused help
+	new player, health, player_name[MAX_PLAYER_NAME], str[128];
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "ri", player, health)) return SendClientMessage(playerid, -1, "KORISCENJE: /sethealth [id/deo imena] [kolicina]");
+
+	SetPlayerHealth(player, health);
+	SavePlayer(player);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s Vam je stavio helte na %d.", player_name, health);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Stavili ste igracu %s helte na %d.", player_name, health);
+	SendClientMessage(playerid, -1, str);
+	return 1;
+}
+
+YCMD:setarmor(playerid, params[], help)
+{
+	#pragma unused help
+	new player, armor, player_name[MAX_PLAYER_NAME], str[128];
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "ri", player, armor)) return SendClientMessage(playerid, -1, "KORISCENJE: /setarmor [id/deo imena] [kolicina]");
+
+	SetPlayerArmour(player, armor);
+	SavePlayer(player);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s Vam je stavio pancir na %d.", player_name, armor);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Stavili ste igracu %s pancir na %d.", player_name, armor);
+	SendClientMessage(playerid, -1, str);
+	return 1;
+}
+
+YCMD:giveweapon(playerid, params[], help)
+{
+	#pragma unused help
+	new player, weapon, ammo;
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "rii", player, weapon, ammo)) return SendClientMessage(playerid, -1, "KORISCENJE: /giveweapon [id/deo imena igraca] [id oruzja] [metkovi]");
+	
+	GivePlayerWeapon(player, weapon, ammo);
+
+	return 1;
+}
+
+YCMD:giveweaponskill(playerid, params[], help)
+{
+	#pragma unused help
+	new player, weapon, skill;
+	if(sscanf(params, "rii", player, weapon, skill)) return SendClientMessage(playerid, -1, "KORISCENJE: /giveweaponskill [id/deo imena] [oruzje] [skill]");
+	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, -1, "GRESKA: Igrac ne postoji!");
+	else if(weapon < 1 || weapon > 11) return SendClientMessage(playerid, -1, "GRESKA: Broj za oruzje mora biti izmedju 1 i 9!");
+	switch(weapon)
+	{
+
+	    case 1:
+	    {
+		    PlayerInfo[player][PistolSkill] += skill;
+		    SavePlayer(player);
+		  	SetPlayerSkillLevel(player, WEAPONSKILL_PISTOL, PlayerInfo[player][PistolSkill]);
+        }
+		case 2:
+	    {
+	        PlayerInfo[player][SilencedSkill] += skill;
+	        SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_PISTOL_SILENCED, PlayerInfo[player][SilencedSkill]);
+        }
+	    case 3:
+	    {
+			PlayerInfo[player][DesertSkill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_DESERT_EAGLE, PlayerInfo[player][DesertSkill]);
+		}
+	    case 4:
+	    {
+			PlayerInfo[player][ShotgunSkill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_SHOTGUN, PlayerInfo[player][ShotgunSkill]);
+        }
+	    case 5:
+	    {
+			PlayerInfo[player][SawnoffSkill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_SAWNOFF_SHOTGUN, PlayerInfo[player][SawnoffSkill]);
+        }
+	    case 6:
+	    {
+		 	PlayerInfo[player][CombatSkill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_SPAS12_SHOTGUN, PlayerInfo[player][CombatSkill]);
+        }
+	    case 7:
+	    {
+			PlayerInfo[player][UziSkill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_MICRO_UZI, PlayerInfo[player][UziSkill]);
+        }
+	    case 8:
+	    {
+			PlayerInfo[player][MP5Skill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_MP5, PlayerInfo[player][MP5Skill]);
+        }
+	    case 9:
+	    {
+			PlayerInfo[player][AK47Skill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_AK47, PlayerInfo[player][AK47Skill]);
+        }
+	    case 10:
+	    {
+			PlayerInfo[player][M4Skill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_M4, PlayerInfo[player][M4Skill]);
+		}
+		case 11:
+	    {
+			PlayerInfo[player][SniperSkill] += skill;
+			SavePlayer(player);
+			SetPlayerSkillLevel(player, WEAPONSKILL_SNIPERRIFLE, PlayerInfo[player][SniperSkill]);
+		}
+	}
+	
+	return 1;
+}
+
+// **TO:DO Fix**
+YCMD:setfightstyle(playerid, params[], help)
+{
+	#pragma unused help
+	new style, player, player_name[MAX_PLAYER_NAME], str[128];
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, style)) return SendClientMessage(playerid, -1, "KORISCENJE: /setfightstyle [id/deo imena] [stil]");
+	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, -1, "GRESKA: Igrac ne postoji!");
+	else if (style < 4 || (style > 7 && style < 15) || style > 16) return SendClientMessage(playerid, -1, "GRESKA: Stil moze biti u opsegu 4-7 i 15-16!");
+	
+	PlayerInfo[playerid][FightingStyle] = style;
+	SetPlayerFightingStyle(player, style);
+	SavePlayer(playerid);
+
+	// GetPlayerName(playerid, player_name, sizeof(player_name));
+	// format(str, sizeof(str), "Admin %s Vam je postavio borbeni still na: %s.", player_name, PlayerFightingStyle(playerid));
+	// SendClientMessage(player, -1, str);
+
+	// GetPlayerName(player, player_name, sizeof(player_name));
+	// format(str, sizeof(str), "Postavili ste %s brobeni stil na: %s.", player_name, PlayerFightingStyle(playerid));
+	// SendClientMessage(playerid, -1, str);
+
+	return 1;
+}
+
+YCMD:givedrugs(playerid, params[], help)
+{
+	#pragma unused help
+	new player, drug, player_name[MAX_PLAYER_NAME], str[128];
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, drug)) return SendClientMessage(playerid, -1, "KORISCENJE: /givedrugs [id/deo imena] [kolicina]");
+
+	PlayerInfo[player][Drugs] += drug;
+	SavePlayer(player);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s Vam je dao %d droge.", player_name, drug);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Dali ste igracu %s %d droge.", player_name, drug);
+	SendClientMessage(playerid, -1, str);
+
+	return 1;
+}
+
+YCMD:givematerials(playerid, params[], help)
+{
+	#pragma unused help
+	new player, materials, player_name[MAX_PLAYER_NAME], str[128];
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "ri", player, materials)) return SendClientMessage(playerid, -1, "KORISCENJE: /givemats [id/deo imena] [kolicina]");
+
+	PlayerInfo[player][Materials] += materials;
+	SavePlayer(player);
+
+	GetPlayerName(playerid, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Admin %s Vam je dao %d materijala.", player_name, materials);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, player_name, sizeof(player_name));
+	format(str, sizeof(str), "Dali ste igracu %s %d materijala.", player_name, materials);
+	SendClientMessage(playerid, -1, str);
+	return 1;
+}
+
+
+YCMD:specialaction(playerid, params[], help)
+{
+	#pragma unused help
+	new action;
+	if(sscanf(params, "i", action)) return SendClientMessage(playerid, -1, "KORISCENJE: /specialaction id_akcije");
+	
+	SetPlayerSpecialAction(playerid, action);
+	
+	return 1;
+}
+// ====================================================================================================== Timers
 task TimerPerSec[1000]() 
 {
 	new str[128];
