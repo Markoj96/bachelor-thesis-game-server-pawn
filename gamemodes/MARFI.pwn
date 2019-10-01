@@ -431,6 +431,7 @@ forward LoadVehicles();
 forward OnVehiclesLoaded();
 forward InsertVehicle(vehicle_owner, vehicle_model);
 forward OnVehicleInserted(vehicle_id);
+forward DeleteVehicle(vehicle_id);
 forward SaveVehicle(vehicle_id);
 forward SetVehicleComponents(vehicle_id);
 forward RemoveVehicleComponents(vehicle_id);
@@ -678,6 +679,7 @@ new HouseBuyOffer[MAX_PLAYERS];
 new HouseForOffer[MAX_PLAYERS];
 new HousePlayerOffer[MAX_PLAYERS];
 new HouseOfferPrice[MAX_PLAYERS];
+new InHouse[MAX_PLAYERS];
 
 //Business
 new BusinessSellOffer[MAX_PLAYERS];
@@ -685,6 +687,7 @@ new BusinessBuyOffer[MAX_PLAYERS];
 new BusinessForOffer[MAX_PLAYERS];
 new BusinessPlayerOffer[MAX_PLAYERS];
 new BusinessOfferPrice[MAX_PLAYERS];
+new InBusiness[MAX_PLAYERS];
 
 // Adding vehicles
 new rent_vehicles[24];
@@ -1335,6 +1338,17 @@ public SaveVehicle(vehicle_id)
 public OnVehicleInserted(vehicle_id)
 {
 	VehicleInfo[vehicle_id][ID] = cache_insert_id();
+}
+
+
+public DeleteVehicle(vehicle_id) 
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "DELETE FROM Vehicles \
+												WHERE id = %d",
+													VehicleInfo[vehicle_id][ID]);
+	mysql_tquery(mysql, query);
 }
 
 public SaveVehicleComponents(vehicle_id)
@@ -2306,7 +2320,7 @@ public OnAccountLoad(playerid)
 	{
 		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
 
-		SendClientMessage(playerid, -1, "Dobrodosli nazad.");
+		SendClientMessage(playerid, -1, "Welcome back.");
 	}
 	
 	return 1;
@@ -2327,7 +2341,7 @@ public AntiRoleplayName(playerid, player_name[])
 		format(str, sizeof(str), "%s je kikovan zbog neprihvatljivog imena", player_name);
 		
 		SendClientMessageToAll(COLOR_RED, str);
-		SendClientMessage(playerid, COLOR_RED, "GRESKA: Vase ime je neprihvatljivo.");
+		SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vase ime je neprihvatljivo.");
 		SendClientMessage(playerid, COLOR_RED, "Vase ime mora biti u formatu Ime_Prezime. Velika pocetna slova.");
 		
 		Kick(playerid);
@@ -3052,6 +3066,14 @@ public OnPlayerConnect(playerid)
  	HouseForOffer[playerid] = 9999;
 	HousePlayerOffer[playerid] = 9999;
 	HouseOfferPrice[playerid] = 0;
+	InHouse[playerid] = 0;
+
+	BusinessSellOffer[playerid] = 9999;
+ 	BusinessBuyOffer[playerid] = 9999;
+ 	BusinessForOffer[playerid] = 9999;
+	BusinessPlayerOffer[playerid] = 9999;
+	BusinessOfferPrice[playerid] = 0;
+	InBusiness[playerid] = 0;
 
 	FuelTD[playerid] = TextDrawCreate(526.399963, 412.906738, "Gorivo: 100");
 	TextDrawLetterSize(FuelTD[playerid], 0.449999, 1.600000);
@@ -3332,7 +3354,73 @@ public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	if(newkeys == KEY_YES)
+	if(newkeys == KEY_SECONDARY_ATTACK) 
+	{
+		for(new i = 0; i < sizeof(HouseInfo); i++)
+		{
+			if(IsPlayerInRangeOfPoint(playerid, 2.0, HouseInfo[i][EnterX], HouseInfo[i][EnterY], HouseInfo[i][EnterZ]))
+			{
+				if(HouseInfo[i][Locked] == 1) return 1;
+				TogglePlayerControllable(playerid, 0);
+				SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+				SetPlayerPos(playerid, HouseInfo[i][ExitX], HouseInfo[i][ExitY], HouseInfo[i][ExitZ]);
+				SetPlayerFacingAngle(playerid, HouseInfo[i][ExitA]);
+				SetPlayerInterior(playerid, HouseInfo[i][InsideInterior]);
+				SetPlayerVirtualWorld(playerid, HouseInfo[i][InsideVirtualWorld]);
+
+				InHouse[playerid] = i;
+
+				return 1;
+			}
+			else if(IsPlayerInRangeOfPoint(playerid, 2.0, HouseInfo[i][ExitX], HouseInfo[i][ExitY], HouseInfo[i][ExitZ]) && GetPlayerVirtualWorld(playerid) == HouseInfo[i][InsideVirtualWorld])
+			{
+				if(InHouse[playerid] == 0) return 1;
+				SetPlayerPos(playerid, HouseInfo[i][EnterX], HouseInfo[i][EnterY], HouseInfo[i][EnterZ]);
+				SetPlayerFacingAngle(playerid, HouseInfo[i][EnterA]);
+				SetPlayerInterior(playerid, HouseInfo[i][OutsideInterior]);
+				SetPlayerVirtualWorld(playerid, HouseInfo[i][OutsideVirtualWorld]);
+
+				InHouse[playerid] = 0;
+
+				return 1;
+			}
+		}
+
+		for(new i = 0; i < sizeof(BusinessInfo); i++)
+		{
+			if(IsPlayerInRangeOfPoint(playerid, 2.0, BusinessInfo[i][EnterX], BusinessInfo[i][EnterY], BusinessInfo[i][EnterZ]))
+			{
+				if(GetPlayerMoney(playerid) < BusinessInfo[i][EnterFee]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da bi usli u biznis!");
+				if(BusinessInfo[i][Locked] == 1) return 1;
+				PlayerInfo[playerid][Money] -= BusinessInfo[i][EnterFee];
+				GivePlayerMoney(playerid, -BusinessInfo[i][EnterFee]);
+				SavePlayer(playerid);
+				TogglePlayerControllable(playerid, 0);
+				SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+				SetPlayerPos(playerid, BusinessInfo[i][ExitX], BusinessInfo[i][ExitY], BusinessInfo[i][ExitZ]);
+				SetPlayerFacingAngle(playerid, BusinessInfo[i][ExitA]);
+				SetPlayerInterior(playerid, BusinessInfo[i][InsideInterior]);
+				SetPlayerVirtualWorld(playerid, BusinessInfo[i][InsideVirtualWorld]);
+				BusinessInfo[i][Money] += BusinessInfo[i][EnterFee];
+				
+				InBusiness[playerid] = i;
+				
+				return 1;
+			}
+			else if(IsPlayerInRangeOfPoint(playerid, 2.0, BusinessInfo[i][ExitX], BusinessInfo[i][ExitY], BusinessInfo[i][ExitZ]) && GetPlayerVirtualWorld(playerid) == BusinessInfo[i][InsideVirtualWorld])
+			{
+				SetPlayerPos(playerid, BusinessInfo[i][EnterX], BusinessInfo[i][EnterY], BusinessInfo[i][EnterZ]);
+				SetPlayerFacingAngle(playerid, BusinessInfo[i][EnterA]);
+				SetPlayerInterior(playerid, BusinessInfo[i][OutsideInterior]);
+				SetPlayerVirtualWorld(playerid, BusinessInfo[i][OutsideVirtualWorld]);
+				
+				InBusiness[playerid] = 0;
+			
+				return 1;
+			}
+		}
+	}
+	else if(newkeys == KEY_YES)
 	{
 		new vehicle_id, playername[MAX_PLAYER_NAME], Float:vehicle_health, str[128];
 		
@@ -3343,8 +3431,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		if(VehicleEngine[vehicle_id] == 1) return 1;
 
 		GetVehicleHealth(vehicle_id, vehicle_health);
-	    if(vehicle_health <= 500.0) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete upaliti motor vozila. Motor je ostecen!");
-	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, -1, "GRESKA: Vec pokusavate da upalite motor vozila!");
+	    if(vehicle_health <= 500.0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete upaliti motor vozila. Motor je ostecen!");
+	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec pokusavate da upalite motor vozila!");
 	    
 		StartingVehicleEngine[playerid] = 1;
 		TogglePlayerControllable(playerid, 0);
@@ -3783,7 +3871,7 @@ YCMD:avehicle(playerid, params[], help)
 	
 	if(sscanf(params, "iii", vehicle, color1, color2))
 	{
-		return SendClientMessage(playerid, -1, "[KORISCENJE]: /avehicle [id_vozila] [boja1] [boja2]");
+		return SendClientMessage(playerid, -1, "[[USAGE]]: /avehicle [id_vozila] [boja1] [boja2]");
 	}
 	
 	GetPlayerPos(playerid, X, Y, Z);
@@ -3806,8 +3894,8 @@ YCMD:amoney(playerid, params[], help)
 {
 	#pragma unused help
 	new player, money, player_name[MAX_PLAYER_NAME], message[128];
-	//if((PlayerInfo[playerid][pAdmin] < 6) || (PlayerInfo[playerid][pAdmin] == 9999)) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /amoney [id/deo imena] [kolicina]");
+	//if((PlayerInfo[playerid][pAdmin] < 6) || (PlayerInfo[playerid][pAdmin] == 9999)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /amoney [id/deo imena] [kolicina]");
 
 	PlayerInfo[player][Money] += money;
 	GivePlayerMoney(player, money);
@@ -3826,7 +3914,7 @@ YCMD:amoney(playerid, params[], help)
 
 // Command that respawns all rent vehicles
 // TO:DO - Check if player is admin
-YCMD:respawnujrentvozila(playerid, params[], help)
+YCMD:respawnrentvehicles(playerid, params[], help)
 {
 	#pragma unused help
 	
@@ -3846,25 +3934,26 @@ YCMD:respawnujrentvozila(playerid, params[], help)
 		if(!PlayerInVehicle) SetVehicleToRespawn(i);
 	}
 	
+	SendClientMessage(playerid, -1, "All unused rent vehicles are respawned.");
 	return 1;
 }
 
-YCMD:iznajmivozilo(playerid, params[], help)
+YCMD:rentvehicle(playerid, params[], help)
 {
 	#pragma unused help
 	
 	new vehicle_id;
 	
-	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "[GRESKA]: Niste u vozilu!");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 	
 	vehicle_id = GetPlayerVehicleID(playerid);
-	if(!IsARentVehicle(vehicle_id)) return SendClientMessage(playerid, -1, "[GRESKA]: Niste u vozilu za iznajmljivanje!");
-	//if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, -1 ,"[GRESKA]: Nemate dovoljno novca da iznajmite vozilo!");
-	if(IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, -1, "[GRESKA]: Vec ste iznajmili neko vozilo!");
+	if(!IsARentVehicle(vehicle_id)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in rent vehicle!");
+	//if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, -1 ,"[ERROR]: You dont have enough money to rent a vehicle!");
+	if(IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are already renting a vehicle!");
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) 
 	{
-		if(RentedVehicle[i] == vehicle_id) return SendClientMessage(playerid, -1, "[GRESKA]: Neko je vec iznajmio ovo vozilo!");
+		if(RentedVehicle[i] == vehicle_id) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Someone already rented this vehicle!");
 	}
 	
 	IsPlayerRentingVehicle[playerid] = 1;
@@ -3876,13 +3965,13 @@ YCMD:iznajmivozilo(playerid, params[], help)
 	return 1;
 }
 
-YCMD:vrativozilo(playerid, params[], help)
+YCMD:returnvehicle(playerid, params[], help)
 {
 	#pragma unused help
 
 	new vehicle_id = GetPlayerVehicleID(playerid);
 	
-	if(!IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, -1, "[GRESKA]: Nemate iznajmljeno vozilo.");
+	if(!IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate iznajmljeno vozilo.");
 	
 	if(vehicle_id == RentedVehicle[playerid]) TogglePlayerControllable(playerid, 1);
 	SetVehicleToRespawn(RentedVehicle[playerid]);
@@ -3894,24 +3983,24 @@ YCMD:vrativozilo(playerid, params[], help)
 	return 1;
 }
 
-YCMD:motor(playerid, params[], help)
+YCMD:engine(playerid, params[], help)
 {
 	#pragma unused help
 	
 	new playername[MAX_PLAYER_NAME], vehicle_id, engine, lights, alarm, doors, bonnet, boot, objective, Float:vehicle_health, str[128];
 	
-	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 	vehicle_id = GetPlayerVehicleID(playerid);
 	GetVehicleParamsEx(vehicle_id, engine, lights, alarm, doors, bonnet, boot, objective);
-	if(IsASaleVehicle(vehicle_id)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
-	if(IsARentVehicle(vehicle_id) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicle_id)) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete pokrenuti motor ovog vozila!");
-	if(VehicleFuel[vehicle_id] == 0) return SendClientMessage(playerid, -1, "GRESKA: Rezervoar je prazan!");
-	if(RefuellingVehicle[playerid] == 1) return SendClientMessage(playerid, -1, "GRESKA: Sipanje goriva u toku!");
+	if(IsASaleVehicle(vehicle_id)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete pokrenuti motor ovog vozila!");
+	if(IsARentVehicle(vehicle_id) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicle_id)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete pokrenuti motor ovog vozila!");
+	if(VehicleFuel[vehicle_id] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Rezervoar je prazan!");
+	if(RefuellingVehicle[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Sipanje goriva u toku!");
 	if(VehicleEngine[vehicle_id] == 0)
 	{
     	GetVehicleHealth(vehicle_id, vehicle_health);
-	    if(vehicle_health <= 500.0) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete upaliti motor vozila. Motor je ostecen!");
-	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, -1, "GRESKA: Vec pokusavate da pokrenete motor vozila!");
+	    if(vehicle_health <= 500.0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete upaliti motor vozila. Motor je ostecen!");
+	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec pokusavate da pokrenete motor vozila!");
 	    StartingVehicleEngine[playerid] = 1;
     	TogglePlayerControllable(playerid, 0);
 		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicle_id);
@@ -3935,14 +4024,14 @@ YCMD:motor(playerid, params[], help)
     return 1;
 }
 
-YCMD:sipajgorivo(playerid, params[], help)
+YCMD:fillfuel(playerid, params[], help)
 {
 	#pragma unused help
 	
 	new vehicle_id, litre, pump1, pump2, pump3;
 	
-	if(sscanf(params, "i", litre)) return SendClientMessage(playerid, -1, "KORISCENJE: /sipajgorivo [litara] (x5$)");
-	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
+	if(sscanf(params, "i", litre)) return SendClientMessage(playerid, -1, "[USAGE]: /sipajgorivo [litara] (x5$)");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 	vehicle_id = GetPlayerVehicleID(playerid);
 	
 	pump1 = IsPlayerNearPump1(playerid);
@@ -3952,9 +4041,9 @@ YCMD:sipajgorivo(playerid, params[], help)
 	if(pump1 != -1 && pump1 != 0)
 	{
 		if(VehicleEngine[vehicle_id] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
-		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, -1, "GRESKA: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
+		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (30l rezervoar)");
+		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (60l rezervoar)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
@@ -3965,9 +4054,9 @@ YCMD:sipajgorivo(playerid, params[], help)
 	else if(pump2 != -1 && pump2 != 0)
 	{
 		if(VehicleEngine[vehicle_id] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
-		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, -1, "GRESKA: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
+		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (30l rezervoar)");
+		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (60l rezervoar)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
@@ -3978,9 +4067,9 @@ YCMD:sipajgorivo(playerid, params[], help)
 	else if(pump3 != -1 && pump3 != 0)
 	{
 		if(VehicleEngine[vehicle_id] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
-		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, -1, "GRESKA: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, -1, "GRESKA: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
+		if(IsABike(vehicle_id) && litre + VehicleFuel[vehicle_id] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (30l rezervoar)");
+		else if(litre + VehicleFuel[vehicle_id] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (60l rezervoar)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
@@ -3988,19 +4077,19 @@ YCMD:sipajgorivo(playerid, params[], help)
 		RefuellingVehicle[playerid] = 1;
 		RefillLitre[playerid] = litre;
 	}
-	else return SendClientMessage(playerid, -1, "GRESKA: Niste na pump!");
+	else return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste na pump!");
 	return 1;
 }
 
-YCMD:pojas(playerid, params[], help)
+YCMD:belt(playerid, params[], help)
 {
 	#pragma unused help
 	
- 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
+ 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 	new str[128], vehicle_id = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	if(IsABike(vehicle_id)) return SendClientMessage(playerid, -1, "GRESKA: Na motoru ste, koristite kacigu! (/kaciga)");
+	if(IsABike(vehicle_id)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Na motoru ste, koristite kacigu! (/kaciga)");
 	if(HasBelt[playerid] == 0)
 	{
 	    HasBelt[playerid] = 1;
@@ -4024,15 +4113,15 @@ YCMD:pojas(playerid, params[], help)
 	return 1;
 }
 
-YCMD:kaciga(playerid, params[], help)
+YCMD:helmet(playerid, params[], help)
 {
 	#pragma unused help
 	
-	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste u vozilu!");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 	new str[128], vehicle_id = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	if(!IsABike(vehicle_id)) return SendClientMessage(playerid, -1, "GRESKA: Niste na motoru, vezite pojas! (/pojas)");
+	if(!IsABike(vehicle_id)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste na motoru, vezite pojas! (/pojas)");
 	if(HasHelmet[playerid] == 0)
 	{
 	    HasHelmet[playerid] = 1;
@@ -4063,7 +4152,7 @@ YCMD:v(playerid, params[], help)
 	new command[16];
 	if(sscanf(params, "s[16]", command))
 	{
-		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [komanda]");
 		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell[1-3], sellto, park[1-3], lock[1-3], find[1-3], color[1-3], paintjob[1-3], save[1-3], menu");
 	}
 	else
@@ -4078,10 +4167,10 @@ YCMD:v(playerid, params[], help)
 			vehicle_model = GetVehicleModel(vehicle_id);
 			new_vehicle_id = GlobalVehiclesCounter++;
 			
-			if(!IsASaleVehicle(vehicle_id)) return SendClientMessage(playerid, COLOR_WHITE, "GRESKA: Ovo vozilo nije na prodaju!");
-			//if((vehicle_id == 411 || vehicle_id == 415 || vehicle_id == 451 || vehicle_id == 495 || vehicle_id == 522 || vehicle_id == 541) && PlayerInfo[playerid][Donator] == 9999) return SendClientMessage(playerid, COLOR_WHITE, "GRESKA: Ne mozete kupiti ovo vozilo! Niste donator!");
+			if(!IsASaleVehicle(vehicle_id)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: Ovo vozilo nije na prodaju!");
+			//if((vehicle_id == 411 || vehicle_id == 415 || vehicle_id == 451 || vehicle_id == 495 || vehicle_id == 522 || vehicle_id == 541) && PlayerInfo[playerid][Donator] == 9999) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: Ne mozete kupiti ovo vozilo! Niste donator!");
 			
-			if(GetPlayerMoney(playerid) < GetVehiclePrice(vehicle_id)) return SendClientMessage(playerid, COLOR_WHITE, "GRESKA: Nemate dovoljno novca da bi kupili ovo vozilo!");
+			if(GetPlayerMoney(playerid) < GetVehiclePrice(vehicle_id)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: Nemate dovoljno novca da bi kupili ovo vozilo!");
 			GetVehicleName(vehicle_model, model_name, sizeof(model_name));
 
 			VehicleInfo[new_vehicle_id][Owned] = 1;
@@ -4096,6 +4185,7 @@ YCMD:v(playerid, params[], help)
 			VehicleInfo[new_vehicle_id][Paintjob] = 9999;
 			VehicleInfo[new_vehicle_id][Locked] = 1;
 			VehicleInfo[new_vehicle_id][Registration] = 0;
+			VehicleFuel[new_vehicle_id] = 60;
 			
 			InsertVehicle(PlayerInfo[playerid][ID], vehicle_model);
 			owned_vehicles[new_vehicle_id] = CreateVehicle(vehicle_model, VehicleInfo[new_vehicle_id][ParkX], VehicleInfo[new_vehicle_id][ParkY], VehicleInfo[new_vehicle_id][ParkZ], VehicleInfo[new_vehicle_id][ParkA], VehicleInfo[new_vehicle_id][Color1], VehicleInfo[new_vehicle_id][Color2], -1);
@@ -4117,7 +4207,7 @@ YCMD:v(playerid, params[], help)
 				if(VehicleInfo[i][Owned] == 1) 
 				{
 					GetVehiclePos(i, X, Y, Z);
-					if(IsPlayerInRangeOfPoint(playerid, 50.0, X, Y, Z))
+					if(IsPlayerInRangeOfPoint(playerid, 5.0, X, Y, Z))
 					{
 						if(VehicleInfo[i][Locked] == 1)
 						{
@@ -4141,7 +4231,7 @@ YCMD:v(playerid, params[], help)
 				}
 			}
 			
-			SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog vozila!");
+			SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog vozila!");
 
 			return 1;
 		}
@@ -4149,10 +4239,10 @@ YCMD:v(playerid, params[], help)
 		{
 			new vehicle_id;
 
-			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 
 			vehicle_id = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vasem vozilu!");
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u vasem vozilu!");
 
 			VehicleInfo[vehicle_id][Owned] = 9999;
 			VehicleInfo[vehicle_id][ParkX] = 1590.3740;
@@ -4176,8 +4266,9 @@ YCMD:v(playerid, params[], help)
 			VehicleInfo[vehicle_id][Vent_right] = 0;
 			VehicleInfo[vehicle_id][Vent_left] = 0;
 			VehicleEngine[vehicle_id] = 0;
+			VehicleFuel[vehicle_id] = 60;
 
-			SaveVehicle(vehicle_id);
+			DeleteVehicle(vehicle_id);
 			
 			PlayerInfo[playerid][Money] += GetVehiclePrice(vehicle_id);
 			GivePlayerMoney(playerid, PlayerInfo[playerid][Money]);
@@ -4195,14 +4286,14 @@ YCMD:v(playerid, params[], help)
 		{
 			new player_name[MAX_PLAYER_NAME], vehicle_id, target, price, vehicle[32], Float:X, Float:Y, Float:Z, message[512];
 
-			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /sellto [id igraca/deo imena] [cena]");
-			if(VehicleSellOffer[playerid] != 9999) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Vec ste ponudili prodaju vozila!");
-			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /sellto [id igraca/deo imena] [cena]");
+			if(VehicleSellOffer[playerid] != 9999) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste ponudili prodaju vozila!");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			vehicle_id = GetPlayerVehicleID(playerid);
 			GetVehiclePos(vehicle_id, X, Y, Z);
 			GetVehicleName(vehicle_id, vehicle, sizeof(vehicle));
-			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u svom vozilu!");
-			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Igrac nije blizu vas!");
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u svom vozilu!");
+			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac nije blizu vas!");
 
 			VehicleSellOffer[playerid] = 1;
 			VehicleBuyOffer[target] = 1;
@@ -4224,7 +4315,7 @@ YCMD:v(playerid, params[], help)
 		}
 		else if(strcmp(command, "save", true) == 0)
 		{
-			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			new vehicle_id = GetPlayerVehicleID(playerid);
 			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRSKA: Niste u vasem vozilu!");
 			if(VehicleInfo[vehicle_id][Owned] == 1)
@@ -4240,10 +4331,10 @@ YCMD:v(playerid, params[], help)
 		{
 			new vehicle_id, vehicle_model, Float:X, Float:Y, Float:Z, Float:A;
 
-			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			vehicle_id = GetPlayerVehicleID(playerid);
 			vehicle_model = GetVehicleModel(vehicle_id);
-			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vasem vozilu!");
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u vasem vozilu!");
 
 			GetVehiclePos(vehicle_id, X, Y, Z);
 			GetVehicleZAngle(vehicle_id, A);
@@ -4253,6 +4344,9 @@ YCMD:v(playerid, params[], help)
 			VehicleInfo[vehicle_id][ParkZ] = Z;
 			VehicleInfo[vehicle_id][ParkA] = A;
 			VehicleEngine[vehicle_id] = 0;
+
+			printf("vehicle_id je %d", vehicle_id);
+			printf("id vozila je %d", VehicleInfo[vehicle_id][ID]);
 
 			SaveVehicle(vehicle_id);
 			RemovePlayerFromVehicle(playerid);
@@ -4270,11 +4364,11 @@ YCMD:v(playerid, params[], help)
 		{
 			new color1, color2;
 
-			if(sscanf(params, "s[16]ii", command, color1, color2)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [color] [boja 1] [boja 2]");
-			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			if(sscanf(params, "s[16]ii", command, color1, color2)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [color] [boja 1] [boja 2]");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			new vehicle_id = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vasem vozilu!");
-			if(GetPlayerMoney(playerid) < 2500) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca! ($2500)");
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u vasem vozilu!");
+			if(GetPlayerMoney(playerid) < 2500) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca! ($2500)");
 
 			PlayerInfo[playerid][Money] -= 2500;
 			GivePlayerMoney(playerid, -2500);
@@ -4293,11 +4387,11 @@ YCMD:v(playerid, params[], help)
 		{
 			new paintjob;
 
-			if(sscanf(params, "s[16]ii", command, paintjob)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [paintjob] [paintjob id]");
-			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vozilu!");
+			if(sscanf(params, "s[16]ii", command, paintjob)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [paintjob] [paintjob id]");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			new vehicle_id = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste u vasem vozilu!");
-			if(GetPlayerMoney(playerid) < 5000) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca! ($5000)");
+			if(VehicleInfo[vehicle_id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u vasem vozilu!");
+			if(GetPlayerMoney(playerid) < 5000) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca! ($5000)");
 
 			PlayerInfo[playerid][Money] -= 5000;
 			GivePlayerMoney(playerid, -5000);
@@ -4313,7 +4407,7 @@ YCMD:v(playerid, params[], help)
 		}
 		/*else
 		{
-		    SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /v(ehicle) [komanda]");
+		    SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [komanda]");
 			SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell[1-3], sellto, park[1-3], lock[1-3], find[1-3], color[1-3], paintjob[1-3], save[1-3], menu");
 		}*/
 	}
@@ -4325,7 +4419,7 @@ YCMD:h(playerid, params[], help)
 	new command[32];
 	if(sscanf(params, "s[32]", command))
 	{
-		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /h(ouse) [komanda]");
 		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavehicle_idrogu, uzmidrogu");
 	}
 	else
@@ -4337,9 +4431,9 @@ YCMD:h(playerid, params[], help)
 			id = IsPlayerNearHouseEnter(playerid);
 			GetPlayerName(playerid, player_name, sizeof(player_name));
 			
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
-			if(HouseInfo[id][Owned] != 0 || HouseInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ova kuca nije na prodaju!");
-			if(GetPlayerMoney(playerid) < HouseInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca da kupite ovu kucu!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu kuce!");
+			if(HouseInfo[id][Owned] != 0 || HouseInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ova kuca nije na prodaju!");
+			if(GetPlayerMoney(playerid) < HouseInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da kupite ovu kucu!");
 
 			PlayerInfo[playerid][Money] -= HouseInfo[id][Price];
 			GivePlayerMoney(playerid, -HouseInfo[id][Price]);
@@ -4365,8 +4459,8 @@ YCMD:h(playerid, params[], help)
 			new id, message[256];
 
 			id = IsPlayerNearHouseEnter(playerid);
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
-			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nije vasa kuca!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu kuce!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nije vasa kuca!");
 
 			HouseInfo[id][Owned] = 0;
 			HouseInfo[id][Locked] = 1;
@@ -4387,7 +4481,7 @@ YCMD:h(playerid, params[], help)
 
 			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste kucu.");
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", HouseInfo[id][Price]);
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", HouseInfo[id][Price], HouseInfo[id][ID]);
 			Update3DTextLabelText(HouseLabelArray[id], -1, message);
 
 			SaveHouse(id);
@@ -4397,13 +4491,13 @@ YCMD:h(playerid, params[], help)
 		else if(!strfind(command, "sellto"))
 		{
 			new id, target, price, Float:X, Float:Y, Float:Z,player_name[MAX_PLAYER_NAME], str[512];
-			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, -1, "KORISCENJE: /h(ouse) sellto [id igraca/deo imena] [cena]");
-			if(HouseSellOffer[playerid] != 9999) return SendClientMessage(playerid, -1, "GRESKA: Vec ste ponudili prodaju kuce!");
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, -1, "[USAGE]: /h(ouse) sellto [id igraca/deo imena] [cena]");
+			if(HouseSellOffer[playerid] != 9999) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste ponudili prodaju kuce!");
 			GetPlayerPos(target, X, Y, Z);
-			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, -1, "GRESKA: Igrac nije blizu vas!");
+			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac nije blizu vas!");
 			id = IsPlayerNearHouseEnter(playerid);
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu kuce!");
-			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nije vasa kuca!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu kuce!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nije vasa kuca!");
 
 			HouseSellOffer[playerid] = 1;
 			HouseBuyOffer[target] = 1;
@@ -4428,7 +4522,7 @@ YCMD:h(playerid, params[], help)
 		else if(strcmp(command, "lock", true) == 0)
 		{
 			new id = IsPlayerNearHouseEnter(playerid);
-			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu vase kuce!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu vase kuce!");
 			if(HouseInfo[id][Locked] == 1)
 			{
 				HouseInfo[id][Locked] = 0;
@@ -4446,7 +4540,7 @@ YCMD:h(playerid, params[], help)
 		}
 		/* else
 		{
-		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /h(ouse) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /h(ouse) [komanda]");
 		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavehicle_idrogu, uzmidrogu");
 		} */
 	}
@@ -4458,7 +4552,7 @@ YCMD:b(playerid, params[], help)
 	new command[16];
 	if(sscanf(params, "s[16]", command))
 	{
-		SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [komanda]");
+		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [komanda]");
 		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
 	}
 	else
@@ -4470,9 +4564,9 @@ YCMD:b(playerid, params[], help)
 			GetPlayerName(playerid, player_name, sizeof(player_name));
 
 			id = IsPlayerNearBusinessEnter(playerid);
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu biznisa!");
-			if(BusinessInfo[id][Owned] != 0 || BusinessInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ovaj biznis nije na prodaju!");
-			if(GetPlayerMoney(playerid) < BusinessInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate dovoljno novca da kupite ovaj biznis!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu biznisa!");
+			if(BusinessInfo[id][Owned] != 0 || BusinessInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ovaj biznis nije na prodaju!");
+			if(GetPlayerMoney(playerid) < BusinessInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da kupite ovaj biznis!");
 
 			PlayerInfo[playerid][Money] -= BusinessInfo[id][Price];
 			GivePlayerMoney(playerid, -BusinessInfo[id][Price]);
@@ -4518,8 +4612,8 @@ YCMD:b(playerid, params[], help)
 
 			id = IsPlayerNearBusinessEnter(playerid);
 
-			if(sscanf(params, "s[16]i", command, fee)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [fee] [cena]");
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(sscanf(params, "s[16]i", command, fee)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [fee] [cena]");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
 			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
 
 			BusinessInfo[id][EnterFee] = fee;
@@ -4535,7 +4629,7 @@ YCMD:b(playerid, params[], help)
 		{
 			new id = IsPlayerNearBusinessEnter(playerid);
 
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
 			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
 
 			if(BusinessInfo[id][Locked] == 1)
@@ -4558,9 +4652,9 @@ YCMD:b(playerid, params[], help)
 			new id, message[128];
 			id = IsPlayerNearBusinessEnter(playerid);
 
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Nemate novca na racunu biznisa!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
+			if(BusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate novca na racunu biznisa!");
 
 			PlayerInfo[playerid][Money] += BusinessInfo[id][Money];
 			GivePlayerMoney(playerid, BusinessInfo[id][Money]);
@@ -4581,8 +4675,8 @@ YCMD:b(playerid, params[], help)
 
 			id = IsPlayerNearBusinessEnter(playerid);
 
-			if(sscanf(params, "s[16]s[128]", command, name)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [name] [ime]");
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Niste blizu svog biznisa!");
+			if(sscanf(params, "s[16]s[128]", command, name)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [name] [ime]");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
 			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
 
 			BusinessInfo[id][Name] = name;
@@ -4596,7 +4690,7 @@ YCMD:b(playerid, params[], help)
 		}
 		else
 		{
-			SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /b(usiness) [komanda]");
+			SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [komanda]");
 			SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
 		}
 	}
@@ -4610,7 +4704,7 @@ YCMD:makehouse(playerid, params[], help)
     // Check for admin level
 
     new price, player_interior, player_virtual_world, inside_interior, Float:X, Float:Y, Float:Z, Float:A;
-    if(sscanf(params, "ii", price, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /makehouse [cena] [interior]");
+    if(sscanf(params, "ii", price, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /makehouse [cena] [interior]");
 
     switch(inside_interior)
 	{
@@ -4788,8 +4882,8 @@ YCMD:deletehouse(playerid, params[], help)
 
     new id;
 
-    if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /deletehouse [id]");
-    if(HouseInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ova kuca ima vlasnika!");
+    if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /deletehouse [id]");
+    if(HouseInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ova kuca ima vlasnika!");
 
     HouseInfo[id][Owned] = 0;
     HouseInfo[id][Price] = 0;
@@ -4829,7 +4923,7 @@ YCMD:makebusiness(playerid, params[], help)
     #pragma unused help
     new price, type, id, player_interior, player_virtual_world, name[128], inside_interior, Float:X, Float:Y, Float:Z, Float:A;
     // Check for admin
-    if(sscanf(params, "iii", price, type, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /makebusiness [cena] [tip] [interior]");
+    if(sscanf(params, "iii", price, type, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /makebusiness [cena] [tip] [interior]");
 
 
     switch(inside_interior)
@@ -5141,8 +5235,8 @@ YCMD:deletebusiness(playerid, params[], help)
 
     // Check for admin
 
-    if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "KORISCENJE: /deletebusiness [id]");
-    if(BusinessInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "GRESKA: Ovaj biznis ima vlasnika.");
+    if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /deletebusiness [id]");
+    if(BusinessInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ovaj biznis ima vlasnika.");
 
     BusinessInfo[id][Owned] = 0;
     BusinessInfo[id][Price] = 0;
@@ -5173,8 +5267,8 @@ YCMD:makeadmin(playerid, params[], help)
 {
 	#pragma unused help
 	new player, level, player_name[MAX_PLAYER_NAME], str[128];
-	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, level)) return SendClientMessage(playerid, -1, "KORISCENJE: /makeadmin [id/deo imena] [level]");
+	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, level)) return SendClientMessage(playerid, -1, "[USAGE]: /makeadmin [id/deo imena] [level]");
 
 	PlayerInfo[player][Admin] = level;
 	SavePlayer(player);
@@ -5194,8 +5288,8 @@ YCMD:makedonator(playerid, params[], help)
 {
 	#pragma unused help
 	new player, points, player_name[MAX_PLAYER_NAME], str[128];
-	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, points)) return SendClientMessage(playerid, -1, "KORISCENJE: /makedonator [id/deo imena] [poeni]");
+	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, points)) return SendClientMessage(playerid, -1, "[USAGE]: /makedonator [id/deo imena] [poeni]");
 
 	if(points == 0)
 	{
@@ -5224,8 +5318,8 @@ YCMD:port(playerid, params[], help)
 {
     #pragma unused help
     new target[32], vehicle_id;
-    if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "s[32]", target)) return SendClientMessage(playerid, -1, "KORISCENJE: /port [mesto]");
+    if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "s[32]", target)) return SendClientMessage(playerid, -1, "[USAGE]: /port [mesto]");
     if(strcmp(target, "banka", true) == 0)
     {
         if(IsPlayerInAnyVehicle(playerid))
@@ -5506,9 +5600,9 @@ YCMD:goto(playerid, params[], help)
 {
     #pragma unused help
     new player, player_interior, vehicle_id, Float:X, Float:Y, Float:Z;
-    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "KORISCENJE: /goto [id/deo imena]");
-    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, -1, "GRESKA: Pogresan ID!");
+    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /goto [id/deo imena]");
+    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Pogresan ID!");
 
     GetPlayerPos(player, X, Y, Z);
     player_interior = GetPlayerInterior(player);
@@ -5532,9 +5626,9 @@ YCMD:gethere(playerid, params[], help)
 {
     #pragma unused help
     new player, player_interior, vehicle_id, Float:X, Float:Y, Float:Z;
-    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "KORISCENJE: /time [id/deo imena]");
-    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, -1, "GRESKA: Pogresan ID!");
+    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /time [id/deo imena]");
+    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Pogresan ID!");
 
     GetPlayerPos(playerid, X, Y, Z);
     player_interior = GetPlayerInterior(playerid);
@@ -5555,12 +5649,39 @@ YCMD:gethere(playerid, params[], help)
     return 1;
 }
 
+YCMD:getincar(playerid, params[], help)
+{
+	#pragma unused help
+	// if((PlayerInfo[playerid][pAdmin] < 3) || (PlayerInfo[playerid][pAdmin] == 9999)) return SendClientMessage(playerid, BOJA_CRVENA, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+	new vID;
+	if(sscanf(params, "i", vID)) return SendClientMessage(playerid, -1, "[USAGE]: /getincar [ID vozila]");
+	else if(vID == INVALID_VEHICLE_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Pogresan ID vozila!");
+
+	PutPlayerInVehicle(playerid, vID, 0);
+	return 1;
+}
+
+YCMD:getvehhere(playerid, params[], help)
+{
+    #pragma unused help
+    new pINT, vehicle, Float:X, Float:Y, Float:Z;
+    // if((PlayerInfo[playerid][pAdmin] < 3) || (PlayerInfo[playerid][pAdmin] == 9999)) return SendClientMessage(playerid, BOJA_CRVENA, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "i", vehicle)) return SendClientMessage(playerid, -1, "[USAGE]: /getvehhere [id vozila]");
+
+    GetPlayerPos(playerid, X, Y, Z);
+    pINT = GetPlayerInterior(playerid);
+
+	SetVehiclePos(vehicle, X-2, Y-2, Z);
+	LinkVehicleToInterior(vehicle, pINT);
+    return 1;
+}
+
 YCMD:settime(playerid, params[], help)
 {
 	#pragma unused help
 	new hours, player_name[MAX_PLAYER_NAME], str[128];
- 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "i", hours)) return SendClientMessage(playerid, -1, "KORISCENJE: /settime [sati]");
+ 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "i", hours)) return SendClientMessage(playerid, -1, "[USAGE]: /settime [sati]");
 
 	SetWorldTime(hours);
 
@@ -5574,9 +5695,9 @@ YCMD:setweather(playerid, params[], help)
 {
     #pragma unused help
 	new weather_id, player_name[MAX_PLAYER_NAME], str[128];
- 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "i", weather_id)) return SendClientMessage(playerid, -1, "KORISCENJE: /setweather [id vremena]");
-    //if(weather_id < 0 || weather_id > 20) return SendClientMessage(playerid, -1, "GRESKA: ID vremena mora biti izmedju 1 i 20!");
+ 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+    if(sscanf(params, "i", weather_id)) return SendClientMessage(playerid, -1, "[USAGE]: /setweather [id vremena]");
+    //if(weather_id < 0 || weather_id > 20) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: ID vremena mora biti izmedju 1 i 20!");
 	SetWeather(weather_id);
 
 	GetPlayerName(playerid, player_name, sizeof(player_name));
@@ -5589,8 +5710,8 @@ YCMD:givemoney(playerid, params[], help)
 {
 	#pragma unused help
 	new player, money, player_name[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, -1, "KORISCENJE: /givemoney [id/deo imena] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, -1, "[USAGE]: /givemoney [id/deo imena] [kolicina]");
 
 	PlayerInfo[player][Money] += money;
 	GivePlayerMoney(player, money);
@@ -5611,9 +5732,9 @@ YCMD:setskin(playerid, params[], help)
 {
 	#pragma unused help
 	new player, skin, player_name[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, skin)) return SendClientMessage(playerid, -1, "KORISCENJE: /setskin [id/deo imena] [id skina]");
-	if(skin < 1 || skin > 299) return SendClientMessage(playerid, -1, "GRESKA: ID Skina ne moze biti manji od 1 i veci od 299!");
+	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "ri", player, skin)) return SendClientMessage(playerid, -1, "[USAGE]: /setskin [id/deo imena] [id skina]");
+	if(skin < 1 || skin > 299) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: ID Skina ne moze biti manji od 1 i veci od 299!");
 
 	SetPlayerSkin(player, skin);
 	PlayerInfo[player][Skin] = skin;
@@ -5635,8 +5756,8 @@ YCMD:setjob(playerid, params[], help)
 {
 	#pragma unused help
 	new player, job, player_name[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, job)) return SendClientMessage(playerid, -1, "KORISCENJE: /ajob [id/deo imena] [id posla]");
+	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, job)) return SendClientMessage(playerid, -1, "[USAGE]: /ajob [id/deo imena] [id posla]");
 
 	PlayerInfo[player][Job] = job;
 	SavePlayer(playerid);
@@ -5655,8 +5776,8 @@ YCMD:setheatlh(playerid, params[], help)
 {
 	#pragma unused help
 	new player, health, player_name[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, health)) return SendClientMessage(playerid, -1, "KORISCENJE: /sethealth [id/deo imena] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "ri", player, health)) return SendClientMessage(playerid, -1, "[USAGE]: /sethealth [id/deo imena] [kolicina]");
 
 	SetPlayerHealth(player, health);
 	SavePlayer(player);
@@ -5675,8 +5796,8 @@ YCMD:setarmor(playerid, params[], help)
 {
 	#pragma unused help
 	new player, armor, player_name[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, armor)) return SendClientMessage(playerid, -1, "KORISCENJE: /setarmor [id/deo imena] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "ri", player, armor)) return SendClientMessage(playerid, -1, "[USAGE]: /setarmor [id/deo imena] [kolicina]");
 
 	SetPlayerArmour(player, armor);
 	SavePlayer(player);
@@ -5695,8 +5816,8 @@ YCMD:giveweapon(playerid, params[], help)
 {
 	#pragma unused help
 	new player, weapon, ammo;
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "rii", player, weapon, ammo)) return SendClientMessage(playerid, -1, "KORISCENJE: /giveweapon [id/deo imena igraca] [id oruzja] [metkovi]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "rii", player, weapon, ammo)) return SendClientMessage(playerid, -1, "[USAGE]: /giveweapon [id/deo imena igraca] [id oruzja] [metkovi]");
 	
 	GivePlayerWeapon(player, weapon, ammo);
 
@@ -5707,9 +5828,9 @@ YCMD:giveweaponskill(playerid, params[], help)
 {
 	#pragma unused help
 	new player, weapon, skill;
-	if(sscanf(params, "rii", player, weapon, skill)) return SendClientMessage(playerid, -1, "KORISCENJE: /giveweaponskill [id/deo imena] [oruzje] [skill]");
-	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, -1, "GRESKA: Igrac ne postoji!");
-	else if(weapon < 1 || weapon > 11) return SendClientMessage(playerid, -1, "GRESKA: Broj za oruzje mora biti izmedju 1 i 9!");
+	if(sscanf(params, "rii", player, weapon, skill)) return SendClientMessage(playerid, -1, "[USAGE]: /giveweaponskill [id/deo imena] [oruzje] [skill]");
+	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac ne postoji!");
+	else if(weapon < 1 || weapon > 11) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Broj za oruzje mora biti izmedju 1 i 9!");
 	switch(weapon)
 	{
 
@@ -5789,10 +5910,10 @@ YCMD:setfightstyle(playerid, params[], help)
 {
 	#pragma unused help
 	new style, player, player_name[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, style)) return SendClientMessage(playerid, -1, "KORISCENJE: /setfightstyle [id/deo imena] [stil]");
-	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, -1, "GRESKA: Igrac ne postoji!");
-	else if (style < 4 || (style > 7 && style < 15) || style > 16) return SendClientMessage(playerid, -1, "GRESKA: Stil moze biti u opsegu 4-7 i 15-16!");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, style)) return SendClientMessage(playerid, -1, "[USAGE]: /setfightstyle [id/deo imena] [stil]");
+	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac ne postoji!");
+	else if (style < 4 || (style > 7 && style < 15) || style > 16) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Stil moze biti u opsegu 4-7 i 15-16!");
 	
 	PlayerInfo[playerid][FightingStyle] = style;
 	SetPlayerFightingStyle(player, style);
@@ -5813,18 +5934,18 @@ YCMD:givedrugs(playerid, params[], help)
 {
 	#pragma unused help
 	new player, drug, player_name[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, drug)) return SendClientMessage(playerid, -1, "KORISCENJE: /givedrugs [id/deo imena] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
+	if(sscanf(params, "ri", player, drug)) return SendClientMessage(playerid, -1, "[USAGE]: /givedrugs [id/deo imena] [kolicina]");
 
 	PlayerInfo[player][Drugs] += drug;
 	SavePlayer(player);
 
 	GetPlayerName(playerid, player_name, sizeof(player_name));
-	format(str, sizeof(str), "Admin %s Vam je dao %d droge.", player_name, drug);
+	format(str, sizeof(str), "Admin %s gave You %d drugs.", player_name, drug);
 	SendClientMessage(player, -1, str);
 
 	GetPlayerName(player, player_name, sizeof(player_name));
-	format(str, sizeof(str), "Dali ste igracu %s %d droge.", player_name, drug);
+	format(str, sizeof(str), "You gave %s %d drugs.", player_name, drug);
 	SendClientMessage(playerid, -1, str);
 
 	return 1;
@@ -5834,8 +5955,8 @@ YCMD:givematerials(playerid, params[], help)
 {
 	#pragma unused help
 	new player, materials, player_name[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, -1, "GRESKA: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, materials)) return SendClientMessage(playerid, -1, "KORISCENJE: /givemats [id/deo imena] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+	if(sscanf(params, "ri", player, materials)) return SendClientMessage(playerid, -1, "[USAGE]: /givemats [id/deo imena] [kolicina]");
 
 	PlayerInfo[player][Materials] += materials;
 	SavePlayer(player);
@@ -5855,7 +5976,7 @@ YCMD:specialaction(playerid, params[], help)
 {
 	#pragma unused help
 	new action;
-	if(sscanf(params, "i", action)) return SendClientMessage(playerid, -1, "KORISCENJE: /specialaction id_akcije");
+	if(sscanf(params, "i", action)) return SendClientMessage(playerid, -1, "[USAGE]: /specialaction id_akcije");
 	
 	SetPlayerSpecialAction(playerid, action);
 	
