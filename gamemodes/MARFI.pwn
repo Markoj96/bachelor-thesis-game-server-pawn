@@ -1901,31 +1901,31 @@ public GetVehicleName(vehicleID, model[], len)
 
 public VehicleStopOffer(playerid, target)
 {
-    VehicleSellOffer[playerid] = 9999;
-	VehicleBuyOffer[playerid] = 9999;
- 	VehicleForOffer[playerid] = 9999;
-	VehiclePlayerOffer[playerid] = 9999;
+    VehicleSellOffer[playerid] = 0;
+	VehicleBuyOffer[playerid] = 0;
+ 	VehicleForOffer[playerid] = 0;
+	VehiclePlayerOffer[playerid] = 0;
 	VehicleOfferPrice[playerid] = 0;
 
-	VehicleSellOffer[target] = 9999;
-	VehicleBuyOffer[target] = 9999;
- 	VehicleForOffer[target] = 9999;
-	VehiclePlayerOffer[target] = 9999;
+	VehicleSellOffer[target] = 0;
+	VehicleBuyOffer[target] = 0;
+ 	VehicleForOffer[target] = 0;
+	VehiclePlayerOffer[target] = 0;
 	VehicleOfferPrice[target] = 0;
 }
 
 public HouseStopOffer(playerid, target)
 {
-    HouseSellOffer[playerid] = 9999;
-	HouseBuyOffer[playerid] = 9999;
- 	HouseForOffer[playerid] = 9999;
-	HousePlayerOffer[playerid] = 9999;
+    HouseSellOffer[playerid] = 0;
+	HouseBuyOffer[playerid] = 0;
+ 	HouseForOffer[playerid] = 0;
+	HousePlayerOffer[playerid] = 0;
 	HouseOfferPrice[playerid] = 0;
 
-	HouseSellOffer[target] = 9999;
-	HouseBuyOffer[target] = 9999;
- 	HouseForOffer[target] = 9999;
-	HousePlayerOffer[target] = 9999;
+	HouseSellOffer[target] = 0;
+	HouseBuyOffer[target] = 0;
+ 	HouseForOffer[target] = 0;
+	HousePlayerOffer[target] = 0;
 	HouseOfferPrice[target] = 0;
 }
 
@@ -2714,6 +2714,17 @@ public LoadRentVehicles()
 	RentVehicles[21] = AddStaticVehicleEx(462,1180.0000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	RentVehicles[22] = AddStaticVehicleEx(462,1175.4000000,-1337.6000000,13.2000000,270.0000000,-1,7,-1); //Faggio
 	RentVehicles[23] = AddStaticVehicleEx(462,1175.4000000,-1340.5996000,13.2000000,270.0000000,-1,7,-1); //Faggio
+
+	// San Fierro Rent Vehicles
+	// CreateVehicle(410, -1402.4318, -318.1165, 13.7324, 32.4744, -1, -1, 100);
+	// CreateVehicle(410, -1397.3706, -325.9061, 13.7324, 30.3861, -1, -1, 100);
+	// CreateVehicle(410, -1408.2535, -310.3975, 13.7324, 40.8863, -1, -1, 100);
+	// CreateVehicle(410, -1421.0155, -296.5672, 13.7324, 48.3267, -1, -1, 100);
+	// CreateVehicle(410, -1428.2483, -290.6228, 13.7324, 53.8011, -1, -1, 100);
+	// CreateVehicle(410, -1435.9463, -285.5995, 13.7324, 56.7948, -1, -1, 100);
+	// CreateVehicle(410, -1393.3823, -334.3792, 13.7324, 24.2823, -1, -1, 100);
+	// CreateVehicle(410, -1444.0166, -280.7827, 13.7324, 64.6600, -1, -1, 100);
+
 	GlobalVehiclesCounter += 24;
 }
 
@@ -3216,23 +3227,23 @@ public OnPlayerConnect(playerid)
 	HasBelt[playerid] = 0;
 	HasHelmet[playerid] = 0;
 	
-	VehicleSellOffer[playerid] = 9999;
- 	VehicleBuyOffer[playerid] = 9999;
- 	VehicleForOffer[playerid] = 9999;
-	VehiclePlayerOffer[playerid] = 9999;
+	VehicleSellOffer[playerid] = 0;
+ 	VehicleBuyOffer[playerid] = 0;
+ 	VehicleForOffer[playerid] = 0;
+	VehiclePlayerOffer[playerid] = 0;
 	VehicleOfferPrice[playerid] = 0;
 	
-	HouseSellOffer[playerid] = 9999;
- 	HouseBuyOffer[playerid] = 9999;
- 	HouseForOffer[playerid] = 9999;
-	HousePlayerOffer[playerid] = 9999;
+	HouseSellOffer[playerid] = 0;
+ 	HouseBuyOffer[playerid] = 0;
+ 	HouseForOffer[playerid] = 0;
+	HousePlayerOffer[playerid] = 0;
 	HouseOfferPrice[playerid] = 0;
 	InHouse[playerid] = 0;
 
-	BusinessSellOffer[playerid] = 9999;
- 	BusinessBuyOffer[playerid] = 9999;
- 	BusinessForOffer[playerid] = 9999;
-	BusinessPlayerOffer[playerid] = 9999;
+	BusinessSellOffer[playerid] = 0;
+ 	BusinessBuyOffer[playerid] = 0;
+ 	BusinessForOffer[playerid] = 0;
+	BusinessPlayerOffer[playerid] = 0;
 	BusinessOfferPrice[playerid] = 0;
 	InBusiness[playerid] = 0;
 
@@ -4037,7 +4048,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				case 2:
 				{
 					PlayerInfo[playerid][City] = 2;
-					PlayerInfo[playerid][SpawnX] = 1410.8577;
+					PlayerInfo[playerid][SpawnX] = -1410.8577;
 					PlayerInfo[playerid][SpawnY] = -301.6284;
 					PlayerInfo[playerid][SpawnZ] = 14.1484;
 					PlayerInfo[playerid][SpawnA] = 136.9096;
@@ -4061,11 +4072,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if(!response)
 			{
-				VehicleSellOffer[VehiclePlayerOffer[playerid]] = 9999;
-				VehicleBuyOffer[playerid] = 9999;
-				VehicleForOffer[playerid] = 9999;
+				VehicleSellOffer[VehiclePlayerOffer[playerid]] = 0;
+				VehicleBuyOffer[playerid] = 0;
+				VehicleForOffer[playerid] = 0;
 				VehicleOfferPrice[playerid] = 0;
-				VehiclePlayerOffer[playerid] = 9999;
+				VehiclePlayerOffer[playerid] = 0;
 
 				SendClientMessage(playerid, COLOR_RED, "Odbili ste da kupite vozilo!");
 				SendClientMessage(VehiclePlayerOffer[playerid], COLOR_RED, "Igrac je odbio ponudu za vozilo!");
@@ -4074,11 +4085,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			{
 				if(GetPlayerMoney(playerid) < VehicleOfferPrice[playerid])
 				{
-					VehicleSellOffer[VehiclePlayerOffer[playerid]] = 9999;
-					VehicleBuyOffer[playerid] = 9999;
-					VehicleForOffer[playerid] = 9999;
+					VehicleSellOffer[VehiclePlayerOffer[playerid]] = 0;
+					VehicleBuyOffer[playerid] = 0;
+					VehicleForOffer[playerid] = 0;
 					VehicleOfferPrice[playerid] = 0;
-					VehiclePlayerOffer[playerid] = 9999;
+					VehiclePlayerOffer[playerid] = 0;
 
 					SendClientMessage(playerid, COLOR_RED, "Nemate dovoljno novca da kupite vozilo!");
 					SendClientMessage(VehiclePlayerOffer[playerid], COLOR_RED, "Igrac nema dovoljno novca da kupi vozilo!");
@@ -4112,11 +4123,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 					OwnedVehicles[vehicleID] = CreateVehicle(vehicle_model, VehicleInfo[vehicleID][ParkX], VehicleInfo[vehicleID][ParkY], VehicleInfo[vehicleID][ParkZ], VehicleInfo[vehicleID][ParkA], VehicleInfo[vehicleID][Color1], VehicleInfo[vehicleID][Color2], -1);
 
-					VehicleSellOffer[player] = 9999;
-					VehicleBuyOffer[playerid] = 9999;
-					VehicleForOffer[playerid] = 9999;
+					VehicleSellOffer[player] = 0;
+					VehicleBuyOffer[playerid] = 0;
+					VehicleForOffer[playerid] = 0;
 					VehicleOfferPrice[playerid] = 0;
-					VehiclePlayerOffer[playerid] = 9999;
+					VehiclePlayerOffer[playerid] = 0;
 				}
 				return 1;
 			}
@@ -4126,11 +4137,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if(!response)
 			{
-			    HouseSellOffer[HousePlayerOffer[playerid]] = 9999;
-				HouseBuyOffer[playerid] = 9999;
-			 	HouseForOffer[playerid] = 9999;
+			    HouseSellOffer[HousePlayerOffer[playerid]] = 0;
+				HouseBuyOffer[playerid] = 0;
+			 	HouseForOffer[playerid] = 0;
 			 	HouseOfferPrice[playerid] = 0;
-				HousePlayerOffer[playerid] = 9999;
+				HousePlayerOffer[playerid] = 0;
 
 				SendClientMessage(playerid, -1, "Odbili ste da kupite kucu!");
 				SendClientMessage(HousePlayerOffer[playerid], -1, "Igrac je odbio ponudu za kucu!");
@@ -4139,11 +4150,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			{
 			    if(GetPlayerMoney(playerid) < HouseOfferPrice[playerid])
 			    {
-			        HouseSellOffer[HousePlayerOffer[playerid]] = 9999;
-					HouseBuyOffer[playerid] = 9999;
-				 	HouseForOffer[playerid] = 9999;
+			        HouseSellOffer[HousePlayerOffer[playerid]] = 0;
+					HouseBuyOffer[playerid] = 0;
+				 	HouseForOffer[playerid] = 0;
 				 	HouseOfferPrice[playerid] = 0;
-					HousePlayerOffer[playerid] = 9999;
+					HousePlayerOffer[playerid] = 0;
 
 					SendClientMessage(playerid, -1, "Nemate dovoljno novca da kupite kucu!");
 					SendClientMessage(HousePlayerOffer[playerid], -1, "Igrac nema dovoljno novca da kupi kucu!");
@@ -4173,11 +4184,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					format(house3dtext, sizeof(house3dtext), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(HouseInfo[id][ID]), HouseInfo[id][ID]);
 					Update3DTextLabelText(HouseLabelArray[id], -1, house3dtext);
 
-					HouseSellOffer[player] = 9999;
-					HouseBuyOffer[playerid] = 9999;
-				 	HouseForOffer[playerid] = 9999;
+					HouseSellOffer[player] = 0;
+					HouseBuyOffer[playerid] = 0;
+				 	HouseForOffer[playerid] = 0;
 				 	HouseOfferPrice[playerid] = 0;
-			 		HousePlayerOffer[playerid] = 9999;
+			 		HousePlayerOffer[playerid] = 0;
 				}
 				return 1;
 			}
@@ -4617,7 +4628,7 @@ YCMD:v(playerid, params[], help)
 			new playerName[MAX_PLAYER_NAME], vehicleID, target, price, vehicle[32], Float:X, Float:Y, Float:Z, message[512];
 
 			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /sellto [id igraca/deo imena] [cena]");
-			if(VehicleSellOffer[playerid] != 9999) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste ponudili prodaju vozila!");
+			if(VehicleSellOffer[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste ponudili prodaju vozila!");
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			vehicleID = GetPlayerVehicleID(playerid);
 			GetVehiclePos(vehicleID, X, Y, Z);
