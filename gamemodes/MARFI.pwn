@@ -33,6 +33,8 @@ main()
 
 #define DIALOG_BUY_HOUSE 20 //
 
+#define DIALOG_BUY_BUSINESS 30 //
+
 // Colors
 #define COLOR_GREY 														0xAFAFAFAA
 // System Defined Colors
@@ -429,7 +431,7 @@ forward SendRadiusMessage(Float:radius, playerid, string[], color1, color2, colo
 
 forward LoadVehicles();
 forward OnVehiclesLoaded();
-forward InsertVehicle(vehicle_owner, vehicle_model);
+forward InsertVehicle(vehicle_owner, vehicle_model, vehicle_id);
 forward OnVehicleInserted(vehicleID);
 forward DeleteVehicle(vehicleID);
 forward SaveVehicle(vehicleID);
@@ -469,6 +471,8 @@ forward LoadLosSantosPoliceDepartment();
 forward LoadLosSantosPoliceCars();
 forward LoadLosSantosTaxiJob();
 forward LoadLosSantosSmugglerJob();
+forward LoadLosSantosBankInterior();
+forward LoadAirportHangars();
 
 forward closeLspdCellRoomDoor();
 forward closeLspdCell1();
@@ -479,6 +483,7 @@ forward closeLspdDoor2();
 forward closeLspdWindow();
 forward closeLspdGarage();
 forward closeLspdGarageDoor();
+forward closeVaultDoor();
 // ====================================================================================================== Variables
 new MySQL:mysql;
 
@@ -676,6 +681,7 @@ new Caller[MAX_PLAYERS];
 new CalledPlayer[MAX_PLAYERS];
 new InCall[MAX_PLAYERS];
 new AdvertisementTime[MAX_PLAYERS];
+new HaveMoneyBag[MAX_PLAYERS];
 
 // Vehicle
 new VehicleEngine[MAX_VEHICLES];
@@ -711,7 +717,7 @@ new OwnedVehicles[sizeof(VehicleInfo)];
 new LSPoliceCars[13];
 
 new Text3D:SaleVehicleLabels[MAX_VEHICLES]; // Labels for sale vehicles
-new Text3D:HouseLabelArray[sizeof(HouseInfo)]; // Labels for houses
+new Text3D:HousesLabels[sizeof(HouseInfo)]; // Labels for houses
 new Text3D:BusinessLabels[sizeof(HouseInfo)]; // Labels for business
 
 // Doors, gates, windows etc..
@@ -734,8 +740,16 @@ new lspdGarage;
 new lspdGarageOpened;
 new lspdGarageDoor;
 new lspdGarageDoorOpened;
-new InLSPDPoliceHQ[MAX_PLAYERS];
+new parkingGate1;
+new parkingGate1Opened;
+new parkingGate2;
+new parkingGate2Opened;
 
+new InLSPDHQ[MAX_PLAYERS];
+// BANK
+new vaultdoor;
+new vaultDoorOpened;
+new moneybag[6];
 // ====================================================================================================== Functions (Public & Stock)
 // Money AntiCheat
 stock SafeGivePlayerMoney(playerid, money)
@@ -789,8 +803,8 @@ stock GetPlayerGender(playerid)
 	
     switch(PlayerInfo[playerid][Gender])
     {
-        case 0: gender = "Musko";
-        case 1: gender = "Zensko";
+        case 0: gender = "Male";
+        case 1: gender = "Female";
 		default: gender = "/";
     }
 	
@@ -803,12 +817,12 @@ stock GetPlayerCountry(playerid)
 	
     switch(PlayerInfo[playerid][Country])
     {
-        case 0: country = "Srbija";
+        case 0: country = "Serbia";
         case 1: country = "Crna Gora";
-        case 2: country = "Bosna i Hercegovina";
-        case 3: country = "Makedonija";
-        case 4: country = "Hrvatska";
-        case 5: country = "Ostalo";
+        case 2: country = "Bosnia and Herzegovina";
+        case 3: country = "Macedonia";
+        case 4: country = "Croatia";
+        case 5: country = "Rest of World";
 		default: country = "/";
     }
 	
@@ -835,8 +849,8 @@ stock GetVehicleRegistration(vehicleID)
 	new registration[4];
 	switch(VehicleInfo[vehicleID][Registration])
 	{
-	    case 1: registration = "Da";
-	    case 0: registration = "Ne";
+	    case 1: registration = "Yes";
+	    case 0: registration = "No";
 	}
 	return registration;
 }
@@ -958,14 +972,14 @@ public OnPlayerDataChecked(playerid)
 		player_country = GetPlayerCountry(playerid);
 		player_city = GetPlayerCity(playerid);
 		
-		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Dobrodosli, Vas nalog je pronadjen. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", playerName, player_sex, player_age, player_country, player_city);
-		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");
+		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Welcome, your account is found. \n"TEXT_COLOR_RED"Full_Name: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Gender: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Age: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Country: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"City: "TEXT_COLOR_WHITE"%s \nEnter your password to login.", playerName, player_sex, player_age, player_country, player_city);
+		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Continue", "Cancel");
 	}
 	// Otherwise, player is not registered, show him dialog for registration
 	else
 	{
-		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Dobrodosli, Vas nalog nije pronadjen. \nUnesite zeljenu lozinku da se registrujete.");
-		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Registracija", message, "Dalje", "Izlaz");
+		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Welcome, your account is not found. \nEnter password to register.");
+		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Registration", message, "Continue", "Cancel");
 	}
 	
 	return 1;
@@ -1157,7 +1171,7 @@ public OnPasswordHashed(playerid)
 												password_digest = '%e'", playername, PlayerInfo[playerid][Password]);
 	mysql_tquery(mysql, query, "OnPlayerRegistered", "i", playerid);
 	
-	ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Pol", ""TEXT_COLOR_WHITE"Musko\nZensko", "U redu", "Izadji");
+	ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Gender", ""TEXT_COLOR_WHITE"Male\nFemale", "Continue", "Cancel");
 }
 
 public OnPasswordChecked(playerid)
@@ -1172,23 +1186,23 @@ public OnPasswordChecked(playerid)
 		// If player didnt pick Gender, show him dialog
 		if(PlayerInfo[playerid][Gender] == 9999)
 		{
-			ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Pol", ""TEXT_COLOR_WHITE"Musko\nZensko", "U redu", "Izadji");
+			ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Gender", ""TEXT_COLOR_WHITE"Male\nFemale", "Continue", "Cancel");
 		}
 		// If player didnt pick Age, show him dialog
 		else if(PlayerInfo[playerid][Age] == 9999)
 		{
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE"Unesite koliko imate godina");
-			ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", message, "U redu", "Izadji");
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE"Enter how old are You");
+			ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration - Age", message, "Continue", "Cancel");
 		}
 		// If player didnt pick Country, show him dialog
 		else if(PlayerInfo[playerid][Country] == 9999)
 		{
-			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Drzava", ""TEXT_COLOR_WHITE"Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
+			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Country", ""TEXT_COLOR_WHITE"Serbia\nMontenegro\nBosnia and Herzegovina\nCroatia\nMacedonia\nRest of World", "Continue", "Cancel");
 		}
 		// If player didnt picky City, show him dialog
 		else if(PlayerInfo[playerid][City] == 9999)
 		{
-			ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+			ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 		}
 		// Otherwise, player is fully registered, spawn him
 		else 
@@ -1204,8 +1218,8 @@ public OnPasswordChecked(playerid)
 		player_country = GetPlayerCountry(playerid);
 		player_city = GetPlayerCity(playerid);
 		
-		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Lozinka koju ste uneli nije ispravna. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nPokusajte ponovo. \nUnesite Vasu lozinku da se prijavite", playerName, player_sex, player_age, player_country, player_city);
-		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");
+		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Password You entered is incorrect. \n"TEXT_COLOR_RED"Full_Name: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Gender: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Age: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Country: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"City: "TEXT_COLOR_WHITE"%s \nTry again. \nEnter your password to login.", playerName, player_sex, player_age, player_country, player_city);
+		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Continue", "Cancel");
 	}
 }
 
@@ -1275,7 +1289,7 @@ public LoadVehiclesFuel()
 	}
 }
 
-public InsertVehicle(vehicle_owner, vehicle_model) 
+public InsertVehicle(vehicle_owner, vehicle_model, vehicle_id) 
 {
 	new query[512];
 	
@@ -1308,7 +1322,7 @@ public InsertVehicle(vehicle_owner, vehicle_model)
 													vent_left = 0",
 													vehicle_owner,
 													vehicle_model);
-	mysql_tquery(mysql, query);
+	mysql_tquery(mysql, query, "OnVehicleInserted", "i", vehicle_id);
 }
 
 public SaveVehicle(vehicleID)
@@ -1368,7 +1382,7 @@ public SaveVehicle(vehicleID)
 												VehicleInfo[vehicleID][Vent_right],
 												VehicleInfo[vehicleID][Vent_left],
 												VehicleInfo[vehicleID][ID]);
-	mysql_pquery(mysql, query, "OnVehicleInserted", "i", vehicleID);
+	mysql_pquery(mysql, query);
 
 	return 1;
 }
@@ -1931,16 +1945,16 @@ public HouseStopOffer(playerid, target)
 
 public BusinessStopOffer(playerid, target)
 {
-    BusinessSellOffer[playerid] = 9999;
-	BusinessBuyOffer[playerid] = 9999;
- 	BusinessForOffer[playerid] = 9999;
-	BusinessPlayerOffer[playerid] = 9999;
+    BusinessSellOffer[playerid] = 0;
+	BusinessBuyOffer[playerid] = 0;
+ 	BusinessForOffer[playerid] = 0;
+	BusinessPlayerOffer[playerid] = 0;
 	BusinessOfferPrice[playerid] = 0;
 
-	BusinessSellOffer[target] = 9999;
-	BusinessBuyOffer[target] = 9999;
- 	BusinessForOffer[target] = 9999;
-	BusinessPlayerOffer[target] = 9999;
+	BusinessSellOffer[target] = 0;
+	BusinessBuyOffer[target] = 0;
+ 	BusinessForOffer[target] = 0;
+	BusinessPlayerOffer[target] = 0;
 	BusinessOfferPrice[target] = 0;
 }
 
@@ -2028,17 +2042,17 @@ public OnHousesLoaded()
 			if(HouseInfo[GlobalHousesCounter][Owned] == 0)
 			{
 				new message[256];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n Da kupite ovu kucu \n kucajte "TEXT_COLOR_RED"/buyhouse", HouseInfo[GlobalHousesCounter][ID], HouseInfo[GlobalHousesCounter][Price]);
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has no owner !\n "TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d \n To buy this house \n type "TEXT_COLOR_RED"/h buy", HouseInfo[GlobalHousesCounter][ID], HouseInfo[GlobalHousesCounter][Price]);
 				HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1273, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
-				HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
+				HousesLabels[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
 				GlobalHousesCounter++;
 			}
 			else
 			{
 				new message[256];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(GlobalHousesCounter), HouseInfo[GlobalHousesCounter][ID]);
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has owner !\n "TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(GlobalHousesCounter), HouseInfo[GlobalHousesCounter][ID]);
 				HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1272, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
-				HouseLabelArray[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
+				HousesLabels[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
 				GlobalHousesCounter++;
 			}		
 		}
@@ -2100,8 +2114,8 @@ public OnHouseInserted(house_id)
 	if(HouseInfo[house_id][Icon]) DestroyPickup(HouseInfo[house_id][Icon]);
     HouseInfo[house_id][Icon] = CreatePickup(1273, 1, HouseInfo[house_id][EnterX], HouseInfo[house_id][EnterY], HouseInfo[house_id][EnterZ], HouseInfo[house_id][OutsideVirtualWorld]);
 
-	format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_BLUE"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", house_id, HouseInfo[house_id][Price]);
-    HouseLabelArray[house_id] = Create3DTextLabel(message, -1, HouseInfo[house_id][EnterX], HouseInfo[house_id][EnterY], HouseInfo[house_id][EnterZ], 20.0, HouseInfo[house_id][OutsideVirtualWorld]);
+	format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has no owner !\n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"Price"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"To buy this house \n type /h buy", house_id, HouseInfo[house_id][Price]);
+    HousesLabels[house_id] = Create3DTextLabel(message, -1, HouseInfo[house_id][EnterX], HouseInfo[house_id][EnterY], HouseInfo[house_id][EnterZ], 20.0, HouseInfo[house_id][OutsideVirtualWorld]);
 }
 
 public DeleteHouse(house_id) 
@@ -2216,14 +2230,14 @@ public OnBusinessesLoaded()
 			if(BusinessInfo[GlobalBusinessesCounter][Owned] == 0)
 			{
 				new message[256];
-				format(message, sizeof(message), "Ovaj biznis nema vlasnika!\n"TEXT_COLOR_RED"Ime"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_WHITE"Da kupite biznis, kucajte /b buy", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], BusinessInfo[GlobalBusinessesCounter][Price]);
+				format(message, sizeof(message), "This business has no owner!\n"TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_WHITE"To buy this business, kucajttypeypete /b buy", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], BusinessInfo[GlobalBusinessesCounter][Price]);
 				BusinessLabels[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
 				GlobalBusinessesCounter++;
 			}
 			if(BusinessInfo[GlobalBusinessesCounter][Owned] == 1)
 			{
 				new message[512];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Ovaj biznis ima vlasnika!\n "TEXT_COLOR_RED"Ime"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Vlasnik"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Cena ulaza"TEXT_COLOR_WHITE": %d", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], GetBusinessOwnerName(BusinessInfo[GlobalBusinessesCounter][Owner]), BusinessInfo[GlobalBusinessesCounter][EnterFee]);
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE"This business has owner!\n "TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Enter fee"TEXT_COLOR_WHITE": %d", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], GetBusinessOwnerName(BusinessInfo[GlobalBusinessesCounter][Owner]), BusinessInfo[GlobalBusinessesCounter][EnterFee]);
 				BusinessLabels[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
 				GlobalBusinessesCounter++;
 			}	
@@ -2285,9 +2299,10 @@ public OnBusinessInserted(business_id)
     if(BusinessInfo[business_id][Icon]) DestroyPickup(BusinessInfo[business_id][Icon]);
     BusinessInfo[business_id][Icon] = CreatePickup(1274, 1, BusinessInfo[business_id][EnterX], BusinessInfo[business_id][EnterY], BusinessInfo[business_id][EnterZ], BusinessInfo[business_id][OutsideVirtualWorld]);
 
-    format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis vlasnika !\n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/kupibiznis", BusinessInfo[business_id][Price], BusinessInfo[business_id][ID]);
+    format(message, sizeof(message), ""TEXT_COLOR_WHITE" This business has no owner !\n "TEXT_COLOR_BLUE"Price"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n To buy this business \n type "TEXT_COLOR_BLUE"/b buy", BusinessInfo[business_id][Price], BusinessInfo[business_id][ID]);
     BusinessLabels[business_id] = Create3DTextLabel(message, -1, BusinessInfo[business_id][EnterX], BusinessInfo[business_id][EnterY], BusinessInfo[business_id][EnterZ], 20.0, BusinessInfo[business_id][OutsideVirtualWorld]);
 
+	return 1;
 }
 
 public SaveBusiness(business_id)
@@ -2376,11 +2391,11 @@ public AntiRoleplayName(playerid, playerName[])
 	check_name = strfind(playerName, "_", true);
 	if(check_name == -1 ) 
 	{
-		format(str, sizeof(str), "%s je kikovan zbog neprihvatljivog imena", playerName);
+		format(str, sizeof(str), "%s has been kicked for unappreciated name!", playerName);
 		
 		SendClientMessageToAll(COLOR_RED, str);
-		SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vase ime je neprihvatljivo.");
-		SendClientMessage(playerid, COLOR_RED, "Vase ime mora biti u formatu Ime_Prezime. Velika pocetna slova.");
+		SendClientMessage(playerid, COLOR_RED, "[ERROR]: your name is unnapreciated.");
+		SendClientMessage(playerid, COLOR_RED, "your name must be in format Full_Name.");
 		
 		Kick(playerid);
 	}
@@ -2568,10 +2583,10 @@ public StartVehicleEngine(playerid, vehicleID)
 	StartingVehicleEngine[playerid] = 0;
 	TogglePlayerControllable(playerid, 1);
 
-	SendClientMessage(playerid, -1, "Motor vozila pokrenut.");
+	SendClientMessage(playerid, -1, "Vehicle's engine started.");
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	format(str, sizeof(str), "%s pali motor vozila.", playername);
+	format(str, sizeof(str), "%s starting vehicle's engine.", playername);
 	SendRadiusMessage(50.0, playerid, str, -1, -1, -1, -1, -1);
 }
 
@@ -2613,7 +2628,7 @@ public OnPlayerRegistered(playerid)
 {
 	PlayerInfo[playerid][ID] = cache_insert_id();
 	printf("Korisnik se registrovao %d", PlayerInfo[playerid][ID]);
-	SendClientMessage(playerid, -1, "Registrovali ste se na server.");
+	SendClientMessage(playerid, -1, "You have been registered to server.");
 }
 
 public closeLspdCellRoomDoor()
@@ -2684,6 +2699,27 @@ public closeLspdGarageDoor()
 	MoveDynamicObject(lspdGarageDoor, 1582.4000000, -1638.0500000, 15.0000000, 5.0, 0.0000000, 0.0000000, 90.0000000);
 	lspdGarageDoorOpened = 0;
 
+	return 1;
+}
+
+public closeVaultDoor()
+{
+    MoveDynamicObject(vaultdoor, 582.62872, -1267.33948, 983.59998, 0.1, 0.00000, 0.00000, 180.00000);
+	vaultDoorOpened = 0;
+	return 1;
+}
+
+public closeParkingGate1()
+{
+	MoveDynamicObject(parkingGate1, 1627.8000000, -1145.9000000, 23.1000000, 1.0, 0.0000000, 0.0000000, 0.0000000);
+	parkingGate1Opened = 0;
+	return 1;
+}
+
+public closeParkingGate2()
+{
+	MoveDynamicObject(parkingGate2, 1647.6000000, -1145.9000000, 23.1000000, 1.0, 0.0000000, 0.0000000, 180.0000000);
+	parkingGate2Opened = 0;
 	return 1;
 }
 
@@ -2967,8 +3003,8 @@ public LoadLosSantosParking()
 	CreateDynamicObject(19447,1546.4100000,-1001.2000000,24.5000000,0.0000000,0.0000000,335.6982000); //object(cs_detrok13) (9)
 	CreateDynamicObject(8406,1635.9000000,-1146.1000000,28.4000000,0.0000000,0.0000000,0.0000000); //object(carparksign01_lvs) (1)
 	CreateDynamicObject(4641,1637.7000000,-1144.4000000,24.6000000,0.0000000,0.0000000,180.0000000); //object(paypark_lan04) (1)
-	// parking_gate1 = CreateDynamicObject(969,1627.8000000,-1145.9000000,23.1000000,0.0000000,0.0000000,0.0000000); //object(electricgate) (1)
-	// parking_gate2 = CreateDynamicObject(969,1647.6000000,-1145.9000000,23.1000000,0.0000000,0.0000000,180.0000000); //object(electricgate) (2)
+	// parkingGate1 = CreateDynamicObject(969,1627.8000000,-1145.9000000,23.1000000,0.0000000,0.0000000,0.0000000); //object(electricgate) (1)
+	// parkingGate2 = CreateDynamicObject(969,1647.6000000,-1145.9000000,23.1000000,0.0000000,0.0000000,180.0000000); //object(electricgate) (2)
 }
 
 public LoadLosSantosAirport()
@@ -3085,6 +3121,663 @@ public LoadLosSantosPoliceDepartment()
 	lspdGarageDoor = CreateDynamicObject(2930,1582.4000000,-1638.0500000,15.0000000,0.0000000,0.0000000,90.0000000); //object(chinatgate) (1)
 }
 
+public LoadLosSantosCityHallInterior() 
+{
+	CreateDynamicObject(14597, 1481.30005, -1790.00000, 1000.00000, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1998, 1480.77734, -1801.83716, 998.00317, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1671, 1481.66187, -1801.51086, 998.45001, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2002, 1478.89514, -1794.76050, 998.00189, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1703, 1483.65051, -1794.73047, 998.00140, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1703, 1483.65051, -1797.19995, 998.00140, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2165, 1492.10901, -1788.86707, 997.99707, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2165, 1492.10901, -1792.58911, 997.99707, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1671, 1492.97424, -1788.35400, 998.45001, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1671, 1492.97424, -1792.09351, 998.45001, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1703, 1486.85852, -1787.07385, 998.00287, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2002, 1485.01257, -1787.07422, 998.00165, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1742, 1485.68433, -1794.09668, 998.00262, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2167, 1494.88818, -1787.03223, 998.00018, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2167, 1494.88818, -1793.53003, 998.00018, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2162, 1494.90002, -1791.76001, 997.99988, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2161, 1494.89404, -1787.91809, 998.00031, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2200, 1467.87463, -1793.45679, 998.05603, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2200, 1467.87463, -1788.26978, 998.05603, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2165, 1470.40125, -1789.79309, 997.99902, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1671, 1469.63159, -1790.38281, 998.45001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1703, 1475.56055, -1787.05286, 998.00189, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1703, 1473.07947, -1787.05286, 998.00189, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1703, 1477.56091, -1793.39050, 998.00189, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1703, 1475.04028, -1793.39050, 998.00189, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2161, 1479.24011, -1803.14368, 998.00122, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2165, 1469.59387, -1784.65503, 997.99982, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2165, 1469.59387, -1779.11365, 997.99982, 0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1671, 1468.87854, -1785.19849, 998.50000, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1671, 1468.87854, -1779.66064, 998.50000, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2164, 1476.56250, -1778.75659, 998.00177, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2191, 1475.13440, -1779.22156, 998.00116, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2191, 1473.79224, -1779.22156, 998.00122, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1775, 1477.22473, -1785.76746, 999.09998, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2002, 1476.31274, -1785.66138, 998.00262, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1703, 1475.58594, -1785.65405, 998.00092, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1998, 1493.44971, -1780.25012, 998.11108, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1671, 1494.35266, -1779.92029, 998.50000, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1671, 1492.37451, -1780.01855, 998.50000, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2162, 1494.41821, -1786.14209, 998.00098, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1703, 1487.00610, -1785.65125, 998.00311, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1703, 1489.51160, -1785.65125, 998.00311, 0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2002, 1485.00830, -1779.26624, 998.00177, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1775, 1487.18140, -1779.13745, 999.09998, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2811, 1488.09302, -1779.14722, 998.00085, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2249, 1493.27954, -1779.03833, 999.59998, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(644, 1490.55432, -1785.28406, 998.32166, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1494.98999, -1782.94543, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1494.98999, -1792.52661, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1489.28638, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1498.92004, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1489.28638, -1786.24402, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1498.92004, -1786.24402, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1484.26904, -1773.57483, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1484.26904, -1799.01794, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1479.43420, -1776.80005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1478.32483, -1773.57483, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1478.32483, -1799.01794, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1479.43420, -1803.21997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1473.27515, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1463.65283, -1778.68005, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1473.27002, -1786.23999, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1463.65283, -1786.23999, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1473.27515, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1463.65283, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1473.27515, -1794.00000, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1463.65283, -1794.00000, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1489.28638, -1794.04004, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1489.28638, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, -1794.04004, 999.70001, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1498.92004, -1786.46997, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1498.92004, -1794.04004, 999.70001, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19446, 1467.61328, -1791.36206, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19446, 1467.61328, -1781.35571, 999.70001, 0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19378, 1483.62744, -1781.74316, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1494.11633, -1781.74341, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1472.89136, -1781.74341, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1483.62744, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1494.11633, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1472.89136, -1791.37097, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19378, 1483.62744, -1800.98755, 997.92999, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1483.62744, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1494.11633, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1483.62939, -1800.98755, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1494.11633, -1791.37097, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1473.11157, -1791.37097, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1473.11157, -1781.74341, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19380, 1483.62744, -1791.35107, 1001.45001, 0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(2946, 1484.46436, -1776.86133, 998.01440, 0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2946, 1478.12231, -1776.86133, 998.01440, 0.00000, 0.00000, -90.00000);
+}
+
+public LoadLosSantosCityHallExterior() 
+{
+	// LEFT WINDOWS
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1492.21497, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	// MIDDLE-LEFT WINDOWS
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1486.63000, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	// MIDDLE-RIGHT WINDOWS
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1475.68994, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	// RIGHT WINDOWS
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 16.03740,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 16.03740,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1470.16699, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	// MIDDLE WINDOWS
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 25.80000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 25.80000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 22.56000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 22.56000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 19.30000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1649, 1481.18542, -1751.33997, 19.30000,   0.00000, 0.00000, 180.00000);
+	// WINDOWS ABOVE ENTRY
+	CreateDynamicObject(10932, 1481.17737, -1787.80005, 27.42870,   0.00000, 0.00000, 0.00000);
+	// PARKING LINES
+	CreateDynamicObject(11548, 1551.69885, -1792.77197, 12.55990,   0.00000, -0.10000, 60.00000);
+	CreateDynamicObject(11548, 1406.88232, -1787.57886, 12.55990,   0.00000, 0.08000, 60.00000);
+	// LOGO
+	CreateDynamicObject(18750, 1482.29211, -1771.79895, 131.21419,   90.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1214, 1493.28955, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.28955, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.29053, -1774.95178, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.29053, -1776.14294, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.29053, -1777.30298, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.28955, -1777.26001, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1774.85315, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1776.05005, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1777.25000, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1777.26001, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.60620, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1774.92468, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1776.11060, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1777.31372, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1774.86426, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1776.06995, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1484.02209, -1777.24023, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1774.82117, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1776.00806, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1777.17651, 115.97470,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1774.92468, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1776.11060, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1477.03503, -1777.31372, 120.00000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.66516, -1774.77393, 115.90000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.66516, -1775.96619, 115.90000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.66516, -1777.13037, 115.90000,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1776.36792, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1777.54834, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1778.74841, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1779.94922, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1781.15002, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.48608, -1775.20764, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1775.01550, 138.84155,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1776.18774, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1777.36816, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1778.52832, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1779.70862, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1780.86890, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1775.31226, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1776.46936, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1777.62671, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1778.78833, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1779.98975, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1474.86658, -1781.17114, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1775.21851, 138.84155,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1776.41663, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1777.60364, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1778.77991, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1779.96692, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1781.16724, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1775.21851, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1776.41663, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1777.60364, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1778.77991, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1779.96692, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1480.75903, -1781.16724, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1485.93225, -1775.38025, 138.84155,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1485.93225, -1776.56311, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1777.73938, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1778.90308, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1780.07874, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1781.26123, 138.84160,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1775.38025, 135.41119,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1485.93225, -1776.56311, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1777.73938, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1778.90308, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1780.07874, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1485.93225, -1781.26123, 135.41119,   -90.00000, 0.00000, 0.24000);
+	CreateDynamicObject(1214, 1490.70508, -1775.22449, 138.84155,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1776.38635, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1777.54382, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1778.72144, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1779.90271, 138.84160,   -90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.70508, -1781.08777, 138.84160,   -90.00000, 0.00000, 0.00000);
+	// LIGHTS IN FRONT OF ENTRY
+	CreateDynamicObject(19121, 1478.50110, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1473.00256, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1467.77417, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1483.86072, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1489.40112, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1494.56628, -1750.69727, 14.94230,   0.00000, 0.00000, 0.00000);
+	// LIGHTS INSIDE OF ENTRY
+	CreateDynamicObject(19121, 1483.87488, -1758.85999, 17.13857,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1478.43518, -1758.85999, 17.13860,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1484.76440, -1772.40796, 18.34751,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19121, 1477.38220, -1772.40796, 18.34750,   0.00000, 0.00000, 0.00000);
+	// NO-VEHICLE RIGHT
+	CreateDynamicObject(1214, 1458.51599, -1750.06982, 12.33903,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1748.78967, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1747.52625, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1746.28516, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1745.02490, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1743.76257, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1458.51599, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	// NO-VEHICLE LEFT
+	CreateDynamicObject(1214, 1503.89844, -1750.06982, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1748.78967, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1747.52625, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1746.28516, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1745.02490, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1743.76257, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1503.89844, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	// NO-VEHICLE MIDDLE
+	CreateDynamicObject(1214, 1460.15991, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1461.81995, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1463.44409, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1465.14746, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1466.81104, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1468.45654, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1470.13684, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1471.79626, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1473.46277, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1475.12915, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1476.83020, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1478.51160, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1502.21289, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1500.53125, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1498.86548, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1497.18188, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1495.51855, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1493.87695, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1492.15625, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1490.53271, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1488.85718, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1487.19385, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1485.48303, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1214, 1483.86035, -1742.52209, 12.33900,   0.00000, 0.00000, 0.00000);
+}
+
+public LoadLosSantosBankInterior()
+{
+	CreateDynamicObject(14602, 590.75989, -1273.02539, 1000.00000,  0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 567.90002, -1274.28015, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 568.73108, -1288.67261, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 567.90002, -1264.69592, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 567.90002, -1255.06689, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 567.91602, -1283.87854, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 567.90002, -1274.28015, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 567.90002, -1264.69592, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 567.90002, -1255.06689, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 567.91272, -1283.88184, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 578.32037, -1288.68005, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(14576, 582.62543, -1274.90002, 990.09882,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 578.33893, -1288.67261, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 568.71912, -1288.69604, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 583.00000, -1284.91003, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 583.00000, -1284.82495, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 572.80353, -1257.40002, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 572.80353, -1257.40002, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 582.40002, -1257.40002, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 582.40002, -1257.40002, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 592.02008, -1257.40002, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 592.02008, -1257.40002, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 591.71002, -1263.96997, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 591.71002, -1263.93994, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 591.71002, -1254.33997, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 591.71002, -1254.31995, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19388, 586.26398, -1280.09998, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 583.85925, -1280.09448, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 587.72699, -1280.09448, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 592.59943, -1280.09448, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 591.71503, -1269.38000, 999.48999,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 591.71503, -1270.97998, 999.48999,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 591.71503, -1272.53589, 999.48999,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 591.71503, -1274.09998, 999.48999,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 591.71503, -1275.69995, 999.48999,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 591.71503, -1277.30005, 999.48999,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 591.71002, -1281.90002, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 596.43903, -1277.00000, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 591.71002, -1281.72803, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 606.05640, -1277.00000, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 596.43799, -1268.69995, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 606.04102, -1268.69995, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19450, 604.78394, -1272.72852, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 587.54297, -1276.68237, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 588.36151, -1275.96997, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 589.23462, -1276.68237, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 588.36151, -1277.39600, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 587.54303, -1276.68237, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 588.36151, -1275.96997, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 589.23462, -1276.68237, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 588.36151, -1277.39600, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 587.54303, -1269.33325, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 589.23462, -1269.33325, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 588.36151, -1270.04565, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 588.36151, -1268.62000, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 588.36151, -1270.04565, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 587.54303, -1269.33325, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 588.36151, -1268.62000, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 589.23462, -1269.33325, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.08521, -1276.68237, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.79999, -1277.39600, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 579.51923, -1276.68237, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.79999, -1275.96997, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 579.51923, -1276.68237, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.79999, -1275.96997, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 578.08521, -1276.68237, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.79999, -1277.39600, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 578.08521, -1269.34021, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.80499, -1268.62866, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 579.51923, -1269.50000, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.79999, -1270.21301, 996.39001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 579.51923, -1269.50000, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.79999, -1270.21301, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19431, 578.08521, -1269.34021, 999.89001,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19431, 578.80499, -1268.62866, 999.89001,   180.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19379, 599.50000, -1272.68018, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 589.00000, -1272.68018, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 578.50000, -1272.68018, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 568.00000, -1272.68018, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 589.00000, -1263.09998, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 578.50000, -1263.09998, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 568.00000, -1263.09998, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 578.50000, -1253.47998, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 589.00000, -1253.47998, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 568.00000, -1253.47998, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 568.00000, -1282.27966, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 578.50000, -1282.27966, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 589.00000, -1282.27271, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19379, 568.00000, -1291.90002, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19443, 575.00043, -1287.89001, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19443, 578.48859, -1287.89001, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19443, 581.97998, -1287.89001, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19443, 585.47937, -1287.89001, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19443, 588.95898, -1287.89001, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19443, 585.47937, -1288.92004, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19443, 588.95898, -1288.92004, 994.56000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19450, 585.40997, -1284.90002, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19450, 587.08130, -1284.90002, 996.39001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19377, 596.88525, -1273.49854, 997.79999,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 607.38000, -1273.49854, 997.79999,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 586.33722, -1275.30005, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 586.33722, -1265.69299, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 586.33722, -1256.10620, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 575.85480, -1265.69299, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 575.85480, -1275.30005, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 575.85480, -1256.10620, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 565.40002, -1265.69299, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 565.40002, -1275.30005, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 565.40002, -1256.10620, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 575.85480, -1284.92102, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 565.40002, -1284.92102, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19377, 586.33722, -1284.92102, 1000.00000,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19435, 586.29498, -1280.28003, 998.89001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19435, 586.29498, -1280.43005, 998.89001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19435, 586.22693, -1288.90002, 997.78003,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19435, 586.22693, -1287.30005, 997.78003,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19435, 586.22491, -1285.69995, 997.78003,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19435, 586.22693, -1284.09998, 997.78003,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19435, 586.22693, -1282.50000, 997.78003,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19435, 586.22693, -1281.19995, 997.78003,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(18756, 585.89038, -1287.67700, 992.20001,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(18756, 590.29938, -1290.39490, 992.20001,   0.00000, 0.00000, 0.00000);
+	/*CreateDynamicObject(18643, 567.52087, -1271.65002, 984.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 600.00000, -1271.65002, 984.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 567.52087, -1271.65002, 983.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 600.00000, -1271.65002, 983.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 567.52087, -1276.69812, 984.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 567.52087, -1281.97131, 984.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 567.52087, -1281.97131, 983.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 567.52087, -1276.69812, 983.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 600.00000, -1276.69812, 984.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 600.00000, -1276.69812, 983.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 600.00000, -1281.97131, 983.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 600.00000, -1281.97131, 984.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 567.52087, -1271.65002, 985.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 567.52087, -1271.65002, 982.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 567.52087, -1276.69812, 982.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 567.52087, -1276.69812, 985.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 567.52087, -1281.97131, 982.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 567.52087, -1281.97131, 985.50000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18643, 600.00000, -1271.65002, 985.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 600.00000, -1271.65002, 982.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 600.00000, -1276.69812, 982.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 600.00000, -1276.69812, 985.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 600.00000, -1281.97131, 982.50000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(18643, 600.00000, -1281.97131, 985.50000,   0.00000, 0.00000, 180.00000);*/
+	vaultdoor = CreateDynamicObject(2634, 582.62872, -1267.33948, 983.59998,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1649, 571.61932, -1286.40149, 998.29999,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1649, 571.61932, -1282.01953, 998.29999,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1649, 571.61932, -1277.67480, 998.29999,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1649, 571.61932, -1273.31445, 998.29999,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1649, 571.61932, -1268.91162, 998.29999,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1649, 571.61932, -1264.63184, 998.29999,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1649, 571.61932, -1260.25183, 998.29999,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1649, 571.61932, -1255.89124, 998.29999,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2190, 574.97241, -1273.41125, 995.35748,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1715, 573.70074, -1273.18201, 994.64832,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2190, 571.62946, -1287.77869, 995.54999,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1715, 570.23834, -1287.59412, 994.64832,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2190, 571.62952, -1280.77869, 995.54999,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1715, 570.23828, -1280.55005, 994.64832,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2190, 571.62952, -1258.59998, 995.54999,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1715, 570.08502, -1258.40002, 994.64832,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2190, 571.62952, -1265.59998, 995.54999,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1715, 570.08502, -1265.40002, 994.64832,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2946, 604.74738, -1277.22974, 994.59998,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2946, 604.74738, -1268.50085, 994.59998,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1829, 584.60461, -1252.07397, 982.40002,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1829, 585.40997, -1252.07397, 982.40002,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1829, 583.78491, -1252.07397, 982.40002,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1829, 579.81299, -1252.07397, 982.40002,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1829, 580.63507, -1252.07397, 982.40002,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1829, 581.45728, -1252.07397, 982.40002,   0.00000, 0.00000, 0.00000);
+	moneybag[0] = CreateDynamicObject(1550, 585.76355, -1257.17932, 982.29999,   0.00000, 0.00000, 0.00000);
+	moneybag[1] = CreateDynamicObject(1550, 585.76349, -1255.18335, 982.29999,   0.00000, 0.00000, 0.00000);
+	moneybag[2] = CreateDynamicObject(1550, 585.76349, -1256.15796, 982.29999,   0.00000, 0.00000, 0.00000);
+	moneybag[3] = CreateDynamicObject(1550, 579.71600, -1257.17932, 982.29999,   0.00000, 0.00000, 0.00000);
+	moneybag[4] = CreateDynamicObject(1550, 579.71600, -1255.18335, 982.29999,   0.00000, 0.00000, 0.00000);
+	moneybag[5] = CreateDynamicObject(1550, 579.71600, -1256.15796, 982.29999,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1212, 581.83557, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.75000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.65997, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.57001, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.47998, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.39001, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.29999, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.21002, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.12000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.03003, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.94000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.84998, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.76001, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.66998, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.58002, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.48999, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.40002, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.31000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.21997, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.13000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.03998, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.95001, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.85999, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.77002, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.67999, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.59003, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.50000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.83557, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.75000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.65997, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.57001, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.47998, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.39001, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.29999, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.21002, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.12000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.03003, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.94000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.84998, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.76001, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.66998, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.58002, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.48999, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.40002, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.31000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.21997, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.13000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.03998, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.95001, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.85999, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.77002, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.67999, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.59003, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.50000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.83557, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.75000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.65997, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.57001, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.47998, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.39001, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.29999, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.21002, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.12000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 581.03003, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.94000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.84998, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.76001, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.66998, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.58002, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.48999, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.40002, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.31000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.21997, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.13000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 580.03998, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.95001, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.85999, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.77002, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.67999, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.59003, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 579.50000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.44000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.53003, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.62000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.71002, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.79999, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.89001, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.97998, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.07001, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.15997, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.25000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.34003, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.42999, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.52002, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.60999, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.70001, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.78998, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.88000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.96997, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.06000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.15002, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.23999, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.33002, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.41998, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.51001, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.59998, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.69000, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.78003, -1251.88977, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.44000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.53003, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.62000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.71002, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.79999, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.89001, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.97998, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.07001, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.15997, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.25000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.34003, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.42999, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.52002, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.60999, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.70001, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.78998, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.88000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.96997, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.06000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.15002, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.23999, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.33002, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.41998, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.51001, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.59998, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.69000, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.78003, -1251.67004, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.44000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.53003, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.62000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.71002, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.79999, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.89001, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 583.97998, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.07001, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.15997, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.25000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.34003, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.42999, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.52002, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.60999, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.70001, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.78998, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.88000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 584.96997, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.06000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.15002, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.23999, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.33002, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.41998, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.51001, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.59998, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.69000, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1212, 585.78003, -1251.44995, 982.87262,   0.00000, 0.00000, 90.00000);
+}
+
+public LoadLosSantosTaxiJob()
+{
+ 	CreateDynamicObject(983,1102.6000000,-1760.5000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (3)
+	CreateDynamicObject(983,1102.6000000,-1754.1000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (4)
+	CreateDynamicObject(983,1102.6000000,-1766.9000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (6)
+	CreateDynamicObject(983,1102.6000000,-1771.7000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (7)
+	CreateDynamicObject(983,1102.6000000,-1774.9000000,13.2000000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (8)
+	CreateDynamicObject(9131,1102.5000000,-1777.8000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (3)
+	CreateDynamicObject(983,1099.0000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (10)
+	CreateDynamicObject(983,1092.6000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (11)
+	CreateDynamicObject(983,1062.2000000,-1777.9000000,13.2500000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (12)
+	CreateDynamicObject(983,1079.8000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (13)
+	CreateDynamicObject(984,1070.2000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit2) (4)
+	CreateDynamicObject(983,1086.2000000,-1777.9000000,13.2000000,0.0000000,0.0000000,90.0000000); //object(fenceshit3) (16)
+	CreateDynamicObject(9131,1058.6700000,-1777.8000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (4)
+	CreateDynamicObject(982,1058.6000000,-1765.3000000,13.3000000,0.0000000,0.0000000,0.0000000); //object(fenceshit) (2)
+	CreateDynamicObject(984,1058.6000000,-1746.1000000,13.3000000,0.0000000,0.0000000,0.0000000); //object(fenceshit2) (5)
+	CreateDynamicObject(983,1058.6000000,-1738.1000000,13.3400000,0.0000000,0.0000000,0.0000000); //object(fenceshit3) (17)
+	CreateDynamicObject(9131,1058.6000000,-1735.1000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (5)
+	CreateDynamicObject(9131,1102.5000000,-1751.2399900,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (6)
+	CreateDynamicObject(982,1071.7200000,-1735.1000000,13.4000000,0.0000000,0.0000000,90.0000000); //object(fenceshit) (4)
+	CreateDynamicObject(982,1089.3300000,-1735.1000000,13.4000000,0.0000000,0.0000000,90.0000000); //object(fenceshit) (5)
+	CreateDynamicObject(9131,1102.4500000,-1735.1000000,13.7000000,0.0000000,0.0000000,0.0000000); //object(shbbyhswall13_lvs) (7)
+	CreateDynamicObject(1215,1102.5000000,-1751.3000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (1)
+	CreateDynamicObject(1215,1102.5000000,-1777.8000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (2)
+	CreateDynamicObject(1215,1058.6000000,-1777.8000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (3)
+	CreateDynamicObject(1215,1058.6000000,-1735.1000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (4)
+	CreateDynamicObject(1215,1102.4000000,-1735.1000000,15.4000000,0.0000000,0.0000000,0.0000000); //object(bollardlight) (5)
+}
+
+public LoadAirportHangars()
+{
+	CreateDynamicObject(16098,307.8999900,2466.3999000,20.5000000,0.0000000,0.0000000,270.0000000); //object(des_by_hangar_) (2)
+	CreateDynamicObject(16098,227.3999900,2466.3999000,20.5000000,0.0000000,0.0000000,270.0000000); //object(des_by_hangar_) (4)
+}
+
 public OnGameModeInit()
 {
 	AddPlayerClass(0, 1642.2903, -2333.3423, 13.5469, 360.0, 0, 0, 0, 0, 0, 0);
@@ -3111,12 +3804,25 @@ public OnGameModeInit()
 	
 	if(mysql_errno(mysql) != 0 || mysql == MYSQL_INVALID_HANDLE)
 	{
-		print("Connection has failed");
+		print("Connection has failed!");
 		SendRconCommand("exit");
 		return 1;
 	}
 
-	
+	lspdCellRoomDoorOpened = 0;
+	lspdCell1Opened = 0;
+	lspdCell2Opened = 0;
+	lspdCell3Opened = 0;
+	lspdDoor1Opened = 0;
+	lspdDoor2Opened = 0;
+	lspdWindowOpened = 0;
+	lspdGarageOpened = 0;
+	lspdGarageDoorOpened = 0;
+	vaultDoorOpened = 0;
+	parkingGate1Opened = 0;
+	parkingGate2Opened = 0;
+
+
     //TIME AND WEATHER ON SERVER START
     new hours, minutes, seconds;
 	gettime(hours, minutes, seconds);
@@ -3142,6 +3848,21 @@ public OnGameModeInit()
 		default: SetWorldTime(12);
 	}
 
+	LoadLosSantosParking();
+	LoadLosSantosAirport();
+	LoadRentVehicles();
+	LoadSaleVehicles();	
+	LoadLosSantosPoliceDepartment();
+	LoadLosSantosBankInterior();
+	LoadLosSantosCityHallExterior();
+	LoadLosSantosCityHallInterior();
+	LoadAirportHangars();
+	LoadVehicles(); 
+	LoadHouses();
+	LoadBusinesses();
+
+	SetTimer("CheckVehicleFuel", 60000, true);
+	
 	// Textdraws for vehicles on sale
 	for(new i = 0; i < MAX_VEHICLES; i++)
 	{
@@ -3152,39 +3873,13 @@ public OnGameModeInit()
 			GetVehiclePos(i, X, Y, Z);
 			GetVehicleName(i, model_name, sizeof(model_name));
 			
-	        format(message, sizeof(message), "Vozilo na prodaju! \n "TEXT_COLOR_RED"Model"TEXT_COLOR_WHITE": %s ( %d ) \n "TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d$ \n Da kupite ovo vozilo \n udjite u njega i kucajte \n "TEXT_COLOR_RED"/v buy", model_name, GetVehicleModel(i), GetVehiclePrice(i));
+	        format(message, sizeof(message), "Vehicle on sale! \n "TEXT_COLOR_RED"Model"TEXT_COLOR_WHITE": %s ( %d ) \n "TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d$ \n To buy this vehicle \n enter in and type \n "TEXT_COLOR_RED"/v buy", model_name, GetVehicleModel(i), GetVehiclePrice(i));
 			
 			SaleVehicleLabels[i] = Create3DTextLabel(message, -1, X, Y, Z, 10, 0, 0);
 	        Attach3DTextLabelToVehicle(SaleVehicleLabels[i], i, 0, 0, 0);
 		}
 	}
 
-	// Load great parking
-	LoadLosSantosParking();
-	
-	// Load Los Santos airport
-	LoadLosSantosAirport();
-	
-	// Load rent vehicles
-	LoadRentVehicles();
-	
-	// Load sale vehicles
-	LoadSaleVehicles();
-	
-	// Load Los Santos police department
-	LoadLosSantosPoliceDepartment();
-
-	// Load owned vehicles
-	LoadVehicles(); 
-	
-	// Load all houses
-	LoadHouses();
-	
-	// Load all businesses
-	LoadBusinesses();
-	
-	SetTimer("CheckVehicleFuel", 60000, true);
-	
 	return 1;
 }
 
@@ -3226,6 +3921,7 @@ public OnPlayerConnect(playerid)
 	RefillLitre[playerid] = 0;
 	HasBelt[playerid] = 0;
 	HasHelmet[playerid] = 0;
+	HaveMoneyBag[playerid] = 0;
 	
 	VehicleSellOffer[playerid] = 0;
  	VehicleBuyOffer[playerid] = 0;
@@ -3247,7 +3943,6 @@ public OnPlayerConnect(playerid)
 	BusinessOfferPrice[playerid] = 0;
 	InBusiness[playerid] = 0;
 
-
 	iCall[playerid] = 0;
 	Caller[playerid] = 0;
 	CalledPlayer[playerid] = 0;
@@ -3263,7 +3958,13 @@ public OnPlayerConnect(playerid)
 	TextDrawFont(FuelTD[playerid], 1);
 	TextDrawSetProportional(FuelTD[playerid], 1);
 
-	InLSPDPoliceHQ[playerid] = 0;
+	InLSPDHQ[playerid] = 0;
+
+	//------------------------------------------------------------------------ > CITY HALL
+	RemoveBuildingForPlayer(playerid, 1527, 1448.2344, -1755.8984, 14.5234, 0.25);
+	RemoveBuildingForPlayer(playerid, 4003, 1481.0781, -1747.0313, 33.5234, 0.25);
+	//------------------------------------------------------------------------ > LSPD CELLS
+	RemoveBuildingForPlayer(playerid, 14843, 266.3516, 81.1953, 1001.2813, 0.25);
 	
 	return 1;
 }
@@ -3359,9 +4060,9 @@ public OnPlayerText(playerid, text[])
 	/*if(DetectiveDuty[playerid] != 9999) playerName = "Detektiv";
 	else GetPlayerNameEx(playerid, playerName, MAX_PLAYER_NAME);*/
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	if(PlayerInfo[playerid][Muted] != 9999)
+	if(PlayerInfo[playerid][Muted] != 0)
 	{
-	    format(str, sizeof(str), "Mutirani ste, ne mozete da pisete! Sacekajte jos %d sekundi", PlayerInfo[playerid][MutedTime]);
+	    format(str, sizeof(str), "You are muted, you cant type. Wait %d seconds before try again.", PlayerInfo[playerid][MutedTime]);
 		SendClientMessage(playerid, COLOR_RED, str);
 	}
 	else
@@ -3380,7 +4081,7 @@ public OnPlayerText(playerid, text[])
 			{
 			    if(PlayerInfo[i][Admin] != 9999)
 			    {
-			        format(str, sizeof(str), "%s %s adminima: %s", prefix, playerName, text[1]);
+			        format(str, sizeof(str), "%s %s to admins: %s", prefix, playerName, text[1]);
 			        SendClientMessage(i, COLOR_WHITE, str);
 				}
 			}
@@ -3435,17 +4136,17 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 	
 	if(IsAOwnedVehicle(vehicleid))
 	{
-	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: %s", vehicle_name, vehicleid, vehicle_owner);
+	    format(str, sizeof(str), "You are entering in %s (%d). Owner: %s", vehicle_name, vehicleid, vehicle_owner);
 	    SendClientMessage(playerid, -1, str);
 		
 	    if(VehicleInfo[vehicleid][Locked] == 1)
 		{
-			format(str, sizeof(str), "Vozilo: zakljucano");
+			format(str, sizeof(str), "Vehicle: locked");
 			SetVehicleParamsForPlayer(vehicleid, playerid, 0, 1);
 		}
 	    else
 		{
-			format(str, sizeof(str), "Vozilo: otkljucano");
+			format(str, sizeof(str), "Vehicle: unlocked");
 			SetVehicleParamsForPlayer(vehicleid, playerid, 0, 0);
 		}
 	    
@@ -3453,7 +4154,7 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 	}
 	else
 	{
-	    format(str, sizeof(str), "Ulazite u %s (%d). Vlasnik: Drzava", vehicle_name, vehicleid);
+	    format(str, sizeof(str), "You are entering in %s (%d). Owner: Country", vehicle_name, vehicleid);
 	    SendClientMessage(playerid, -1, str);
 	}
 	return 1;
@@ -3471,8 +4172,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		new newcar, str[128];
 		newcar = GetPlayerVehicleID(playerid);
 
-		if(IsABike(newcar)) SendClientMessage(playerid, -1, "Ne zaboravite da stavite kacigu, da se ne bi povredili. /kaciga");
-	    else SendClientMessage(playerid, -1, "Ne zaboravite da vezete pojas. /pojas");
+		if(IsABike(newcar)) SendClientMessage(playerid, -1, "Don't forget to put helmet on. /helmet");
+	    else SendClientMessage(playerid, -1, "Don't forget to put seat belt on. /belt");
 		
 		if(IsARentVehicle(newcar))
    		{
@@ -3483,7 +4184,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
    			else return 1;
   		}
 		
-		format(str, sizeof(str), "Gorivo: %i", VehicleFuel[newcar]);
+		format(str, sizeof(str), "Fuel: %i", VehicleFuel[newcar]);
 		TextDrawSetString(FuelTD[playerid], str);
 	    TextDrawShowForPlayer(playerid, FuelTD[playerid]);
 	}
@@ -3495,9 +4196,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		if(HasBelt[playerid] == 1)
 		{
 		    HasBelt[playerid] = 0;
-		    format(str, sizeof(str), "Odvezali ste pojas.");
+		    format(str, sizeof(str), "You removed seat belt.");
 		    SendClientMessage(playerid, -1, str);
-		    format(str, sizeof(str), "%s odvezuje svoj pojas.", playername);
+		    format(str, sizeof(str), "%s removes seat belt.", playername);
 		    SendRadiusMessage(10.0, playerid, str, -1, -1, -1, -1, -1);
 		}
 
@@ -3505,9 +4206,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		{
 		    HasHelmet[playerid] = 0;
 		    RemovePlayerAttachedObject(playerid, 1);
-		    format(str, sizeof(str), "Skinuli ste kacigu.");
+		    format(str, sizeof(str), "You removed helmet.");
 		    SendClientMessage(playerid, -1, str);
-		    format(str, sizeof(str), "%s skida kacigu.", playername);
+		    format(str, sizeof(str), "%s removes helmet.", playername);
 		    SendRadiusMessage(10.0, playerid, str, -1, -1, -1, -1, -1);
 		}
 		
@@ -3601,13 +4302,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		    SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
 			SetPlayerPos(playerid, 246.783996, 63.900199, 1003.640625);
 			SetPlayerInterior(playerid, 6);
-			InLSPDPoliceHQ[playerid] = 1;
+			InLSPDHQ[playerid] = 1;
 		}
         else if(IsPlayerInRangeOfPoint(playerid, 2.0, 246.783996, 63.900199, 1003.640625)) // Los Santos PoliceHQ EXIT
 		{
 			SetPlayerPos(playerid, 1553.9333, -1675.6754, 16.1953);
 			SetPlayerInterior(playerid, 0);
-			InLSPDPoliceHQ[playerid] = 0;
+			InLSPDHQ[playerid] = 0;
 		}
 		else 
 		{
@@ -3645,7 +4346,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 			{
 				if(IsPlayerInRangeOfPoint(playerid, 2.0, BusinessInfo[i][EnterX], BusinessInfo[i][EnterY], BusinessInfo[i][EnterZ]))
 				{
-					if(GetPlayerMoney(playerid) < BusinessInfo[i][EnterFee]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da bi usli u biznis!");
+					if(GetPlayerMoney(playerid) < BusinessInfo[i][EnterFee]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money to enter this business!");
 					if(BusinessInfo[i][Locked] == 1) return 1;
 					PlayerInfo[playerid][Money] -= BusinessInfo[i][EnterFee];
 					GivePlayerMoney(playerid, -BusinessInfo[i][EnterFee]);
@@ -3687,21 +4388,47 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		if(VehicleEngine[vehicleID] == 1) return 1;
 
 		GetVehicleHealth(vehicleID, vehicleHealth);
-	    if(vehicleHealth <= 500.0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete upaliti motor vozila. Motor je ostecen!");
-	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec pokusavate da upalite motor vozila!");
+	    if(vehicleHealth <= 500.0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't start vehicle's engine. Engine is damaged!");
+	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Already trying to start vehicle's engine!");
 	    
 		StartingVehicleEngine[playerid] = 1;
 		TogglePlayerControllable(playerid, 0);
 		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicleID);
-	    GameTextForPlayer(playerid, "~w~Pokretanje motora vozila...", 3500, 3);
+	    GameTextForPlayer(playerid, "~w~Starting vehicle's engine...", 3500, 3);
 
 	    GetPlayerName(playerid, playername, sizeof(playername));
-    	format(str, sizeof(str), "%s okrece kljuc i pokusava da upali motor vozila.", playername);
+    	format(str, sizeof(str), "%s turns the key and try to turn vehicle's engine.", playername);
     	SendRadiusMessage(50.0, playerid, str, -1, -1, -1, -1, -1);
 	}
 	else if(newkeys == KEY_CROUCH)
 	{
-		if(IsPlayerInRangeOfPoint(playerid, 5.0, 1589.7000000, -1638.3101000, 14.2700000)) // LSPD
+		if(IsPlayerInRangeOfPoint(playerid, 10.0, 1627.8000000, -1145.9000000, 23.1000000)) // LOS SANTOS PARKING
+		{
+			new id, money, sendername[MAX_PLAYER_NAME], str[128];
+			money = GetPlayerMoney(playerid);
+			GetPlayerName(playerid, sendername, sizeof(sendername));
+			id = 1;
+			MoveDynamicObject(parkingGate1, 1618.8000000, -1145.9000000, 23.1000000, 1.0, 0.0000000, 0.0000000, 0.0000000);
+			parkingGate1Opened = 1;
+			SetTimer("closeParkingGate1", 10000, 0);
+			SendClientMessage(playerid, COLOR_GREEN, "You opened parking's gate.");
+			format(str, sizeof(str), "%s opens parking's gate.", sendername);
+			SendRadiusMessage(15.0, playerid, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 10.0, 1647.6000000, -1145.9000000, 23.1000000)) // LOS SANTOS PARKING
+		{
+		    new money, sendername[MAX_PLAYER_NAME], id, str[128];
+		    money = GetPlayerMoney(playerid);
+			GetPlayerName(playerid, sendername, sizeof(sendername));
+			id = 1;
+			MoveDynamicObject(parkingGate2, 1656.6000000, -1145.9000000, 23.1000000, 1.0, 0.0000000, 0.0000000, 180.0000000);
+			parkingGate2Opened = 1;
+			SetTimer("closeParkingGate2", 10000, 0);
+			SendClientMessage(playerid, COLOR_GREEN, "You opened parking's gate.");
+			format(str, sizeof(str), "%s opens parking's gate.", sendername);
+			SendRadiusMessage(15.0, playerid, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 5.0, 1589.7000000, -1638.3101000, 14.2700000)) // LSPD
 		{
 		    new playerName[MAX_PLAYER_NAME], str[128];
 			GetPlayerName(playerid, playerName, sizeof(playerName));
@@ -3709,8 +4436,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 			if(lspdGarageOpened == 1) return 1;
 			MoveDynamicObject(lspdGarage, 1597.7000000, -1638.3101000, 14.2700000, 5.0, 0.0000000, 0.0000000, 90.0000000);
 			lspdGarageOpened = 1;
-			SendClientMessage(playerid, -1, "Otvorili ste PD garazu, zatvorice se sama za 10 sekundi!");
-			format(str, sizeof(str), "%s otvara garazu LSPDa!", playerName);
+			SendClientMessage(playerid, -1, "You opened LSPD's garage, it will be closed in 10 seconds.");
+			format(str, sizeof(str), "%s opens LSPD's garage.", playerName);
 			SendRadiusMessage(15.0, playerid, str, -1, -1, -1, -1, -1);
 			SetTimer("closeLspdGarage", 10000, 0);
 		}
@@ -3722,8 +4449,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 			if(lspdGarageDoorOpened == 1) return 1;
 			MoveDynamicObject(lspdGarageDoor, 1582.4000000, -1638.0500000, 12.5000000, 5.0, 0.0000000, 0.0000000, 90.0000000);
 			lspdGarageDoorOpened = 1;
-			SendClientMessage(playerid, -1, "Otvorili ste PD garazu, zatvorice se sama za 10 sekundi!");
-			format(str, sizeof(str), "%s otvara garazu LSPDa!", playerName);
+			SendClientMessage(playerid, -1, "You opened LSPD's garage's door, it will be closed in 10 seconds.");
+			format(str, sizeof(str), "%s opens LSPD's garage's door.", playerName);
 			SendRadiusMessage(15.0, playerid, str, -1, -1, -1, -1, -1);
 			SetTimer("closeLspdGarageDoor", 10000, 0);
 		}
@@ -3843,7 +4570,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			
 			if(strlen(inputtext) < 6 || strlen(inputtext) > 20)
 			{
-				ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija", ""TEXT_COLOR_WHITE"Lozinka mora biti izmedju 6 i 20 karaktera. \nMolimo Vas upisite lozinku da se registrujete", "Dalje", "Izlaz");
+				ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration", ""TEXT_COLOR_WHITE"Password must been between 6 and 20 character.. \nPlease, enter password to register.", "Continue", "Cancel");
 				return 1;
 			}
 			
@@ -3868,8 +4595,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);																						
 				mysql_tquery(mysql, query);
 			
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Unesite koliko imate godina");
-				ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", message, "U redu", "Izadji");
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Enter how old are You");
+				ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration - Age", message, "Continue", "Cancel");
 			}
 			else if(listitem == 1)
 			{
@@ -3880,8 +4607,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);
 				mysql_tquery(mysql, query);
 				
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Unesite koliko imate godina");
-				ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", message, "U redu", "Izadji");
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Enter how old are You");
+				ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration - Age", message, "Continue", "Cancel");
 			}
 		}
 		
@@ -3896,18 +4623,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			
 			if(!strlen(inputtext))
 			{
-				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", ""TEXT_COLOR_WHITE"Niste uneli koliko imate godina. \nUnesite koliko imate godina.", "U redu", "Izadji");
+				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration - Age", ""TEXT_COLOR_WHITE"You did not eneter your age. \nEnter how old are You.", "Continue", "Cancel");
 			}
 			
 			if(!isNumeric(inputtext))
 			{
-				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", ""TEXT_COLOR_WHITE"Niste uneli koliko imate godina. \nUnesite koliko imate godina.", "U redu", "Izadji");
+				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration - Age", ""TEXT_COLOR_WHITE"You did not eneter your age. \nEnter how old are You.", "Continue", "Cancel");
 			}
 			
 			years = strval(inputtext);
 			if(years < 7 || years > 99)
 			{
-				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registracija - Godine", ""TEXT_COLOR_WHITE"Opseg godina mora biti izmedju 7 i 99. \nUnesite koliko imate godina.", "U redu", "Izadji");
+				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration - Age", ""TEXT_COLOR_WHITE"Age must be between 7 and 99 years. \nEnter how old are You.", "Continue", "Cancel");
 			}
 			
 			PlayerInfo[playerid][Age] = years;
@@ -3915,7 +4642,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 														SET age = %d \
 														WHERE id = %d", years, PlayerInfo[playerid][ID]);
 			mysql_tquery(mysql, query);
-			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Drzava", ""TEXT_COLOR_WHITE"Srbija\nCrna Gora\nBosna i Hercegovina\nHrvatska\nMakedonija\nOstalo", "U redu", "Izadji");
+			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Country", ""TEXT_COLOR_WHITE"Serbia\nMontenegro\nBosnia and Herzegovina\nCroatia\nMacedonia\nRest of World", "Continue", "Cancel");
 		}
 		
 		case DIALOG_COUNTRY:
@@ -3937,7 +4664,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);									
 					mysql_tquery(mysql, query);
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 					
 				}
 				// Montenegro
@@ -3948,7 +4675,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
 				// Bosnia and Herzegovina
 				case 2:
@@ -3958,7 +4685,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
 				// Croatia
 				case 3:
@@ -3968,7 +4695,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
 				// Macedonia
 				case 4:
@@ -3978,7 +4705,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
 				// Other 
 				case 5:
@@ -3988,7 +4715,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 																SET country = %d \
 																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
-					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registracija - Grad", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "U redu", "Izadji");
+					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
 			}
 		}
@@ -4024,8 +4751,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					player_country = GetPlayerCountry(playerid);
 					player_city = GetPlayerCity(playerid);
 					
-					format(message, sizeof(message), ""TEXT_COLOR_WHITE"Uspesno ste zavrsili registraciju. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", playerName, player_sex, player_age, player_country, player_city);
-					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");					
+					format(message, sizeof(message), ""TEXT_COLOR_WHITE"You successfully finished registration. \n"TEXT_COLOR_RED"Full_Name: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Gender: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Age: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Country: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"City: "TEXT_COLOR_WHITE"%s \nEnter your password to login.", playerName, player_sex, player_age, player_country, player_city);
+					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Continue", "Cancel");					
 				}
 				// Las Venturas
 				case 1:
@@ -4041,8 +4768,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
 					mysql_tquery(mysql, query);
 					
-					format(message, sizeof(message), ""TEXT_COLOR_WHITE"Uspesno ste zavrsili registraciju. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", playerName, player_sex, player_age, player_country, player_city);
-					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");	
+					format(message, sizeof(message), ""TEXT_COLOR_WHITE"You successfully finished registration. \n"TEXT_COLOR_RED"Full_Name: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Gender: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Age: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Country: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"City: "TEXT_COLOR_WHITE"%s \nEnter your password to login.", playerName, player_sex, player_age, player_country, player_city);
+					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Continue", "Cancel");	
 				}
 				// San Fierro
 				case 2:
@@ -4062,8 +4789,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					player_country = GetPlayerCountry(playerid);
 					player_city = GetPlayerCity(playerid);
 		
-					format(message, sizeof(message), ""TEXT_COLOR_WHITE"Uspesno ste zavrsili registraciju. \n"TEXT_COLOR_RED"Ime_Prezime: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Pol: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Godina: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Drzava: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Grad: "TEXT_COLOR_WHITE"%s \nUnesite Vasu lozinku da se prijavite", playerName, player_sex, player_age, player_country, player_city);
-					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Dalje", "Izlaz");	
+					format(message, sizeof(message), ""TEXT_COLOR_WHITE"You successfully finished registration. \n"TEXT_COLOR_RED"Full_Name: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Gender: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Age: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Country: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"City: "TEXT_COLOR_WHITE"%s \nEnter your password to login.", playerName, player_sex, player_age, player_country, player_city);
+					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Continue", "Cancel");	
 				}
 			}
 		}
@@ -4078,8 +4805,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				VehicleOfferPrice[playerid] = 0;
 				VehiclePlayerOffer[playerid] = 0;
 
-				SendClientMessage(playerid, COLOR_RED, "Odbili ste da kupite vozilo!");
-				SendClientMessage(VehiclePlayerOffer[playerid], COLOR_RED, "Igrac je odbio ponudu za vozilo!");
+				SendClientMessage(playerid, COLOR_RED, "You refused to buy vehicle.");
+				SendClientMessage(VehiclePlayerOffer[playerid], COLOR_RED, "Player refused to buy vehicle.");
 			}
 			if(response)
 			{
@@ -4091,8 +4818,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					VehicleOfferPrice[playerid] = 0;
 					VehiclePlayerOffer[playerid] = 0;
 
-					SendClientMessage(playerid, COLOR_RED, "Nemate dovoljno novca da kupite vozilo!");
-					SendClientMessage(VehiclePlayerOffer[playerid], COLOR_RED, "Igrac nema dovoljno novca da kupi vozilo!");
+					SendClientMessage(playerid, COLOR_RED, "You don't have enough money to buy vehicle.");
+					SendClientMessage(VehiclePlayerOffer[playerid], COLOR_RED, "Player don't have enough money to buy vehicle.");
 				}
 				else
 				{
@@ -4111,12 +4838,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][Money] -= VehicleOfferPrice[playerid];
 					GivePlayerMoney(playerid, -VehicleOfferPrice[playerid]);
 					SavePlayer(playerid);
-					SendClientMessage(playerid, COLOR_GREEN, "KUPILI STE VOZILO!");
+					SendClientMessage(playerid, COLOR_GREEN, "YOU HAVE BOUGHT A VEHICLE!");
 
 					PlayerInfo[player][Money] += VehicleOfferPrice[playerid];
 					GivePlayerMoney(player, VehicleOfferPrice[playerid]);
 					SavePlayer(player);
-					SendClientMessage(player, COLOR_GREEN, "PRODALI STE VOZILO!");
+					SendClientMessage(player, COLOR_GREEN, "YOU HAVE SOLD A VEHICLE!");
 
 					SaveVehicle(vehicleID);
 					DestroyVehicle(vehicleID);
@@ -4143,8 +4870,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			 	HouseOfferPrice[playerid] = 0;
 				HousePlayerOffer[playerid] = 0;
 
-				SendClientMessage(playerid, -1, "Odbili ste da kupite kucu!");
-				SendClientMessage(HousePlayerOffer[playerid], -1, "Igrac je odbio ponudu za kucu!");
+				SendClientMessage(playerid, -1, "You refused to buy house.");
+				SendClientMessage(HousePlayerOffer[playerid], -1, "Player refused to buy house.");
 			}
 			if(response)
 			{
@@ -4156,8 +4883,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				 	HouseOfferPrice[playerid] = 0;
 					HousePlayerOffer[playerid] = 0;
 
-					SendClientMessage(playerid, -1, "Nemate dovoljno novca da kupite kucu!");
-					SendClientMessage(HousePlayerOffer[playerid], -1, "Igrac nema dovoljno novca da kupi kucu!");
+					SendClientMessage(playerid, -1, "You don't have enough money to buy house.");
+					SendClientMessage(HousePlayerOffer[playerid], -1, "Player don't have enough money to buy house.");
 			    }
 			    else
 			    {
@@ -4175,20 +4902,81 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[player][Money] += HouseOfferPrice[playerid];
 					GivePlayerMoney(player, HouseOfferPrice[playerid]);
 
-					SendClientMessage(playerid, -1, "KUPILI STE KUCU!");
-					SendClientMessage(player, -1, "PRODALI STE KUCU!");
+					SendClientMessage(playerid, -1, "YOU HAVE BOUGHT HOUSE!");
+					SendClientMessage(player, -1, "YOU HAVE SOLD HOUSE!");
 					SavePlayer(player);
 					SavePlayer(playerid);
 					SaveHouse(id);
 
-					format(house3dtext, sizeof(house3dtext), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(HouseInfo[id][ID]), HouseInfo[id][ID]);
-					Update3DTextLabelText(HouseLabelArray[id], -1, house3dtext);
+					format(house3dtext, sizeof(house3dtext), ""TEXT_COLOR_WHITE" This house has owner !\n "TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(HouseInfo[id][ID]), HouseInfo[id][ID]);
+					Update3DTextLabelText(HousesLabels[id], -1, house3dtext);
 
 					HouseSellOffer[player] = 0;
 					HouseBuyOffer[playerid] = 0;
 				 	HouseForOffer[playerid] = 0;
 				 	HouseOfferPrice[playerid] = 0;
 			 		HousePlayerOffer[playerid] = 0;
+				}
+				return 1;
+			}
+		}
+
+		case DIALOG_BUY_BUSINESS:
+		{
+			if(!response)
+			{
+			    BusinessSellOffer[BusinessPlayerOffer[playerid]] = 0;
+				BusinessBuyOffer[playerid] = 0;
+			 	BusinessForOffer[playerid] = 0;
+			 	BusinessOfferPrice[playerid] = 0;
+				BusinessPlayerOffer[playerid] = 0;
+
+				SendClientMessage(playerid, -1, "You refused to buy business.");
+				SendClientMessage(BusinessPlayerOffer[playerid], -1, "Player refused to buy business.");
+			}
+			if(response)
+			{
+			    if(GetPlayerMoney(playerid) < BusinessOfferPrice[playerid])
+			    {
+			        BusinessSellOffer[BusinessPlayerOffer[playerid]] = 0;
+					BusinessBuyOffer[playerid] = 0;
+				 	BusinessForOffer[playerid] = 0;
+				 	BusinessOfferPrice[playerid] = 0;
+					BusinessPlayerOffer[playerid] = 0;
+
+					SendClientMessage(playerid, -1, "You don't have enough money to buy business.");
+					SendClientMessage(BusinessPlayerOffer[playerid], -1, "Player don't have enough money to buy business.");
+			    }
+			    else
+			    {
+	       			new player, id, playerName[MAX_PLAYER_NAME], business3dtext[256];
+					GetPlayerName(playerid, playerName, sizeof(playerName));
+					player = BusinessPlayerOffer[playerid];
+
+					id = BusinessForOffer[playerid];
+					BusinessInfo[id][Owner] = PlayerInfo[playerid][ID];
+					BusinessInfo[id][Locked] = 1;
+
+					PlayerInfo[playerid][Money] -= BusinessOfferPrice[playerid];
+					GivePlayerMoney(playerid, -BusinessOfferPrice[playerid]);
+
+					PlayerInfo[player][Money] += BusinessOfferPrice[playerid];
+					GivePlayerMoney(player, BusinessOfferPrice[playerid]);
+
+					SendClientMessage(playerid, -1, "YOU HAVE BOUGHT BUSINESS!");
+					SendClientMessage(player, -1, "YOU HAVE SOLD BUSINESS!");
+					SavePlayer(player);
+					SavePlayer(playerid);
+					SaveBusiness(id);
+
+					format(business3dtext, sizeof(business3dtext), ""TEXT_COLOR_WHITE"This business has owner!\n "TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Enter fee"TEXT_COLOR_WHITE": %d", BusinessInfo[id][Name], BusinessInfo[id][ID], GetBusinessOwnerName(BusinessInfo[id][Owner]), BusinessInfo[id][EnterFee]);
+					Update3DTextLabelText(BusinessLabels[id], -1, business3dtext);
+
+					BusinessSellOffer[player] = 0;
+					BusinessBuyOffer[playerid] = 0;
+				 	BusinessForOffer[playerid] = 0;
+				 	BusinessOfferPrice[playerid] = 0;
+			 		BusinessPlayerOffer[playerid] = 0;
 				}
 				return 1;
 			}
@@ -4212,7 +5000,7 @@ YCMD:avehicle(playerid, params[], help)
 	
 	if(sscanf(params, "iii", vehicle, color1, color2))
 	{
-		return SendClientMessage(playerid, -1, "[[USAGE]]: /avehicle [id_vozila] [boja1] [boja2]");
+		return SendClientMessage(playerid, -1, "[[USAGE]]: /avehicle [vehicle id] [color1] [color1]");
 	}
 	
 	GetPlayerPos(playerid, X, Y, Z);
@@ -4235,8 +5023,8 @@ YCMD:amoney(playerid, params[], help)
 {
 	#pragma unused help
 	new player, money, playerName[MAX_PLAYER_NAME], message[128];
-	//if((PlayerInfo[playerid][Admin] < 6) || (PlayerInfo[playerid][Admin] == 9999)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /amoney [id/deo imena] [kolicina]");
+	if((PlayerInfo[playerid][Admin] != 6 && !IsPlayerAdmin(playerid))) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /amoney [id/part of the name] [amount]");
 
 	PlayerInfo[player][Money] += money;
 	GivePlayerMoney(player, money);
@@ -4244,11 +5032,11 @@ YCMD:amoney(playerid, params[], help)
 	SavePlayer(player);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(message, sizeof(message), "Admin %s Vam je dao %d$.", playerName, money);
+	format(message, sizeof(message), "Admin %s gave You %d$.", playerName, money);
 	SendClientMessage(player, COLOR_GREEN, message);
 
 	GetPlayerName(player, playerName, sizeof(playerName));
-	format(message, sizeof(message), "Dali ste igracu %s %d$.", playerName, money);
+	format(message, sizeof(message), "You gave player %s %d$.", playerName, money);
 	SendClientMessage(playerid, COLOR_GREEN, message);
 	return 1;
 }
@@ -4289,7 +5077,7 @@ YCMD:rentvehicle(playerid, params[], help)
 	
 	vehicleID = GetPlayerVehicleID(playerid);
 	if(!IsARentVehicle(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in rent vehicle!");
-	//if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, -1 ,"[ERROR]: You dont have enough money to rent a vehicle!");
+	//if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, -1 ,"[ERROR]: You don't have enough money to rent a vehicle!");
 	if(IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are already renting a vehicle!");
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) 
@@ -4301,7 +5089,7 @@ YCMD:rentvehicle(playerid, params[], help)
 	RentedVehicle[playerid] = vehicleID;
    	TogglePlayerControllable(playerid, 1);
 	
-	SendClientMessage(playerid, -1, "Iznajmili ste vozilo. Da vratite vozilo kucajte: /vrativozilo");
+	SendClientMessage(playerid, -1, "You rent a vehicle. To return a vehile type /returnvehicle");
 	
 	return 1;
 }
@@ -4312,14 +5100,14 @@ YCMD:returnvehicle(playerid, params[], help)
 
 	new vehicleID = GetPlayerVehicleID(playerid);
 	
-	if(!IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate iznajmljeno vozilo.");
+	if(!IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have rented vehicle!");
 	
 	if(vehicleID == RentedVehicle[playerid]) TogglePlayerControllable(playerid, 1);
 	SetVehicleToRespawn(RentedVehicle[playerid]);
 	IsPlayerRentingVehicle[playerid] = 0;
 	RentedVehicle[playerid] = 0;
 	
-	SendClientMessage(playerid, -1, "Vratili ste iznajmljeno vozilo.");
+	SendClientMessage(playerid, -1, "You returned the rented vehicle.");
 	
 	return 1;
 }
@@ -4333,22 +5121,22 @@ YCMD:engine(playerid, params[], help)
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 	vehicleID = GetPlayerVehicleID(playerid);
 	GetVehicleParamsEx(vehicleID, engine, lights, alarm, doors, bonnet, boot, objective);
-	if(IsASaleVehicle(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete pokrenuti motor ovog vozila!");
-	if(IsARentVehicle(vehicleID) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete pokrenuti motor ovog vozila!");
-	if(VehicleFuel[vehicleID] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Rezervoar je prazan!");
-	if(RefuellingVehicle[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Sipanje goriva u toku!");
+	if(IsASaleVehicle(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:  You can't start vehicle's engine!");
+	if(IsARentVehicle(vehicleID) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't start vehicle's engine!");
+	if(VehicleFuel[vehicleID] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Fuel tank empty!");
+	if(RefuellingVehicle[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Fuel refilling in progress!");
 	if(VehicleEngine[vehicleID] == 0)
 	{
     	GetVehicleHealth(vehicleID, vehicleHealth);
-	    if(vehicleHealth <= 500.0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete upaliti motor vozila. Motor je ostecen!");
-	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec pokusavate da pokrenete motor vozila!");
+	    if(vehicleHealth <= 500.0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:  You can't start vehicle's engine. Engine is damaged!");
+	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're already trying to start vehicle's engine!");
 	    StartingVehicleEngine[playerid] = 1;
     	TogglePlayerControllable(playerid, 0);
 		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicleID);
-	    GameTextForPlayer(playerid, "~w~Pokretanje motora vozila...", 3500, 3);
+	    GameTextForPlayer(playerid, "~w~Starting vehicle's engine...", 3500, 3);
 
 	    GetPlayerName(playerid, playername, sizeof(playername));
-    	format(str, sizeof(str), "%s okrece kljuc i pokusava da upali motor vozila.", playername);
+    	format(str, sizeof(str), "%s turns the key and try to turn vehicle's engine.", playername);
     	SendRadiusMessage(50.0, playerid, str, -1, -1, -1, -1, -1);
 	}
 	else
@@ -4356,10 +5144,10 @@ YCMD:engine(playerid, params[], help)
 	    SetVehicleParamsEx(vehicleID, 0, 0, alarm, doors, bonnet, boot, objective);
     	VehicleEngine[vehicleID] = 0;
 
-    	SendClientMessage(playerid, -1, "Ugasili ste motor vozila.");
+    	SendClientMessage(playerid, -1, "You've turned off vehicle's engine.");
 		
     	GetPlayerName(playerid, playername, sizeof(playername));
-    	format(str, sizeof(str), "%s gasi motor vozila.", playername);
+    	format(str, sizeof(str), "%s turns off vehicle's engine.", playername);
     	SendRadiusMessage(50.0, playerid, str, -1, -1, -1, -1, -1);
  	}
     return 1;
@@ -4371,7 +5159,7 @@ YCMD:fillfuel(playerid, params[], help)
 	
 	new vehicleID, litre, pump1, pump2, pump3;
 	
-	if(sscanf(params, "i", litre)) return SendClientMessage(playerid, -1, "[USAGE]: /sipajgorivo [litara] (x5$)");
+	if(sscanf(params, "i", litre)) return SendClientMessage(playerid, -1, "[USAGE]: /fillfuel [litres] (x5$)");
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 	vehicleID = GetPlayerVehicleID(playerid);
 	
@@ -4381,44 +5169,44 @@ YCMD:fillfuel(playerid, params[], help)
 	
 	if(pump1 != -1 && pump1 != 0)
 	{
-		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
+		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
 		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
+		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
 		
 		TogglePlayerControllable(playerid, 0);
-		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
+		GameTextForPlayer(playerid, "~w~REFUELLING TANK...", 10000, 3);
 		SetTimerEx("AntiFreezePlayer", litre, false, "i", playerid);
 		RefuellingVehicle[playerid] = 1;
 		RefillLitre[playerid] = litre;
 	}
 	else if(pump2 != -1 && pump2 != 0)
 	{
-		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
+		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
 		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
+		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
 		
 		TogglePlayerControllable(playerid, 0);
-		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
+		GameTextForPlayer(playerid, "~w~REFUELLING TANK...", 10000, 3);
 		SetTimerEx("AntiFreezePlayer", litre, false, "i", playerid);
 		RefuellingVehicle[playerid] = 1;
 		RefillLitre[playerid] = litre;
 	}
 	else if(pump3 != -1 && pump3 != 0)
 	{
-		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, -1, "Morate prvo ugasiti motor! (/engine)");
+		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
 		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (30l rezervoar)");
-		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ne mozete da sipate toliko goriva! (60l rezervoar)");
+		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
+		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
 		
 		TogglePlayerControllable(playerid, 0);
-		GameTextForPlayer(playerid, "~w~PUNJENJE GORIVA...", 10000, 3);
+		GameTextForPlayer(playerid, "~w~REFUELLING TANK...", 10000, 3);
 		SetTimerEx("AntiFreezePlayer", litre, false, "i", playerid);
 		RefuellingVehicle[playerid] = 1;
 		RefillLitre[playerid] = litre;
 	}
-	else return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste na pump!");
+	else return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not on the pump!");
 	return 1;
 }
 
@@ -4430,25 +5218,25 @@ YCMD:belt(playerid, params[], help)
 	new str[128], vehicleID = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	if(IsABike(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Na motoru ste, koristite kacigu! (/kaciga)");
+	if(IsABike(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're on bike, use helmet! (/helmet)");
 	if(HasBelt[playerid] == 0)
 	{
 	    HasBelt[playerid] = 1;
 
-	    format(str, sizeof(str), "Vezali ste pojas.");
+	    format(str, sizeof(str), "* You just have Enganched your Belt to the Seat");
 	    SendClientMessage(playerid, -1, str);
 
-	    format(str, sizeof(str), "%s vezuje svoj pojas.", playername);
+	    format(str, sizeof(str), "* %s Ticks on his Seabelt that comes out of the Seat.", playername);
 	    SendRadiusMessage(10.0, playerid, str, -1, -1, -1, -1, -1);
 	}
 	else
 	{
 	    HasBelt[playerid] = 0;
 
-	    format(str, sizeof(str), "Odvezali ste pojas.");
+	    format(str, sizeof(str), "* You just have Took off your belt.");
 	    SendClientMessage(playerid, -1, str);
 
-	    format(str, sizeof(str), "%s odvezuje svoj pojas.", playername);
+	    format(str, sizeof(str), "* %s Removes his Seabelt that comes out of the Seat.", playername);
 	    SendRadiusMessage(10.0, playerid, str, -1, -1, -1, -1, -1);
 	}
 	return 1;
@@ -4462,16 +5250,16 @@ YCMD:helmet(playerid, params[], help)
 	new str[128], vehicleID = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	if(!IsABike(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste na motoru, vezite pojas! (/pojas)");
+	if(!IsABike(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not on the bike, put seat belt! (/belt)");
 	if(HasHelmet[playerid] == 0)
 	{
 	    HasHelmet[playerid] = 1;
 	    SetPlayerAttachedObject(playerid, 1, 18645, 2, 0.086220, 0.028146, 0.000000, 91.219810, 85.847640, 0.000000, 1.000000, 1.000000, 1.000000 );
 
-	   	format(str, sizeof(str), "Stavili ste kacigu.");
+	   	format(str, sizeof(str), "* You just have Enganched your Helmet to your head.");
 	    SendClientMessage(playerid, -1, str);
 
-	    format(str, sizeof(str), "%s stavlja kacigu na glavu.", playername);
+	    format(str, sizeof(str), "* %s Puts on his Helmet that is on the passanger seat.", playername);
 	    SendRadiusMessage(10.0, playerid, str, -1, -1, -1, -1, -1);
 	}
 	else
@@ -4479,10 +5267,10 @@ YCMD:helmet(playerid, params[], help)
 	    HasHelmet[playerid] = 0;
 	    RemovePlayerAttachedObject(playerid, 1);
 
- 		format(str, sizeof(str), "Skinuli ste kacigu.");
+ 		format(str, sizeof(str), "* You just have Took off your helmet.");
 	    SendClientMessage(playerid, -1, str);
 
-	    format(str, sizeof(str), "%s skida kacigu.", playername);
+	    format(str, sizeof(str), "* %s Removes his Helmet and leaves it on the passanger seat.", playername);
 	    SendRadiusMessage(10.0, playerid, str, -1, -1, -1, -1, -1);
 	}
 	return 1;
@@ -4493,8 +5281,8 @@ YCMD:v(playerid, params[], help)
 	new command[16];
 	if(sscanf(params, "s[16]", command))
 	{
-		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [komanda]");
-		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell[1-3], sellto, park[1-3], lock[1-3], find[1-3], color[1-3], paintjob[1-3], save[1-3], menu");
+		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [command]");
+		SendClientMessage(playerid, COLOR_BLUE, "Available commands: buy, sell[1-3], sellto, park[1-3], lock[1-3], find[1-3], color[1-3], paintjob[1-3], save[1-3], menu");
 	}
 	else
 	{
@@ -4508,10 +5296,10 @@ YCMD:v(playerid, params[], help)
 			vehicle_model = GetVehicleModel(vehicleID);
 			new_vehicleID = GlobalVehiclesCounter++;
 			
-			if(!IsASaleVehicle(vehicleID)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: Ovo vozilo nije na prodaju!");
-			//if((vehicleID == 411 || vehicleID == 415 || vehicleID == 451 || vehicleID == 495 || vehicleID == 522 || vehicleID == 541) && PlayerInfo[playerid][Donator] == 9999) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: Ne mozete kupiti ovo vozilo! Niste donator!");
+			if(!IsASaleVehicle(vehicleID)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: This vehicle is not for sale!");
+			if((vehicleID == 411 || vehicleID == 415 || vehicleID == 451 || vehicleID == 495 || vehicleID == 522 || vehicleID == 541) && PlayerInfo[playerid][Donator] == 0) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: You can't buy this vehicle. You're not donator!");
 			
-			if(GetPlayerMoney(playerid) < GetVehiclePrice(vehicleID)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: Nemate dovoljno novca da bi kupili ovo vozilo!");
+			if(GetPlayerMoney(playerid) < GetVehiclePrice(vehicleID)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: You don't have enough money to buy this vehicle!");
 			GetVehicleName(vehicle_model, model_name, sizeof(model_name));
 
 			VehicleInfo[new_vehicleID][Owned] = 1;
@@ -4526,12 +5314,12 @@ YCMD:v(playerid, params[], help)
 			VehicleInfo[new_vehicleID][Paintjob] = 9999;
 			VehicleInfo[new_vehicleID][Locked] = 1;
 			VehicleInfo[new_vehicleID][Registration] = 0;
-			VehicleFuel[new_vehicleID] = 60;
 			
-			InsertVehicle(PlayerInfo[playerid][ID], vehicle_model);
+			InsertVehicle(PlayerInfo[playerid][ID], vehicle_model, new_vehicleID);
 			OwnedVehicles[new_vehicleID] = CreateVehicle(vehicle_model, VehicleInfo[new_vehicleID][ParkX], VehicleInfo[new_vehicleID][ParkY], VehicleInfo[new_vehicleID][ParkZ], VehicleInfo[new_vehicleID][ParkA], VehicleInfo[new_vehicleID][Color1], VehicleInfo[new_vehicleID][Color2], -1);
-			
-			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste vozilo. Vozilo je na parkingu, preuzmite ga.");
+			VehicleFuel[OwnedVehicles[new_vehicleID]] = 60;
+
+			SendClientMessage(playerid, COLOR_GREEN, "* Congratulations! You've bought vehicle. Vehicle awaits You on the parking in Los Santos.");
             
 			PlayerInfo[playerid][Money] -= GetVehiclePrice(vehicle_model);
 			GivePlayerMoney(playerid, -GetVehiclePrice(vehicle_model));
@@ -4553,7 +5341,7 @@ YCMD:v(playerid, params[], help)
 						if(VehicleInfo[i][Locked] == 1)
 						{
 							SetVehicleParamsForPlayer(i, playerid, 0, 0);
-							GameTextForPlayer(playerid, "~g~Vozilo otkljucano!", 2000, 3);
+							GameTextForPlayer(playerid, "~g~Vehicle unlocked!", 2000, 3);
 							VehicleInfo[i][Locked] = 0;
 							SaveVehicle(i);
 							
@@ -4562,7 +5350,7 @@ YCMD:v(playerid, params[], help)
 						else
 						{
 							SetVehicleParamsForPlayer(i, playerid, 0, 1);
-							GameTextForPlayer(playerid, "~r~Vozilo zakljucano!", 2000, 3);
+							GameTextForPlayer(playerid, "~r~Vehicle locked!", 2000, 3);
 							VehicleInfo[i][Locked] = 1;
 							SaveVehicle(i);
 							
@@ -4572,7 +5360,7 @@ YCMD:v(playerid, params[], help)
 				}
 			}
 			
-			SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog vozila!");
+			SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your vehicle!");
 
 			return 1;
 		}
@@ -4583,7 +5371,7 @@ YCMD:v(playerid, params[], help)
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 
 			vehicleID = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u vasem vozilu!");
+			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
 
 			VehicleInfo[vehicleID][Owned] = 9999;
 			VehicleInfo[vehicleID][ParkX] = 1590.3740;
@@ -4619,7 +5407,7 @@ YCMD:v(playerid, params[], help)
 			DestroyVehicle(vehicleID);
 			TogglePlayerControllable(playerid, 1);
 			
-			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste vase vozilo.");
+			SendClientMessage(playerid, COLOR_GREEN, "* Congratulations! You've sold your vehicle.");
 
 			return 1;
 		}
@@ -4627,14 +5415,14 @@ YCMD:v(playerid, params[], help)
 		{
 			new playerName[MAX_PLAYER_NAME], vehicleID, target, price, vehicle[32], Float:X, Float:Y, Float:Z, message[512];
 
-			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /sellto [id igraca/deo imena] [cena]");
-			if(VehicleSellOffer[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste ponudili prodaju vozila!");
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /sellto [id/par of the name] [price]");
+			if(VehicleSellOffer[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You've already sent offer for selling vehicle!");
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			vehicleID = GetPlayerVehicleID(playerid);
 			GetVehiclePos(vehicleID, X, Y, Z);
 			GetVehicleName(vehicleID, vehicle, sizeof(vehicle));
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u svom vozilu!");
-			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac nije blizu vas!");
+			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
+			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Player is not close to You!");
 
 			VehicleSellOffer[playerid] = 1;
 			VehicleBuyOffer[target] = 1;
@@ -4643,27 +5431,27 @@ YCMD:v(playerid, params[], help)
 			VehicleOfferPrice[target] = price;
 
 			SetTimerEx("VehicleStopOffer", 10000, false, "ii", playerid, target);
-			format(message, sizeof(message), "\n"TEXT_COLOR_RED"Vozilo"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Trenutni vlasnik"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Registrovan"TEXT_COLOR_WHITE": %s\n", vehicle, GetVehicleOwnerName(vehicleID), price, GetVehicleRegistration(vehicleID));
-			ShowPlayerDialog(target, DIALOG_BUY_VEHICLE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"KUPOVINA VOZILA", message, "Kupi", "Odbij");
+			format(message, sizeof(message), "\n"TEXT_COLOR_RED"Vehicle"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Registered"TEXT_COLOR_WHITE": %s\n", vehicle, GetVehicleOwnerName(vehicleID), price, GetVehicleRegistration(vehicleID));
+			ShowPlayerDialog(target, DIALOG_BUY_VEHICLE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"BUY VEHICLE", message, "Buy", "Cancel");
 
 			GetPlayerName(target, playerName, sizeof(playerName));
-			format(message, sizeof(message), "Ponudili ste igracu %s da kupi vase vozilo.", playerName);
+			format(message, sizeof(message), "* You offered player %s to buy your vehicle.", playerName);
 			SendClientMessage(playerid, COLOR_GREEN, message);
 
 			GetPlayerName(target, playerName, sizeof(playerName));
-			format(message, sizeof(message), "Igrac %s Vam je ponudio da kupite njegovo vozilo.", playerName);
+			format(message, sizeof(message), "Player %s offered You to buy his vehicle.", playerName);
 			SendClientMessage(target, COLOR_GREEN, message);
 		}
 		else if(strcmp(command, "save", true) == 0)
 		{
-			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in vehicle!");
 			new vehicleID = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "GRSKA: Niste u vasem vozilu!");
+			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
 			if(VehicleInfo[vehicleID][Owned] == 1)
 			{
 				SaveVehicleComponents(vehicleID);
 
-				SendClientMessage(playerid, COLOR_GREEN, "Sacuvali ste komponente vaseg vozila.");
+				SendClientMessage(playerid, COLOR_GREEN, "* Congratulations! You've saved components of your vehicle.");
 			}
 
 			return 1;
@@ -4675,7 +5463,7 @@ YCMD:v(playerid, params[], help)
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			vehicleID = GetPlayerVehicleID(playerid);
 			vehicle_model = GetVehicleModel(vehicleID);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u vasem vozilu!");
+			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
 
 			GetVehiclePos(vehicleID, X, Y, Z);
 			GetVehicleZAngle(vehicleID, A);
@@ -4708,7 +5496,7 @@ YCMD:v(playerid, params[], help)
 			if(sscanf(params, "s[16]ii", command, color1, color2)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [color] [boja 1] [boja 2]");
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			new vehicleID = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u vasem vozilu!");
+			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
 			if(GetPlayerMoney(playerid) < 2500) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca! ($2500)");
 
 			PlayerInfo[playerid][Money] -= 2500;
@@ -4731,7 +5519,7 @@ YCMD:v(playerid, params[], help)
 			if(sscanf(params, "s[16]ii", command, paintjob)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [paintjob] [paintjob id]");
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			new vehicleID = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste u vasem vozilu!");
+			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
 			if(GetPlayerMoney(playerid) < 5000) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca! ($5000)");
 
 			PlayerInfo[playerid][Money] -= 5000;
@@ -4787,8 +5575,8 @@ YCMD:h(playerid, params[], help)
 			HouseInfo[id][Icon] = CreatePickup(1272, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
 			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste kucu.");
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca ima vlasnika !\n "TEXT_COLOR_RED"Vlasnik kuce"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID Kuce"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(GlobalHousesCounter), HouseInfo[id][ID]);
-			Update3DTextLabelText(HouseLabelArray[id], -1, message);
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has owner !\n "TEXT_COLOR_RED"House owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"House ID"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(id), HouseInfo[id][ID]);
+			Update3DTextLabelText(HousesLabels[id], -1, message);
 
 			SaveHouse(id);
 			SavePlayer(playerid);
@@ -4822,8 +5610,8 @@ YCMD:h(playerid, params[], help)
 
 			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste kucu.");
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ova kuca nema vlasnika !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"ID kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", HouseInfo[id][Price], HouseInfo[id][ID]);
-			Update3DTextLabelText(HouseLabelArray[id], -1, message);
+			format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has no owner !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"House ID"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", HouseInfo[id][Price], HouseInfo[id][ID]);
+			Update3DTextLabelText(HousesLabels[id], -1, message);
 
 			SaveHouse(id);
 			SavePlayer(playerid);
@@ -4832,8 +5620,8 @@ YCMD:h(playerid, params[], help)
 		else if(!strfind(command, "sellto"))
 		{
 			new id, target, price, Float:X, Float:Y, Float:Z,playerName[MAX_PLAYER_NAME], str[512];
-			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, -1, "[USAGE]: /h(ouse) sellto [id igraca/deo imena] [cena]");
-			if(HouseSellOffer[playerid] != 9999) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste ponudili prodaju kuce!");
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, -1, "[USAGE]: /h(ouse) sellto [id/par of the name] [price]");
+			if(HouseSellOffer[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste ponudili prodaju kuce!");
 			GetPlayerPos(target, X, Y, Z);
 			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac nije blizu vas!");
 			id = IsPlayerNearHouseEnter(playerid);
@@ -4953,7 +5741,7 @@ YCMD:b(playerid, params[], help)
 
 			id = IsPlayerNearBusinessEnter(playerid);
 
-			if(sscanf(params, "s[16]i", command, fee)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [fee] [cena]");
+			if(sscanf(params, "s[16]i", command, fee)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [fee] [price]");
 			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
 			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
 
@@ -5044,8 +5832,8 @@ YCMD:makehouse(playerid, params[], help)
 	#pragma unused help
     // Check for admin level
 
-    new price, player_interior, player_virtual_world, inside_interior, Float:X, Float:Y, Float:Z, Float:A;
-    if(sscanf(params, "ii", price, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /makehouse [cena] [interior]");
+    new price, playerInterior, playerVirtualWorld, inside_interior, Float:X, Float:Y, Float:Z, Float:A;
+    if(sscanf(params, "ii", price, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /makehouse [price] [interior]");
 
     switch(inside_interior)
 	{
@@ -5187,8 +5975,8 @@ YCMD:makehouse(playerid, params[], help)
 
     GetPlayerPos(playerid, X, Y, Z);
     GetPlayerFacingAngle(playerid, A);
-    player_interior = GetPlayerInterior(playerid);
-    player_virtual_world = GetPlayerVirtualWorld(playerid);
+    playerInterior = GetPlayerInterior(playerid);
+    playerVirtualWorld = GetPlayerVirtualWorld(playerid);
 
     HouseInfo[GlobalHousesCounter][Owned] = 0;
     HouseInfo[GlobalHousesCounter][Owner] = PlayerInfo[playerid][ID];
@@ -5198,8 +5986,8 @@ YCMD:makehouse(playerid, params[], help)
     HouseInfo[GlobalHousesCounter][EnterZ] = Z;
     HouseInfo[GlobalHousesCounter][EnterA] = A;
     HouseInfo[GlobalHousesCounter][Locked] = 1;
-    HouseInfo[GlobalHousesCounter][OutsideInterior] = player_interior;
-    HouseInfo[GlobalHousesCounter][OutsideVirtualWorld] = player_virtual_world;
+    HouseInfo[GlobalHousesCounter][OutsideInterior] = playerInterior;
+    HouseInfo[GlobalHousesCounter][OutsideVirtualWorld] = playerVirtualWorld;
     HouseInfo[GlobalHousesCounter][InsideVirtualWorld] = GlobalHousesCounter;
 	HouseInfo[GlobalHousesCounter][Slot1] = 0;
 	HouseInfo[GlobalHousesCounter][Slot1_ammo] = 0;
@@ -5224,7 +6012,7 @@ YCMD:deletehouse(playerid, params[], help)
     new id;
 
     if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /deletehouse [id]");
-    if(HouseInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ova kuca ima vlasnika!");
+    if(HouseInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: This house has owner!");
 
     HouseInfo[id][Owned] = 0;
     HouseInfo[id][Price] = 0;
@@ -5254,7 +6042,7 @@ YCMD:deletehouse(playerid, params[], help)
     DeleteHouse(id);
 
    	DestroyPickup(HouseInfo[id][Icon]);
-    Delete3DTextLabel(HouseLabelArray[id]);
+    Delete3DTextLabel(HousesLabels[id]);
 
     return 1;
 }
@@ -5262,9 +6050,9 @@ YCMD:deletehouse(playerid, params[], help)
 YCMD:makebusiness(playerid, params[], help)
 {
     #pragma unused help
-    new price, type, id, player_interior, player_virtual_world, name[128], inside_interior, Float:X, Float:Y, Float:Z, Float:A;
+    new price, type, id, playerInterior, playerVirtualWorld, name[128], inside_interior, Float:X, Float:Y, Float:Z, Float:A;
     // Check for admin
-    if(sscanf(params, "iii", price, type, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /makebusiness [cena] [tip] [interior]");
+    if(sscanf(params, "iii", price, type, inside_interior)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /makebusiness [price] [type] [interior]");
 
 
     switch(inside_interior)
@@ -5276,10 +6064,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -185.868988;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            //strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
 			BusinessInfo[GlobalBusinessesCounter][Name] = name;
-			
-			printf("Name je %s", BusinessInfo[GlobalBusinessesCounter][Name]);
         }
         case 2: // 24/7 2
         {
@@ -5288,7 +6073,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -29.271898;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 3: // 24/7 3
         {
@@ -5297,7 +6082,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -89.609596;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 4: // 24/7 4
         {
@@ -5306,7 +6091,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -139.066986;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 5: // 24/7 5
         {
@@ -5315,7 +6100,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -29.277599;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 6: // 24/7 6
         {
@@ -5324,7 +6109,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -55.714897;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.549988;
             format(name, sizeof(name), "24/7");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 7: // Ammunation 1
         {
@@ -5333,7 +6118,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -40.644398;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.569946;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 8: // Ammunation 2
         {
@@ -5342,7 +6127,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -82.547600;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.539978;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 9: // Ammunation 3
         {
@@ -5351,7 +6136,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -108.071999;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.569946;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 10: // Ammunation 4 (2 floors)
         {
@@ -5360,7 +6145,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -141.431992;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.661987;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 11: // Ammunation 5
         {
@@ -5369,7 +6154,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -167.706985;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.661987;
             format(name, sizeof(name), "Ammunation");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 12: // Binco
         {
@@ -5378,7 +6163,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -109.019996;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1005.132812;
             format(name, sizeof(name), "Binco");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 13: // DS (Didier Sachs)
         {
@@ -5387,7 +6172,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -166.694992;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.523437;
             format(name, sizeof(name), "DS (Didier Sachs)");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 14: // Prolaps
         {
@@ -5396,7 +6181,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -138.804992;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1003.507812;
             format(name, sizeof(name), "Prolaps");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 15: // Suburban
         {
@@ -5405,7 +6190,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -48.492397;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.804687;
             format(name, sizeof(name), "Suburban");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 16: // Victim
         {
@@ -5414,7 +6199,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -7.431529;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1002.210937;
             format(name, sizeof(name), "Victim");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 17: // ZIP
         {
@@ -5423,7 +6208,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -93.159156;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.804687;
             format(name, sizeof(name), "ZIP");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 18: // Burg
         {
@@ -5432,7 +6217,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -73.8064;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.507812;
             format(name, sizeof(name), "Burg");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 19: // Cluckin'Bell
         {
@@ -5441,7 +6226,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -65.816848;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.507812;
             format(name, sizeof(name), "Cluckin'Bell");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 20: // Well Stacked Pizza
         {
@@ -5450,7 +6235,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -132.2032;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.4922;
             format(name, sizeof(name), "Well Stacked Pizza");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 21: // Rusty Brown Donuts
         {
@@ -5459,7 +6244,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -191.9550;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.632812;
             format(name, sizeof(name), "Rusty Brown Donuts");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 22: // Dillimore Gas Station
         {
@@ -5468,7 +6253,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -575.605407;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 16.343263;
             format(name, sizeof(name), "Dillimore Gas Station");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 23: // Club
         {
@@ -5477,7 +6262,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -22.722799;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.679687;
             format(name, sizeof(name), "Club");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 24: // Bar
         {
@@ -5486,7 +6271,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -69.150199;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 998.757812;
             format(name, sizeof(name), "Bar");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 25: // Lil' probe inn
         {
@@ -5495,7 +6280,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = 1401.229980;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 27.765625;
             format(name, sizeof(name), "Lil' probe inn");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 26: // Jay's diner
         {
@@ -5504,7 +6289,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -88.428497;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.554687;
             format(name, sizeof(name), "Jay's diner");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 27: // Gant bridge diner
         {
@@ -5513,7 +6298,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -110.104995;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.077209;
             format(name, sizeof(name), "Gant bridge diner");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 28: // World of coq
         {
@@ -5522,7 +6307,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -18.179698;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.132812;
             format(name, sizeof(name), "World of coq");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 29: // Welcome pump
         {
@@ -5531,7 +6316,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -455.680053;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = -25.609874;
             format(name, sizeof(name), "Welcome pump");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 30: // Big spread ranch
         {
@@ -5540,14 +6325,14 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -28.663099;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.953125;
             format(name, sizeof(name), "Big spread ranch");
-            strmid(BusinessInfo[GlobalBusinessesCounter][Name], name, 0, strlen(name));
+			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
     }
 
     GetPlayerPos(playerid, X, Y, Z);
     GetPlayerFacingAngle(playerid, A);
-    player_interior = GetPlayerInterior(playerid);
-    player_virtual_world = GetPlayerVirtualWorld(playerid);
+    playerInterior = GetPlayerInterior(playerid);
+    playerVirtualWorld = GetPlayerVirtualWorld(playerid);
 
     BusinessInfo[GlobalBusinessesCounter][Owned] = 0;
     BusinessInfo[GlobalBusinessesCounter][Owner] = PlayerInfo[playerid][ID];
@@ -5560,8 +6345,8 @@ YCMD:makebusiness(playerid, params[], help)
     BusinessInfo[GlobalBusinessesCounter][EnterZ] = Z;
     BusinessInfo[GlobalBusinessesCounter][EnterA] = A;
     BusinessInfo[GlobalBusinessesCounter][Locked] = 0;
-    BusinessInfo[GlobalBusinessesCounter][OutsideInterior] = player_interior;
-    BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld] = player_virtual_world;
+    BusinessInfo[GlobalBusinessesCounter][OutsideInterior] = playerInterior;
+    BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld] = playerVirtualWorld;
     BusinessInfo[GlobalBusinessesCounter][InsideVirtualWorld] = id;
 
     InsertBusiness(GlobalBusinessesCounter);
@@ -5573,9 +6358,7 @@ YCMD:deletebusiness(playerid, params[], help)
 {
     #pragma unused help
     new id;
-
     // Check for admin
-
     if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /deletebusiness [id]");
     if(BusinessInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ovaj biznis ima vlasnika.");
 
@@ -5608,8 +6391,8 @@ YCMD:makeadmin(playerid, params[], help)
 {
 	#pragma unused help
 	new player, level, playerName[MAX_PLAYER_NAME], str[128];
-	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, level)) return SendClientMessage(playerid, -1, "[USAGE]: /makeadmin [id/deo imena] [level]");
+	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+	if(sscanf(params, "ri", player, level)) return SendClientMessage(playerid, -1, "[USAGE]: /makeadmin [id/part of the name] [level]");
 
 	PlayerInfo[player][Admin] = level;
 	SavePlayer(player);
@@ -5629,8 +6412,8 @@ YCMD:makedonator(playerid, params[], help)
 {
 	#pragma unused help
 	new player, points, playerName[MAX_PLAYER_NAME], str[128];
-	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, points)) return SendClientMessage(playerid, -1, "[USAGE]: /makedonator [id/deo imena] [poeni]");
+	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+	if(sscanf(params, "ri", player, points)) return SendClientMessage(playerid, -1, "[USAGE]: /makedonator [id/part of the name] [poeni]");
 
 	if(points == 0)
 	{
@@ -5661,7 +6444,7 @@ YCMD:port(playerid, params[], help)
     new target[32], vehicleID;
     if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
     if(sscanf(params, "s[32]", target)) return SendClientMessage(playerid, -1, "[USAGE]: /port [mesto]");
-    if(strcmp(target, "banka", true) == 0)
+    if(strcmp(target, "bank", true) == 0)
     {
         if(IsPlayerInAnyVehicle(playerid))
 		{
@@ -5677,7 +6460,7 @@ YCMD:port(playerid, params[], help)
 			SetPlayerInterior(playerid, 0);
 		}
 	}
-	else if(strcmp(target, "opstina", true) == 0)
+	else if(strcmp(target, "cityhall", true) == 0)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
@@ -5726,7 +6509,7 @@ YCMD:port(playerid, params[], help)
 			SetPlayerInterior(playerid, 0);
 		}
 	}
-	else if(strcmp(target, "autoskola", true) == 0)
+	else if(strcmp(target, "driveschool", true) == 0)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
@@ -5806,7 +6589,23 @@ YCMD:port(playerid, params[], help)
 			SetPlayerInterior(playerid, 0);
 		}
 	}
-	else if(strcmp(target, "lShowPlayerDialog", true) == 0)
+	else if(strcmp(target, "salon5", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			vehicleID = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleID, -1974.2048, 293.8221, 35.1719);
+	  		SetVehicleVirtualWorld(vehicleID, 0);
+	  		LinkVehicleToInterior(vehicleID, 0);
+		}
+	    else
+		{
+			SetPlayerPos(playerid, -1974.2048, 293.8221, 35.1719);
+			SetPlayerVirtualWorld(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+		}
+	}
+	else if(strcmp(target, "lspd", true) == 0)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
@@ -5838,7 +6637,7 @@ YCMD:port(playerid, params[], help)
 			SetPlayerInterior(playerid, 0);
 		}
 	}
-	else if(strcmp(target, "lsgaraza", true) == 0)
+	else if(strcmp(target, "lsgarage", true) == 0)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
@@ -5854,7 +6653,7 @@ YCMD:port(playerid, params[], help)
 			SetPlayerInterior(playerid, 0);
 		}
 	}
-	else if(strcmp(target, "sfgaraza", true) == 0)
+	else if(strcmp(target, "sfgarage", true) == 0)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
@@ -5870,7 +6669,7 @@ YCMD:port(playerid, params[], help)
 			SetPlayerInterior(playerid, 0);
 		}
 	}
-	else if(strcmp(target, "planina", true) == 0)
+	else if(strcmp(target, "mountain", true) == 0)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
@@ -5886,7 +6685,7 @@ YCMD:port(playerid, params[], help)
 			SetPlayerInterior(playerid, 0);
 		}
 	}
-	else if(strcmp(target, "vrh", true) == 0)
+	else if(strcmp(target, "alp", true) == 0)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
@@ -5940,24 +6739,24 @@ YCMD:port(playerid, params[], help)
 YCMD:goto(playerid, params[], help)
 {
     #pragma unused help
-    new player, player_interior, vehicleID, Float:X, Float:Y, Float:Z;
+    new player, playerInterior, vehicleID, Float:X, Float:Y, Float:Z;
     if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /goto [id/deo imena]");
+    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /goto [id/part of the name]");
     if(!IsPlayerConnected(player)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Pogresan ID!");
 
     GetPlayerPos(player, X, Y, Z);
-    player_interior = GetPlayerInterior(player);
+    playerInterior = GetPlayerInterior(player);
 
     if(IsPlayerInAnyVehicle(playerid))
 	{
 		vehicleID = GetPlayerVehicleID(playerid);
   		SetVehiclePos(vehicleID, X-1, Y-1, Z);
-  		LinkVehicleToInterior(vehicleID, player_interior);
+  		LinkVehicleToInterior(vehicleID, playerInterior);
 	}
     else
 	{
 		SetPlayerPos(playerid, X-1, Y-1, Z);
-		SetPlayerInterior(playerid, player_interior);
+		SetPlayerInterior(playerid, playerInterior);
 	}
 
     return 1;
@@ -5966,25 +6765,25 @@ YCMD:goto(playerid, params[], help)
 YCMD:gethere(playerid, params[], help)
 {
     #pragma unused help
-    new player, player_interior, vehicleID, Float:X, Float:Y, Float:Z;
+    new player, playerInterior, vehicleID, Float:X, Float:Y, Float:Z;
     if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /time [id/deo imena]");
+    if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /time [id/part of the name]");
     if(!IsPlayerConnected(player)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Pogresan ID!");
 
     GetPlayerPos(playerid, X, Y, Z);
-    player_interior = GetPlayerInterior(playerid);
+    playerInterior = GetPlayerInterior(playerid);
 
     if(IsPlayerInAnyVehicle(player))
 	{
 		vehicleID = GetPlayerVehicleID(player);
   		SetVehiclePos(vehicleID, X-1, Y-1, Z);
-  		LinkVehicleToInterior(vehicleID, player_interior);
-  		SetPlayerInterior(player, player_interior);
+  		LinkVehicleToInterior(vehicleID, playerInterior);
+  		SetPlayerInterior(player, playerInterior);
 	}
     else
     {
 		SetPlayerPos(player, X-1, Y-1, Z);
-		SetPlayerInterior(player, player_interior);
+		SetPlayerInterior(player, playerInterior);
 	}
 
     return 1;
@@ -6051,8 +6850,8 @@ YCMD:givemoney(playerid, params[], help)
 {
 	#pragma unused help
 	new player, money, playerName[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, -1, "[USAGE]: /givemoney [id/deo imena] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, -1, "[USAGE]: /givemoney [id/part of the name] [kolicina]");
 
 	PlayerInfo[player][Money] += money;
 	GivePlayerMoney(player, money);
@@ -6074,7 +6873,7 @@ YCMD:setskin(playerid, params[], help)
 	#pragma unused help
 	new player, skin, playerName[MAX_PLAYER_NAME], str[128];
 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, skin)) return SendClientMessage(playerid, -1, "[USAGE]: /setskin [id/deo imena] [id skina]");
+	if(sscanf(params, "ri", player, skin)) return SendClientMessage(playerid, -1, "[USAGE]: /setskin [id/part of the name] [id skina]");
 	if(skin < 1 || skin > 299) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: ID Skina ne moze biti manji od 1 i veci od 299!");
 
 	SetPlayerSkin(player, skin);
@@ -6097,8 +6896,8 @@ YCMD:setjob(playerid, params[], help)
 {
 	#pragma unused help
 	new player, job, playerName[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, job)) return SendClientMessage(playerid, -1, "[USAGE]: /ajob [id/deo imena] [id posla]");
+	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+	if(sscanf(params, "ri", player, job)) return SendClientMessage(playerid, -1, "[USAGE]: /ajob [id/part of the name] [id posla]");
 
 	PlayerInfo[player][Job] = job;
 	SavePlayer(playerid);
@@ -6113,12 +6912,12 @@ YCMD:setjob(playerid, params[], help)
 	return 1;
 }
 
-YCMD:setheatlh(playerid, params[], help)
+YCMD:sethealth(playerid, params[], help)
 {
 	#pragma unused help
 	new player, health, playerName[MAX_PLAYER_NAME], str[128];
 	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, health)) return SendClientMessage(playerid, -1, "[USAGE]: /sethealth [id/deo imena] [kolicina]");
+	if(sscanf(params, "ri", player, health)) return SendClientMessage(playerid, -1, "[USAGE]: /sethealth [id/part of the name] [kolicina]");
 
 	SetPlayerHealth(player, health);
 	SavePlayer(player);
@@ -6138,7 +6937,7 @@ YCMD:setarmor(playerid, params[], help)
 	#pragma unused help
 	new player, armor, playerName[MAX_PLAYER_NAME], str[128];
 	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, armor)) return SendClientMessage(playerid, -1, "[USAGE]: /setarmor [id/deo imena] [kolicina]");
+	if(sscanf(params, "ri", player, armor)) return SendClientMessage(playerid, -1, "[USAGE]: /setarmor [id/part of the name] [kolicina]");
 
 	SetPlayerArmour(player, armor);
 	SavePlayer(player);
@@ -6169,7 +6968,7 @@ YCMD:giveweaponskill(playerid, params[], help)
 {
 	#pragma unused help
 	new player, weapon, skill;
-	if(sscanf(params, "rii", player, weapon, skill)) return SendClientMessage(playerid, -1, "[USAGE]: /giveweaponskill [id/deo imena] [oruzje] [skill]");
+	if(sscanf(params, "rii", player, weapon, skill)) return SendClientMessage(playerid, -1, "[USAGE]: /giveweaponskill [id/part of the name] [oruzje] [skill]");
 	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac ne postoji!");
 	else if(weapon < 1 || weapon > 11) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Broj za oruzje mora biti izmedju 1 i 9!");
 	switch(weapon)
@@ -6251,8 +7050,8 @@ YCMD:setfightstyle(playerid, params[], help)
 {
 	#pragma unused help
 	new style, player, playerName[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, style)) return SendClientMessage(playerid, -1, "[USAGE]: /setfightstyle [id/deo imena] [stil]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+	if(sscanf(params, "ri", player, style)) return SendClientMessage(playerid, -1, "[USAGE]: /setfightstyle [id/part of the name] [stil]");
 	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac ne postoji!");
 	else if (style < 4 || (style > 7 && style < 15) || style > 16) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Stil moze biti u opsegu 4-7 i 15-16!");
 	
@@ -6275,8 +7074,8 @@ YCMD:givedrugs(playerid, params[], help)
 {
 	#pragma unused help
 	new player, drug, playerName[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu!");
-	if(sscanf(params, "ri", player, drug)) return SendClientMessage(playerid, -1, "[USAGE]: /givedrugs [id/deo imena] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+	if(sscanf(params, "ri", player, drug)) return SendClientMessage(playerid, -1, "[USAGE]: /givedrugs [id/part of the name] [kolicina]");
 
 	PlayerInfo[player][Drugs] += drug;
 	SavePlayer(player);
@@ -6297,7 +7096,7 @@ YCMD:givematerials(playerid, params[], help)
 	#pragma unused help
 	new player, materials, playerName[MAX_PLAYER_NAME], str[128];
 	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, materials)) return SendClientMessage(playerid, -1, "[USAGE]: /givemats [id/deo imena] [kolicina]");
+	if(sscanf(params, "ri", player, materials)) return SendClientMessage(playerid, -1, "[USAGE]: /givemats [id/part of the name] [kolicina]");
 
 	PlayerInfo[player][Materials] += materials;
 	SavePlayer(player);
@@ -6328,7 +7127,7 @@ YCMD:call(playerid, params[], help)
 {
 	#pragma unused help
 	new number, sendername[MAX_PLAYER_NAME], str[128];
-	if(sscanf(params, "i", number)) return SendClientMessage(playerid, COLOR_WHITE, "[USAGE]: /pozovi [id igraca/deo imena]");
+	if(sscanf(params, "i", number)) return SendClientMessage(playerid, COLOR_WHITE, "[USAGE]: /pozovi [id/par of the name]");
 	if(PlayerInfo[playerid][Mobile] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate mobilni!");
 	if(PlayerInfo[playerid][MobileNumber] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate SIM karticu!");
 	if(PlayerInfo[playerid][MobileCredit] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate kredita!");
@@ -6483,6 +7282,53 @@ YCMD:advertise(playerid, params[], help)
 	SavePlayer(playerid);
 	return 1;
 }
+
+YCMD:robbank(playerid, params[], help)
+{
+	#pragma unused help
+	if(vaultDoorOpened == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Bank has already been robbed, try again later!");
+	MoveDynamicObject(vaultdoor, 582.98975, -1268.18286, 983.59998, 0.01, 0.00000, 0.00000, 240.00000);
+	SendClientMessage(playerid, COLOR_WHITE, "You robbed the bank.");
+	vaultDoorOpened = 1;
+	SetTimer("closeVaultDoor", 120000, false);
+	return 1;
+}
+
+YCMD:dropbag(playerid, params[], help)
+{
+	if(HaveMoneyBag[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]]: You do not have bag on your back!");
+	switch (HaveMoneyBag[playerid])
+	{
+     	case 0: moneybag[0] = CreateDynamicObject(1550, 585.76355, -1257.17932, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 1: moneybag[1] = CreateDynamicObject(1550, 585.76349, -1255.18335, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 2: moneybag[2] = CreateDynamicObject(1550, 585.76349, -1256.15796, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 3: moneybag[3] = CreateDynamicObject(1550, 579.71600, -1257.17932, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 4: moneybag[4] = CreateDynamicObject(1550, 579.71600, -1255.18335, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 5: moneybag[5] = CreateDynamicObject(1550, 579.71600, -1256.15796, 982.29999,   0.00000, 0.00000, 0.00000);
+	}
+
+    RemovePlayerAttachedObject(playerid, 0);
+    HaveMoneyBag[playerid] = 9999;
+    PlayerInfo[playerid][Money] += 1000;
+    GivePlayerMoney(playerid, 1000);
+    SavePlayer(playerid);
+
+    SendClientMessage(playerid, COLOR_WHITE, "You took money and dropped the bag (1000$)");
+	return 1;
+}
+
+YCMD:clearchat(playerid, params[], help)
+{
+	#pragma unused help
+
+	new i;
+	for(i = 0; i < 20; i++)
+	{
+		SendClientMessage(playerid, -1, "");
+	}
+
+	return 1;
+}
 // ====================================================================================================== Timers
 task TimerPerSec[1000]() 
 {
@@ -6491,6 +7337,50 @@ task TimerPerSec[1000]()
 	{
 		if(!IsPlayerConnected(i)) return 1;
 		
+		//MONEY BAGS
+		if(IsPlayerInRangeOfPoint(i, 1.0, 585.76355, -1257.17932, 982.29999))
+		{
+		    if(HaveMoneyBag[i] != 0) return 1;
+		    SetPlayerAttachedObject(i, 0, 1550, 15, -0.026831, 0.271080, -0.150249, 0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000); // CJ_MONEY_BAG - moneybag
+		    DestroyDynamicObject(moneybag[0]);
+		    HaveMoneyBag[i] = 0;
+		}
+		else if(IsPlayerInRangeOfPoint(i, 1.0, 585.76349, -1255.18335, 982.29999))
+		{
+		    if(HaveMoneyBag[i] != 0) return 1;
+		    SetPlayerAttachedObject(i, 0, 1550, 15, -0.026831, 0.271080, -0.150249, 0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000); // CJ_MONEY_BAG - moneybag
+		    DestroyDynamicObject(moneybag[1]);
+		    HaveMoneyBag[i] = 1;
+		}
+		else if(IsPlayerInRangeOfPoint(i, 1.0, 585.76349, -1256.15796, 982.29999))
+		{
+		    if(HaveMoneyBag[i] != 0) return 1;
+		    SetPlayerAttachedObject(i, 0, 1550, 15, -0.026831, 0.271080, -0.150249, 0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000); // CJ_MONEY_BAG - moneybag
+		    DestroyDynamicObject(moneybag[2]);
+		    HaveMoneyBag[i] = 2;
+		}
+		else if(IsPlayerInRangeOfPoint(i, 1.0, 579.71600, -1257.17932, 982.29999))
+		{
+		    if(HaveMoneyBag[i] != 0) return 1;
+		    SetPlayerAttachedObject(i, 0, 1550, 15, -0.026831, 0.271080, -0.150249, 0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000); // CJ_MONEY_BAG - moneybag
+		    DestroyDynamicObject(moneybag[3]);
+		    HaveMoneyBag[i] = 3;
+		}
+		else if(IsPlayerInRangeOfPoint(i, 1.0, 579.71600, -1255.18335, 982.29999))
+		{
+		    if(HaveMoneyBag[i] != 0) return 1;
+		    SetPlayerAttachedObject(i, 0, 1550, 15, -0.026831, 0.271080, -0.150249, 0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000); // CJ_MONEY_BAG - moneybag
+		    DestroyDynamicObject(moneybag[4]);
+		    HaveMoneyBag[i] = 4;
+		}
+		else if(IsPlayerInRangeOfPoint(i, 1.0, 579.71600, -1256.15796, 982.29999))
+		{
+		    if(HaveMoneyBag[i] != 0) return 1;
+		    SetPlayerAttachedObject(i, 0, 1550, 15, -0.026831, 0.271080, -0.150249, 0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000); // CJ_MONEY_BAG - moneybag
+		    DestroyDynamicObject(moneybag[5]);
+		    HaveMoneyBag[i] = 5;
+		}
+
 		//FUEL
 		for(new v = 0; v < MAX_VEHICLES; v++)
 		{
