@@ -21,6 +21,8 @@ main()
 // BCrypt
 #define BCRYPT_COST 12
 
+#define MAX_ORGS 6
+
 // Dialogs
 #define DIALOG_LOGIN 0 // On login, typing password to enter the game
 #define DIALOG_REGISTER 1 // On registration, first step for making account and typing password
@@ -28,12 +30,17 @@ main()
 #define DIALOG_AGE 3 // On registration, enter age
 #define DIALOG_COUNTRY 4 // On registration, choose between Balkan countries
 #define DIALOG_CITY 5 // On registration, choose between in-game cities
+#define DIALOG_SHOP 6 // Dialog for buying items in shop
+#define DIALOG_CREDIT 7 // Dialog for credit top up
 
-#define DIALOG_BUY_VEHICLE 10 // Vehicle sell(buy) offer
 
-#define DIALOG_BUY_HOUSE 20 //
+#define DIALOG_BUY_VEHICLE 10
 
-#define DIALOG_BUY_BUSINESS 30 //
+#define DIALOG_BUY_HOUSE 20
+
+#define DIALOG_BUY_BUSINESS 30
+
+#define DIALOG_ORG_INVITE 40
 
 // Colors
 #define COLOR_GREY 														0xAFAFAFAA
@@ -81,7 +88,7 @@ main()
 #define COLOR_DARKMAGENTA 												0x8B008BFF
 #define COLOR_DARKOLIVEGREEN 											0x556B2FFF
 #define COLOR_DARKORANGE 												0xFF8C00FF
-#define COLOR_DARKORCHID 												0x9932CCFF
+#define COLOR_DARKORChouseId 												0x9932CCFF
 #define COLOR_DARKRED 													0x8B0000FF
 #define COLOR_DARKSALMON 												0xE9967AFF
 #define COLOR_DARKSEAGREEN 												0x8FBC8BFF
@@ -146,7 +153,7 @@ main()
 #define COLOR_MAROON  													0x800000FF
 #define COLOR_MEDIUMAQUAMARINE  										0x66CDAAFF
 #define COLOR_MEDIUMBLUE  												0x0000CDFF
-#define COLOR_MEDIUMORCHID  											0xBA55D3FF
+#define COLOR_MEDIUMORChouseId  											0xBA55D3FF
 #define COLOR_MEDIUMPURPLE  											0x9370DBFF
 #define COLOR_MEDIUMSEAGREEN  											0x3CB371FF
 #define COLOR_MEDIUMSLATEBLUE  											0x7B68EEFF
@@ -168,7 +175,7 @@ main()
 #define COLOR_OLIVEDRAB  												0x6B8E23FF
 #define COLOR_ORANGE  													0xFFA500FF
 #define COLOR_ORANGERED  												0xFF4500FF
-#define COLOR_ORCHID  													0xDA70D6FF
+#define COLOR_ORChouseId  													0xDA70D6FF
 #define COLOR_PALEGOLDENROD  											0xEEE8AAFF
 #define COLOR_PALEGREEN  												0x98FB98FF
 #define COLOR_PALETURQUOISE  											0xAFEEEEFF
@@ -263,7 +270,7 @@ main()
 #define TEXT_COLOR_DARKMAGENTA 											"{8B008B}"
 #define TEXT_COLOR_DARKOLIVEGREEN 										"{556B2F}"
 #define TEXT_COLOR_DARKORANGE 											"{FF8C00}"
-#define TEXT_COLOR_DARKORCHID 											"{9932CC}"
+#define TEXT_COLOR_DARKORChouseId 											"{9932CC}"
 #define TEXT_COLOR_DARKRED 												"{8B0000}"
 #define TEXT_COLOR_DARKSALMON 											"{E9967A}"
 #define TEXT_COLOR_DARKSEAGREEN 										"{8FBC8B}"
@@ -328,7 +335,7 @@ main()
 #define TEXT_COLOR_MAROON  												"{800000}"
 #define TEXT_COLOR_MEDIUMAQUAMARINE  									"{66CDAA}"
 #define TEXT_COLOR_MEDIUMBLUE  											"{0000CD}"
-#define TEXT_COLOR_MEDIUMORCHID  										"{BA55D3}"
+#define TEXT_COLOR_MEDIUMORChouseId  										"{BA55D3}"
 #define TEXT_COLOR_MEDIUMPURPLE  										"{9370DB}"
 #define TEXT_COLOR_MEDIUMSEAGREEN  										"{3CB371}"
 #define TEXT_COLOR_MEDIUMSLATEBLUE  									"{7B68EE}"
@@ -350,7 +357,7 @@ main()
 #define TEXT_COLOR_OLIVEDRAB  											"{6B8E23}"
 #define TEXT_COLOR_ORANGE  												"{FFA500}"
 #define TEXT_COLOR_ORANGERED  											"{FF4500}"
-#define TEXT_COLOR_ORCHID  												"{DA70D6}"
+#define TEXT_COLOR_ORChouseId  												"{DA70D6}"
 #define TEXT_COLOR_PALEGOLDENROD  										"{EEE8AA}"
 #define TEXT_COLOR_PALEGREEN  											"{98FB98}"
 #define TEXT_COLOR_PALETURQUOISE  										"{AFEEEE}"
@@ -411,14 +418,14 @@ forward OnPasswordChecked(playerid);
 
 forward AntiRoleplayName(playerid, playerName[]);
 
-forward IsARentVehicle(vehicleID);
-forward IsASaleVehicle(vehicleID);
-forward IsAOwnedVehicle(vehicleID);
-forward IsALSPoliceCar(vehicleID);
-forward IsABike(vehicleID);
-forward IsABoat(vehicleID);
-forward IsAPlane(vehicleID);
-forward IsATrain(vehicleID);
+forward IsARentVehicle(vehicleId);
+forward IsASaleVehicle(vehicleId);
+forward IsAOwnedVehicle(vehicleId);
+forward IsALSPoliceCar(vehicleId);
+forward IsABike(vehicleId);
+forward IsABoat(vehicleId);
+forward IsAPlane(vehicleId);
+forward IsATrain(vehicleId);
 
 forward IsPlayerNearPump1(playerid);
 forward IsPlayerNearPump2(playerid);
@@ -431,35 +438,48 @@ forward SendRadiusMessage(Float:radius, playerid, string[], color1, color2, colo
 
 forward LoadVehicles();
 forward OnVehiclesLoaded();
-forward InsertVehicle(vehicle_owner, vehicle_model, vehicle_id);
-forward OnVehicleInserted(vehicleID);
-forward DeleteVehicle(vehicleID);
-forward SaveVehicle(vehicleID);
-forward SetVehicleComponents(vehicleID);
-forward RemoveVehicleComponents(vehicleID);
-forward SaveVehicleComponents(vehicleID);
-forward GetVehiclePrice(vehicleID);
-forward GetVehicleName(vehicleID, model[], len);
+forward InsertVehicle(vehicle_owner, vehicleModel, vehicle_id);
+forward OnVehicleInserted(vehicleId);
+forward DeleteVehicle(vehicleId);
+forward SaveVehicle(vehicleId);
+forward SetVehicleComponents(vehicleId);
+forward RemoveVehicleComponents(vehicleId);
+forward SaveVehicleComponents(vehicleId);
+forward GetVehiclePrice(vehicleId);
+forward GetVehicleName(vehicleId, model[], len);
 forward VehicleStopOffer(playerid, target);
 forward LoadVehiclesFuel();
-forward StartVehicleEngine(playerid, vehicleID);
+forward StartVehicleEngine(playerid, vehicleId);
 forward CheckVehicleFuel();
 
 forward LoadHouses();
 forward OnHousesLoaded();
-forward InsertHouse(house_id); 
-forward OnHouseInserted(house_id);
-forward DeleteHouse(house_id); 
-forward SaveHouse(house_id);
+forward InsertHouse(houseId); 
+forward OnHouseInserted(houseId);
+forward DeleteHouse(houseId); 
+forward SaveHouse(houseId);
+forward SetUnownedHouseLabel(houseId);
+forward SetOwnedHouseLabel(houseId);
 forward HouseStopOffer(playerid, target);
 
 forward LoadBusinesses();
 forward OnBusinessesLoaded();
-forward InsertBusiness(business_id);
-forward OnBusinessInserted(business_id);
-forward DeleteBusiness(business_id);
-forward SaveBusiness(business_id);
+forward InsertBusiness(businessId);
+forward OnBusinessInserted(businessId);
+forward DeleteBusiness(businessId);
+forward SaveBusiness(businessId);
+forward SetUnownedBusinessLabel(businessId);
+forward SetOwnedBusinessLabel(businessId);
 forward BusinessStopOffer(playerid, target);
+
+forward LoadSpecialBusinesses();
+forward OnSpecialBusinessesLoaded();
+forward InsertSpecialBusiness(specialBusinessId);
+forward OnSpecialBusinessInserted(specialBusinessId);
+forward DeleteSpecialBusiness(specialBusinessId);
+forward SaveSpecialBusiness(specialBusinessId);
+
+forward CreateHeadquartersLabels();
 
 forward LoadRentVehicles();
 forward LoadSaleVehicles();
@@ -484,6 +504,8 @@ forward closeLspdWindow();
 forward closeLspdGarage();
 forward closeLspdGarageDoor();
 forward closeVaultDoor();
+forward closeParkingGate1();
+forward closeParkingGate2();
 // ====================================================================================================== Variables
 new MySQL:mysql;
 
@@ -492,13 +514,14 @@ new GlobalVehiclesCounter = 1;
 new OwnedVehiclesCounter = 0;
 new GlobalHousesCounter = 1;
 new GlobalBusinessesCounter = 1;
+new GlobalSpecialBusinessesCounter = 1;
 // Textdraws
 new Text:FuelTD[MAX_PLAYERS];
 
 // Players TABLE
 enum PlayerData
 {
-	ID, // ID in the Table of Players
+	Id, // Id in the Table of Players
 	Name[MAX_PLAYER_NAME], // Name of the player
 	Password[65], // Encrypted password
 	Gender, // Gender of the player (male | female)
@@ -578,9 +601,9 @@ new PlayerInfo[MAX_PLAYERS][PlayerData];
 //Vehicle TABLE
 enum VehicleData
 {
-	ID, // ID in Table of Players
+	Id, // Id in Table of Players
 	Owned, // Is vehicle owned
-	Owner, // ID of Owner (foreign key)
+	Owner, // Id of Owner (foreign key)
 	Model, // Model of vehicle
 	Float:ParkX, // Spawn location, coordinate X
 	Float:ParkY, // Spawn location, coordinate Y
@@ -611,7 +634,7 @@ new VehicleInfo[MAX_VEHICLES][VehicleData];
 // House TABLE
 enum HouseData
 {
-	ID,
+	Id,
 	Owned,
 	Owner,
 	Price,
@@ -642,7 +665,7 @@ new HouseInfo[2000][HouseData];
 
 enum BusinessData
 {
-	ID,
+	Id,
     Owned,
     Price,
     Owner,
@@ -667,6 +690,24 @@ enum BusinessData
     Name[128]
 }
 new BusinessInfo[100][BusinessData];
+
+enum SpecialBusinessData
+{
+	Id,
+	Owned,
+	Owner,
+	Name[128],
+	Description[128],
+	Money,
+	Price,
+	EnterFee,
+	Float:EnterX,
+	Float:EnterY,
+	Float:EnterZ,
+	Float:EnterA,
+	Icon
+}
+new SpecialBusinessInfo[20][SpecialBusinessData];
 
 // Player
 new IsPlayerRentingVehicle[MAX_PLAYERS];
@@ -716,9 +757,10 @@ new SaleVehicles[89];
 new OwnedVehicles[sizeof(VehicleInfo)];
 new LSPoliceCars[13];
 
-new Text3D:SaleVehicleLabels[MAX_VEHICLES]; // Labels for sale vehicles
-new Text3D:HousesLabels[sizeof(HouseInfo)]; // Labels for houses
-new Text3D:BusinessLabels[sizeof(HouseInfo)]; // Labels for business
+new Text3D:SaleVehicleLabels[MAX_VEHICLES];
+new Text3D:HouseLabels[sizeof(HouseInfo)];
+new Text3D:BusinessLabels[sizeof(BusinessInfo)];
+new Text3D:SpecialBusinessLabels[sizeof(SpecialBusinessInfo)];
 
 // Doors, gates, windows etc..
 // LSPD
@@ -745,7 +787,18 @@ new parkingGate1Opened;
 new parkingGate2;
 new parkingGate2Opened;
 
+new InBank[MAX_PLAYERS];
+new InCityHall[MAX_PLAYERS];
 new InLSPDHQ[MAX_PLAYERS];
+new InGSFHQ[MAX_PLAYERS];
+new InBallasHQ[MAX_PLAYERS];
+new InLSVHQ[MAX_PLAYERS];
+new InVLAHQ[MAX_PLAYERS];
+new GSFHQLocked;
+new BallasHQLocked;
+new LSVHQLocked;
+new VLAHQLocked;
+
 // BANK
 new vaultdoor;
 new vaultDoorOpened;
@@ -844,15 +897,237 @@ stock GetPlayerCity(playerid)
     return city;
 }
 
-stock GetVehicleRegistration(vehicleID)
+stock GetVehicleRegistration(vehicleId)
 {
 	new registration[4];
-	switch(VehicleInfo[vehicleID][Registration])
+	switch(VehicleInfo[vehicleId][Registration])
 	{
 	    case 1: registration = "Yes";
 	    case 0: registration = "No";
 	}
 	return registration;
+}
+
+stock GetPlayerJobName(playerid)
+{
+    new string[32];
+    switch(PlayerInfo[playerid][Job])
+    {
+        case 1: string = "Detective";
+        case 2: string = "Truckman";
+        case 3: string = "Communal";
+        case 4: string = "Mechanic";
+        case 5: string = "Taxist";
+		default: string = "/";
+    }
+    return string;
+}
+
+stock GetPlayerFightingStyleName(playerid)
+{
+	new string[32];
+	switch(PlayerInfo[playerid][FightingStyle])
+	{
+	    case 4: string = "Normal";
+	    case 5: string = "Boxing";
+	    case 6: string = "Kung-Fu";
+	    case 7: string = "Knee-Head";
+	    case 15: string = "Grab n Kick";
+	    case 16: string = "Elbow";
+		default: string = "/";
+	}
+	return string;
+}
+
+stock GetBusinessTypeName(b)
+{
+    new string[30];
+    switch(BusinessInfo[b][Type])
+    {
+        case 5: string = "Caffe";
+        case 4: string = "Clothes shop";
+        case 3: string = "Restaurant";
+        case 2: string = "Ammunation";
+        case 1: string = "24/7";
+    }
+    return string;
+}
+
+stock GetPlayerRankName(playerid)
+{
+	new rank[32], playerorg = (PlayerInfo[playerid][pOMember] > 0) ? (PlayerInfo[playerid][pOMember]) : (PlayerInfo[playerid][pOLeader]);
+
+	switch(playerorg)
+	{
+		case 1:
+		{
+			switch(PlayerInfo[playerid][pORank])
+			{
+				case 1: rank = "Cadet";
+				case 2: rank = "Officer";
+				case 3: rank = "Sergeant";
+				case 4: rank = "Lieutenant";
+				case 5: rank = "Captain";
+				case 6: rank = "Sheriff";
+				default: rank = "Unknown";
+			}
+		}
+		case 2:
+		{
+			switch(PlayerInfo[playerid][pORank])
+			{
+				case 1: rank = "Cadet";
+				case 2: rank = "Agent";
+				case 3: rank = "Special Agent";
+				case 4: rank = "Chief";
+				case 5: rank = "Assistant of Director";
+				case 6: rank = "Director";
+				default: rank = "Unknown";
+			}
+		}
+		case 3:
+		{
+			switch(PlayerInfo[playerid][pORank])
+			{
+				case 1: rank = "Little Devil";
+				case 2: rank = "Big Devil";
+				case 3: rank = "OG Loc";
+				case 4: rank = "Big Smoke";
+				case 5: rank = "Ryder";
+				case 6: rank = "Sweet";
+				default: rank = "Unknown";
+			}
+		}
+		case 4:
+		{
+			switch(PlayerInfo[playerid][pORank])
+			{
+				case 1: rank = "Little Weasel";
+				case 2: rank = "Little Weasel";
+				case 3: rank = "Little Weasel";
+				case 4: rank = "Big Weasel";
+				case 5: rank = "Big Weasel";
+				case 6: rank = "Kane";
+				default: rank = "Unknown";
+			}
+		}
+		case 5:
+		{
+			switch(PlayerInfo[playerid][pORank])
+			{
+				case 1: rank = "Hazer";
+				case 2: rank = "Hazer";
+				case 3: rank = "Gal";
+				case 4: rank = "Gal";
+				case 5: rank = "Jose";
+				case 6: rank = "Cesar";
+				default: rank = "Unknown";
+			}
+		}
+		case 6:
+		{
+			switch(PlayerInfo[playerid][pORank])
+			{
+				case 1: rank = "Jose";
+				case 2: rank = "Gustavo Mota";
+				case 3: rank = "H";
+				case 4: rank = "Esteban Jimenez";
+				case 5: rank = "Freddy";
+				case 6: rank = "Big Poppa";
+				default: rank = "Unknown";
+			}
+		}
+	}
+	return rank;
+}
+
+stock SetPlayerOrgSkin(playerid, orgid, rank)
+{
+	switch(orgid)
+	{
+		case 1:
+		{
+			switch(rank)
+			{
+				case 1: PlayerInfo[playerid][OSkin] = 280;
+				case 2: PlayerInfo[playerid][OSkin] = 280;
+				case 3: PlayerInfo[playerid][OSkin] = 266;
+				case 4: PlayerInfo[playerid][OSkin] = 267;
+				case 5: PlayerInfo[playerid][OSkin] = 265;
+				case 6: PlayerInfo[playerid][OSkin] = 283;
+				default: PlayerInfo[playerid][OSkin] = 280;
+			}
+		}
+		case 2:
+		{
+			switch(rank)
+			{
+				case 1: PlayerInfo[playerid][OSkin] = 163;
+				case 2: PlayerInfo[playerid][OSkin] = 164;
+				case 3: PlayerInfo[playerid][OSkin] = 165;
+				case 4: PlayerInfo[playerid][OSkin] = 166;
+				case 5: PlayerInfo[playerid][OSkin] = 286;
+				case 6: PlayerInfo[playerid][OSkin] = 286;
+				default: PlayerInfo[playerid][OSkin] = 163;
+			}
+		}
+		case 3:
+		{
+			switch(rank)
+			{
+				case 1: PlayerInfo[playerid][OSkin] = 106;
+				case 2: PlayerInfo[playerid][OSkin] = 105;
+				case 3: PlayerInfo[playerid][OSkin] = 293;
+				case 4: PlayerInfo[playerid][OSkin] = 269;
+				case 5: PlayerInfo[playerid][OSkin] = 271;
+				case 6: PlayerInfo[playerid][OSkin] = 270;
+				default: PlayerInfo[playerid][OSkin] = 106;
+			}
+		}
+		case 4:
+		{
+			switch(rank)
+			{
+				case 1: PlayerInfo[playerid][OSkin] = 102;
+				case 2: PlayerInfo[playerid][OSkin] = 102;
+				case 3: PlayerInfo[playerid][OSkin] = 102;
+				case 4: PlayerInfo[playerid][OSkin] = 103;
+				case 5: PlayerInfo[playerid][OSkin] = 103;
+				case 6: PlayerInfo[playerid][OSkin] = 104;
+				default: PlayerInfo[playerid][OSkin] = 102;
+			}
+		}
+		case 5:
+		{
+			switch(rank)
+			{
+				case 1: PlayerInfo[playerid][OSkin] = 114;
+				case 2: PlayerInfo[playerid][OSkin] = 114;
+				case 3: PlayerInfo[playerid][OSkin] = 115;
+				case 4: PlayerInfo[playerid][OSkin] = 115;
+				case 5: PlayerInfo[playerid][OSkin] = 116;
+				case 6: PlayerInfo[playerid][OSkin] = 292;
+				default: PlayerInfo[playerid][OSkin] = 114;
+			}
+		}
+		case 6:
+		{
+			switch(rank)
+			{
+				case 1: PlayerInfo[playerid][OSkin] = 108;
+				case 2: PlayerInfo[playerid][OSkin] = 108;
+				case 3: PlayerInfo[playerid][OSkin] = 108;
+				case 4: PlayerInfo[playerid][OSkin] = 110;
+				case 5: PlayerInfo[playerid][OSkin] = 110;
+				case 6: PlayerInfo[playerid][OSkin] = 109;
+				default: PlayerInfo[playerid][OSkin] = 108;
+			}
+		}
+	}
+
+	SetPlayerSkin(playerid, PlayerInfo[playerid][OSkin]);
+
+	return 1;
 }
 
 stock IsPlayerNearHouseEnter(playerid)
@@ -872,6 +1147,33 @@ stock IsPlayerNearBusinessEnter(playerid)
         if(IsPlayerInRangeOfPoint(playerid, 3.0, BusinessInfo[i][EnterX], BusinessInfo[i][EnterY], BusinessInfo[i][EnterZ])) return i;
     }
     return -1;
+}
+
+stock IsPlayerNearSpecialBusiness(playerid)
+{
+    for(new sb = 0; sb < sizeof(SpecialBusinessInfo); sb++)
+    {
+        if(IsPlayerInRangeOfPoint(playerid, 5.0, SpecialBusinessInfo[sb][EnterX], SpecialBusinessInfo[sb][EnterY], SpecialBusinessInfo[sb][EnterZ])) return sb;
+    }
+
+    return -1;
+}
+
+stock GetOrganizationName(orgid)
+{
+	new orgname[32];
+	switch(orgid)
+	{
+		case 1: orgname = "Los Santos Police Department";
+		case 2: orgname = "FBI";
+		case 3: orgname = "Grove Street Families";
+		case 4: orgname = "Ballas";
+		case 5: orgname = "Varrios Los Aztecas";
+		case 6: orgname = "Los Santos Vagos";
+		default: orgname = "Unknown";
+	}
+
+	return orgname;
 }
 
 public CheckPlayerData(playerid)
@@ -894,7 +1196,7 @@ public OnPlayerDataChecked(playerid)
 	// Check if result has atleast one row, that means player has an account, show him dialog for login
 	if(cache_num_rows() > 0)
 	{
-		cache_get_value_name_int(0, "id", PlayerInfo[playerid][ID]);
+		cache_get_value_name_int(0, "id", PlayerInfo[playerid][Id]);
 		cache_get_value_name(0, "password_digest", player_password, 65);
 		cache_get_value_name_int(0, "gender", PlayerInfo[playerid][Gender]);
 		cache_get_value_name_int(0, "age", PlayerInfo[playerid][Age]);
@@ -1045,7 +1347,7 @@ public SavePlayer(playerid)
 												PlayerInfo[playerid][Mobile],
 												PlayerInfo[playerid][MobileNumber],
 												PlayerInfo[playerid][MobileCredit],
-												PlayerInfo[playerid][ID]);
+												PlayerInfo[playerid][Id]);
 	mysql_pquery(mysql, query);
 	
 	mysql_format(mysql, query, sizeof(query), "UPDATE Users \
@@ -1088,7 +1390,7 @@ public SavePlayer(playerid)
 												PlayerInfo[playerid][OSkin],
 												PlayerInfo[playerid][Wanted],
 												PlayerInfo[playerid][WantedTimes],
-												PlayerInfo[playerid][ID]);
+												PlayerInfo[playerid][Id]);
 	mysql_pquery(mysql, query);
 	
 	mysql_format(mysql, query, sizeof(query), "UPDATE Users \
@@ -1133,7 +1435,7 @@ public SavePlayer(playerid)
 												PlayerInfo[playerid][M4Skill],
 												PlayerInfo[playerid][SniperSkill],
 												PlayerInfo[playerid][FightingStyle],
-												PlayerInfo[playerid][ID]);
+												PlayerInfo[playerid][Id]);
 	mysql_pquery(mysql, query);
 	
 	mysql_format(mysql, query, sizeof(query), "UPDATE Users \
@@ -1146,7 +1448,7 @@ public SavePlayer(playerid)
 												PlayerInfo[playerid][Banned],
 												PlayerInfo[playerid][BannedTime],
 												PlayerInfo[playerid][Skin],
-												PlayerInfo[playerid][ID]);
+												PlayerInfo[playerid][Id]);
 	mysql_pquery(mysql, query);
 
 	return 1;
@@ -1168,7 +1470,7 @@ public OnPasswordHashed(playerid)
 	
 	mysql_format(mysql, query, sizeof(query), "INSERT INTO Users SET \
 												name = '%e', \
-												password_digest = '%e'", playername, PlayerInfo[playerid][Password]);
+												password_digest = '%e", playername, PlayerInfo[playerid][Password]);
 	mysql_tquery(mysql, query, "OnPlayerRegistered", "i", playerid);
 	
 	ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Gender", ""TEXT_COLOR_WHITE"Male\nFemale", "Continue", "Cancel");
@@ -1239,7 +1541,7 @@ public OnVehiclesLoaded()
 	{
 		for(new i = 0; i < cache_num_rows(); i++)
 		{
-			cache_get_value_name_int(i, "id", VehicleInfo[GlobalVehiclesCounter][ID]);
+			cache_get_value_name_int(i, "id", VehicleInfo[GlobalVehiclesCounter][Id]);
 			cache_get_value_name_int(i, "owned", VehicleInfo[GlobalVehiclesCounter][Owned]);
 			cache_get_value_name_int(i, "user_id", VehicleInfo[GlobalVehiclesCounter][Owner]);
 			cache_get_value_name_int(i, "model", VehicleInfo[GlobalVehiclesCounter][Model]);
@@ -1289,7 +1591,7 @@ public LoadVehiclesFuel()
 	}
 }
 
-public InsertVehicle(vehicle_owner, vehicle_model, vehicle_id) 
+public InsertVehicle(vehicle_owner, vehicleModel, vehicle_id) 
 {
 	new query[512];
 	
@@ -1321,11 +1623,11 @@ public InsertVehicle(vehicle_owner, vehicle_model, vehicle_id)
 													vent_right = 0, \
 													vent_left = 0",
 													vehicle_owner,
-													vehicle_model);
+													vehicleModel);
 	mysql_tquery(mysql, query, "OnVehicleInserted", "i", vehicle_id);
 }
 
-public SaveVehicle(vehicleID)
+public SaveVehicle(vehicleId)
 {
 	new query[512];
 	
@@ -1356,136 +1658,136 @@ public SaveVehicle(vehicleID)
 													vent_right = %d, \
 													vent_left = %d \												
 												WHERE id = %d",
-												VehicleInfo[vehicleID][Owned],
-												VehicleInfo[vehicleID][Owner],												
-												VehicleInfo[vehicleID][ParkX], 
-												VehicleInfo[vehicleID][ParkY], 
-												VehicleInfo[vehicleID][ParkZ], 
-												VehicleInfo[vehicleID][ParkA], 
-												VehicleInfo[vehicleID][Color1], 
-												VehicleInfo[vehicleID][Color2], 
-												VehicleInfo[vehicleID][Paintjob],
-												VehicleInfo[vehicleID][Locked],
-												VehicleInfo[vehicleID][Registration],
-												VehicleInfo[vehicleID][Spoiler],
-												VehicleInfo[vehicleID][Hood],
-												VehicleInfo[vehicleID][Roof],
-												VehicleInfo[vehicleID][Side_skirt],
-												VehicleInfo[vehicleID][Lamps],
-												VehicleInfo[vehicleID][Nitro],
-												VehicleInfo[vehicleID][Exhaust],
-												VehicleInfo[vehicleID][Wheels],
-												VehicleInfo[vehicleID][Stereo],
-												VehicleInfo[vehicleID][Hydraulics],
-												VehicleInfo[vehicleID][Front_bumper],
-												VehicleInfo[vehicleID][Rear_bumper],
-												VehicleInfo[vehicleID][Vent_right],
-												VehicleInfo[vehicleID][Vent_left],
-												VehicleInfo[vehicleID][ID]);
+												VehicleInfo[vehicleId][Owned],
+												VehicleInfo[vehicleId][Owner],												
+												VehicleInfo[vehicleId][ParkX], 
+												VehicleInfo[vehicleId][ParkY], 
+												VehicleInfo[vehicleId][ParkZ], 
+												VehicleInfo[vehicleId][ParkA], 
+												VehicleInfo[vehicleId][Color1], 
+												VehicleInfo[vehicleId][Color2], 
+												VehicleInfo[vehicleId][Paintjob],
+												VehicleInfo[vehicleId][Locked],
+												VehicleInfo[vehicleId][Registration],
+												VehicleInfo[vehicleId][Spoiler],
+												VehicleInfo[vehicleId][Hood],
+												VehicleInfo[vehicleId][Roof],
+												VehicleInfo[vehicleId][Side_skirt],
+												VehicleInfo[vehicleId][Lamps],
+												VehicleInfo[vehicleId][Nitro],
+												VehicleInfo[vehicleId][Exhaust],
+												VehicleInfo[vehicleId][Wheels],
+												VehicleInfo[vehicleId][Stereo],
+												VehicleInfo[vehicleId][Hydraulics],
+												VehicleInfo[vehicleId][Front_bumper],
+												VehicleInfo[vehicleId][Rear_bumper],
+												VehicleInfo[vehicleId][Vent_right],
+												VehicleInfo[vehicleId][Vent_left],
+												VehicleInfo[vehicleId][Id]);
 	mysql_pquery(mysql, query);
 
 	return 1;
 }
 
-public OnVehicleInserted(vehicleID)
+public OnVehicleInserted(vehicleId)
 {
-	VehicleInfo[vehicleID][ID] = cache_insert_id();
+	VehicleInfo[vehicleId][Id] = cache_insert_id();
 }
 
 
-public DeleteVehicle(vehicleID) 
+public DeleteVehicle(vehicleId) 
 {
 	new query[512];
 	
 	mysql_format(mysql, query, sizeof(query), "DELETE FROM Vehicles \
 												WHERE id = %d",
-													VehicleInfo[vehicleID][ID]);
+													VehicleInfo[vehicleId][Id]);
 	mysql_tquery(mysql, query);
 }
 
-public SaveVehicleComponents(vehicleID)
+public SaveVehicleComponents(vehicleId)
 {
 	new spoiler, hood, roof, side_skirt, lamps, nitro, exhaust, wheels, stereo, hydraulics, front_bumper, rear_bumper, left_vent, right_vent;
 	
-	spoiler = GetVehicleComponentInSlot(vehicleID, 0);
-	hood = GetVehicleComponentInSlot(vehicleID, 1);
-	roof = GetVehicleComponentInSlot(vehicleID, 2);
-	side_skirt = GetVehicleComponentInSlot(vehicleID, 3);
-	lamps = GetVehicleComponentInSlot(vehicleID, 4);
-	nitro = GetVehicleComponentInSlot(vehicleID, 5);
-	exhaust = GetVehicleComponentInSlot(vehicleID, 6);
-	wheels = GetVehicleComponentInSlot(vehicleID, 7);
-	stereo = GetVehicleComponentInSlot(vehicleID, 8);
-	hydraulics = GetVehicleComponentInSlot(vehicleID, 9);
-	front_bumper = GetVehicleComponentInSlot(vehicleID, 10);
-	rear_bumper = GetVehicleComponentInSlot(vehicleID, 11);
-	right_vent = GetVehicleComponentInSlot(vehicleID, 12);
-	left_vent = GetVehicleComponentInSlot(vehicleID, 13);
+	spoiler = GetVehicleComponentInSlot(vehicleId, 0);
+	hood = GetVehicleComponentInSlot(vehicleId, 1);
+	roof = GetVehicleComponentInSlot(vehicleId, 2);
+	side_skirt = GetVehicleComponentInSlot(vehicleId, 3);
+	lamps = GetVehicleComponentInSlot(vehicleId, 4);
+	nitro = GetVehicleComponentInSlot(vehicleId, 5);
+	exhaust = GetVehicleComponentInSlot(vehicleId, 6);
+	wheels = GetVehicleComponentInSlot(vehicleId, 7);
+	stereo = GetVehicleComponentInSlot(vehicleId, 8);
+	hydraulics = GetVehicleComponentInSlot(vehicleId, 9);
+	front_bumper = GetVehicleComponentInSlot(vehicleId, 10);
+	rear_bumper = GetVehicleComponentInSlot(vehicleId, 11);
+	right_vent = GetVehicleComponentInSlot(vehicleId, 12);
+	left_vent = GetVehicleComponentInSlot(vehicleId, 13);
 
-	if(spoiler != 0) { VehicleInfo[vehicleID][Spoiler] = spoiler; }
-	if(hood != 0) { VehicleInfo[vehicleID][Hood] = hood; }
-	if(roof != 0) { VehicleInfo[vehicleID][Roof] = roof; }
-	if(side_skirt != 0) { VehicleInfo[vehicleID][Side_skirt] = side_skirt; }
-	if(lamps != 0) { VehicleInfo[vehicleID][Lamps] = lamps; }
-	if(nitro != 0) { VehicleInfo[vehicleID][Nitro] = nitro; }
-	if(exhaust != 0) { VehicleInfo[vehicleID][Exhaust] = exhaust; }
-	if(wheels != 0) { VehicleInfo[vehicleID][Wheels] = wheels; }
-	if(stereo != 0) { VehicleInfo[vehicleID][Stereo] = stereo; }
-	if(hydraulics != 0) { VehicleInfo[vehicleID][Hydraulics] = hydraulics; }
-	if(front_bumper != 0) { VehicleInfo[vehicleID][Front_bumper] = front_bumper; }
-	if(rear_bumper != 0) { VehicleInfo[vehicleID][Rear_bumper] = rear_bumper; }
-	if(right_vent != 0) { VehicleInfo[vehicleID][Vent_right] = right_vent; }
-	if(left_vent != 0) { VehicleInfo[vehicleID][Vent_left] = left_vent; }
+	if(spoiler != 0) { VehicleInfo[vehicleId][Spoiler] = spoiler; }
+	if(hood != 0) { VehicleInfo[vehicleId][Hood] = hood; }
+	if(roof != 0) { VehicleInfo[vehicleId][Roof] = roof; }
+	if(side_skirt != 0) { VehicleInfo[vehicleId][Side_skirt] = side_skirt; }
+	if(lamps != 0) { VehicleInfo[vehicleId][Lamps] = lamps; }
+	if(nitro != 0) { VehicleInfo[vehicleId][Nitro] = nitro; }
+	if(exhaust != 0) { VehicleInfo[vehicleId][Exhaust] = exhaust; }
+	if(wheels != 0) { VehicleInfo[vehicleId][Wheels] = wheels; }
+	if(stereo != 0) { VehicleInfo[vehicleId][Stereo] = stereo; }
+	if(hydraulics != 0) { VehicleInfo[vehicleId][Hydraulics] = hydraulics; }
+	if(front_bumper != 0) { VehicleInfo[vehicleId][Front_bumper] = front_bumper; }
+	if(rear_bumper != 0) { VehicleInfo[vehicleId][Rear_bumper] = rear_bumper; }
+	if(right_vent != 0) { VehicleInfo[vehicleId][Vent_right] = right_vent; }
+	if(left_vent != 0) { VehicleInfo[vehicleId][Vent_left] = left_vent; }
 	
-	SaveVehicle(vehicleID);
-	
-	return 1;
-}
-
-public SetVehicleComponents(vehicleID)
-{
-	if(VehicleInfo[vehicleID][Spoiler] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Spoiler]); }
-	if(VehicleInfo[vehicleID][Hood] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Hood]); }
-	if(VehicleInfo[vehicleID][Roof] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Roof]); }
-	if(VehicleInfo[vehicleID][Side_skirt] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Side_skirt]); }
-	if(VehicleInfo[vehicleID][Lamps] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Lamps]); }
-	if(VehicleInfo[vehicleID][Nitro] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Nitro]); }
-	if(VehicleInfo[vehicleID][Exhaust] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Exhaust]); }
-	if(VehicleInfo[vehicleID][Wheels] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Wheels]); }
-	if(VehicleInfo[vehicleID][Stereo] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Stereo]); }
-	if(VehicleInfo[vehicleID][Hydraulics] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Hydraulics]); }
-	if(VehicleInfo[vehicleID][Front_bumper] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Front_bumper]); }
-	if(VehicleInfo[vehicleID][Rear_bumper] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Rear_bumper]); }
-	if(VehicleInfo[vehicleID][Vent_right] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Vent_right]); }
-	if(VehicleInfo[vehicleID][Vent_left] >= 0) { AddVehicleComponent(vehicleID, VehicleInfo[vehicleID][Vent_left]); }
+	SaveVehicle(vehicleId);
 	
 	return 1;
 }
 
-public RemoveVehicleComponents(vehicleID)
+public SetVehicleComponents(vehicleId)
 {
-    VehicleInfo[vehicleID][Spoiler] = 0;
-    VehicleInfo[vehicleID][Hood] = 0;
-    VehicleInfo[vehicleID][Roof] = 0;
-    VehicleInfo[vehicleID][Side_skirt] = 0;
-    VehicleInfo[vehicleID][Lamps] = 0;
-    VehicleInfo[vehicleID][Nitro] = 0;
-    VehicleInfo[vehicleID][Exhaust] = 0;
-    VehicleInfo[vehicleID][Wheels] = 0;
-    VehicleInfo[vehicleID][Stereo] = 0;
-    VehicleInfo[vehicleID][Hydraulics] = 0;
-    VehicleInfo[vehicleID][Front_bumper] = 0;
-    VehicleInfo[vehicleID][Rear_bumper] = 0;
-    VehicleInfo[vehicleID][Vent_right] = 0;
-    VehicleInfo[vehicleID][Vent_left] = 0;
+	if(VehicleInfo[vehicleId][Spoiler] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Spoiler]); }
+	if(VehicleInfo[vehicleId][Hood] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Hood]); }
+	if(VehicleInfo[vehicleId][Roof] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Roof]); }
+	if(VehicleInfo[vehicleId][Side_skirt] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Side_skirt]); }
+	if(VehicleInfo[vehicleId][Lamps] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Lamps]); }
+	if(VehicleInfo[vehicleId][Nitro] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Nitro]); }
+	if(VehicleInfo[vehicleId][Exhaust] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Exhaust]); }
+	if(VehicleInfo[vehicleId][Wheels] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Wheels]); }
+	if(VehicleInfo[vehicleId][Stereo] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Stereo]); }
+	if(VehicleInfo[vehicleId][Hydraulics] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Hydraulics]); }
+	if(VehicleInfo[vehicleId][Front_bumper] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Front_bumper]); }
+	if(VehicleInfo[vehicleId][Rear_bumper] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Rear_bumper]); }
+	if(VehicleInfo[vehicleId][Vent_right] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Vent_right]); }
+	if(VehicleInfo[vehicleId][Vent_left] >= 0) { AddVehicleComponent(vehicleId, VehicleInfo[vehicleId][Vent_left]); }
 	
-    SaveVehicle(vehicleID);
 	return 1;
 }
 
-public GetVehiclePrice(vehicleID)
+public RemoveVehicleComponents(vehicleId)
 {
-	new model = GetVehicleModel(vehicleID);
+    VehicleInfo[vehicleId][Spoiler] = 0;
+    VehicleInfo[vehicleId][Hood] = 0;
+    VehicleInfo[vehicleId][Roof] = 0;
+    VehicleInfo[vehicleId][Side_skirt] = 0;
+    VehicleInfo[vehicleId][Lamps] = 0;
+    VehicleInfo[vehicleId][Nitro] = 0;
+    VehicleInfo[vehicleId][Exhaust] = 0;
+    VehicleInfo[vehicleId][Wheels] = 0;
+    VehicleInfo[vehicleId][Stereo] = 0;
+    VehicleInfo[vehicleId][Hydraulics] = 0;
+    VehicleInfo[vehicleId][Front_bumper] = 0;
+    VehicleInfo[vehicleId][Rear_bumper] = 0;
+    VehicleInfo[vehicleId][Vent_right] = 0;
+    VehicleInfo[vehicleId][Vent_left] = 0;
+	
+    SaveVehicle(vehicleId);
+	return 1;
+}
+
+public GetVehiclePrice(vehicleId)
+{
+	new model = GetVehicleModel(vehicleId);
 	if(model == 400) return 3700; // LANDSTALKER
 	else if(model == 401) return 3000; // BRAVURA
 	else if(model == 402) return 5000; // BUFFALO
@@ -1701,9 +2003,9 @@ public GetVehiclePrice(vehicleID)
 	else return 0;
 }
 
-public GetVehicleName(vehicleID, model[], len)
+public GetVehicleName(vehicleId, model[], len)
 {
-	new model_id = GetVehicleModel(vehicleID);
+	new model_id = GetVehicleModel(vehicleId);
 	if(model_id == 400) return format(model, len, "Landstalker", 0);
 	else if(model_id == 401) return format(model, len, "Bravura", 0);
 	else if(model_id == 402) return format(model, len, "Buffalo", 0);
@@ -1958,39 +2260,52 @@ public BusinessStopOffer(playerid, target)
 	BusinessOfferPrice[target] = 0;
 }
 
-stock GetVehicleOwnerName(vehicleID)
+stock GetVehicleOwnerName(vehicleId)
 {
 	new query[256], playerName[MAX_PLAYER_NAME];
 	
 	mysql_format(mysql, query, sizeof(query), "SELECT Name \
 												FROM Users \
-												WHERE ID = %d", VehicleInfo[vehicleID][Owner]);
+												WHERE Id = %d", VehicleInfo[vehicleId][Owner]);
     mysql_query(mysql, query);
 	cache_get_value_name(0, "Name", playerName);
 	
 	return playerName;
 }
 
-stock GetHouseOwnerName(house_id)
+stock GetHouseOwnerName(houseId)
 {
 	new query[256], playerName[MAX_PLAYER_NAME];
 	
 	mysql_format(mysql, query, sizeof(query), "SELECT Name \
 												FROM Users \
-												WHERE ID = %d", HouseInfo[house_id][Owner]);
+												WHERE Id = %d", HouseInfo[houseId][Owner]);
     mysql_query(mysql, query);
 	cache_get_value_name(0, "Name", playerName);
 	
 	return playerName;
 }
 
-stock GetBusinessOwnerName(business_id)
+stock GetBusinessOwnerName(businessId)
 {
 	new query[256], playerName[MAX_PLAYER_NAME];
 	
 	mysql_format(mysql, query, sizeof(query), "SELECT Name \
 												FROM Users \
-												WHERE ID = %d", BusinessInfo[business_id][Owner]);
+												WHERE Id = %d", BusinessInfo[businessId][Owner]);
+    mysql_query(mysql, query);
+	cache_get_value_name(0, "Name", playerName);
+	
+	return playerName;
+}
+
+stock GetSpecialBusinessOwnerName(businessId)
+{
+	new query[256], playerName[MAX_PLAYER_NAME];
+	
+	mysql_format(mysql, query, sizeof(query), "SELECT Name \
+												FROM Users \
+												WHERE Id = %d", SpecialBusinessInfo[businessId][Owner]);
     mysql_query(mysql, query);
 	cache_get_value_name(0, "Name", playerName);
 	
@@ -2013,7 +2328,7 @@ public OnHousesLoaded()
 	{
 		for(new i = 0; i < cache_num_rows(); i++)
 		{
-			cache_get_value_name_int(i, "id", HouseInfo[GlobalHousesCounter][ID]);
+			cache_get_value_name_int(i, "id", HouseInfo[GlobalHousesCounter][Id]);
 			cache_get_value_name_int(i, "owned", HouseInfo[GlobalHousesCounter][Owned]);
 			cache_get_value_name_int(i, "user_id", HouseInfo[GlobalHousesCounter][Owner]);
 			cache_get_value_name_int(i, "price", HouseInfo[GlobalHousesCounter][Price]);
@@ -2041,25 +2356,19 @@ public OnHousesLoaded()
 			
 			if(HouseInfo[GlobalHousesCounter][Owned] == 0)
 			{
-				new message[256];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has no owner !\n "TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d \n To buy this house \n type "TEXT_COLOR_RED"/h buy", HouseInfo[GlobalHousesCounter][ID], HouseInfo[GlobalHousesCounter][Price]);
-				HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1273, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
-				HousesLabels[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
+				SetUnownedHouseLabel(GlobalHousesCounter);
 				GlobalHousesCounter++;
 			}
 			else
 			{
-				new message[256];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has owner !\n "TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(GlobalHousesCounter), HouseInfo[GlobalHousesCounter][ID]);
-				HouseInfo[GlobalHousesCounter][Icon] = CreatePickup(1272, 1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], HouseInfo[GlobalHousesCounter][OutsideVirtualWorld]);
-				HousesLabels[GlobalHousesCounter] = Create3DTextLabel(message, -1, HouseInfo[GlobalHousesCounter][EnterX], HouseInfo[GlobalHousesCounter][EnterY], HouseInfo[GlobalHousesCounter][EnterZ], 10.0, HouseInfo[GlobalHousesCounter][OutsideVirtualWorld], 0);
+				SetOwnedHouseLabel(GlobalHousesCounter);
 				GlobalHousesCounter++;
 			}		
 		}
 	}
 }
 
-public InsertHouse(house_id) 
+public InsertHouse(houseId) 
 {
 	new query[512];
 	
@@ -2088,47 +2397,40 @@ public InsertHouse(house_id)
 													slot3_ammo = 0, \
 													materials = 0, \
 													drugs = 0",
-													HouseInfo[house_id][Owner],
-													HouseInfo[house_id][Price],
-													HouseInfo[house_id][EnterX],
-													HouseInfo[house_id][EnterY],
-													HouseInfo[house_id][EnterZ],
-													HouseInfo[house_id][EnterA],
-													HouseInfo[house_id][ExitX],
-													HouseInfo[house_id][ExitY],
-													HouseInfo[house_id][ExitZ],
-													HouseInfo[house_id][ExitA],
-													HouseInfo[house_id][OutsideInterior],
-													HouseInfo[house_id][OutsideVirtualWorld],
-													HouseInfo[house_id][InsideInterior],
-													HouseInfo[house_id][InsideVirtualWorld]);
-	mysql_tquery(mysql, query, "OnHouseInserted", "i", house_id);
+													HouseInfo[houseId][Owner],
+													HouseInfo[houseId][Price],
+													HouseInfo[houseId][EnterX],
+													HouseInfo[houseId][EnterY],
+													HouseInfo[houseId][EnterZ],
+													HouseInfo[houseId][EnterA],
+													HouseInfo[houseId][ExitX],
+													HouseInfo[houseId][ExitY],
+													HouseInfo[houseId][ExitZ],
+													HouseInfo[houseId][ExitA],
+													HouseInfo[houseId][OutsideInterior],
+													HouseInfo[houseId][OutsideVirtualWorld],
+													HouseInfo[houseId][InsideInterior],
+													HouseInfo[houseId][InsideVirtualWorld]);
+	mysql_tquery(mysql, query, "OnHouseInserted", "i", houseId);
 }
 
-public OnHouseInserted(house_id)
-{
-	new message[512];
-	
-	HouseInfo[house_id][ID] = cache_insert_id();
-	
-	if(HouseInfo[house_id][Icon]) DestroyPickup(HouseInfo[house_id][Icon]);
-    HouseInfo[house_id][Icon] = CreatePickup(1273, 1, HouseInfo[house_id][EnterX], HouseInfo[house_id][EnterY], HouseInfo[house_id][EnterZ], HouseInfo[house_id][OutsideVirtualWorld]);
-
-	format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has no owner !\n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"Price"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"To buy this house \n type /h buy", house_id, HouseInfo[house_id][Price]);
-    HousesLabels[house_id] = Create3DTextLabel(message, -1, HouseInfo[house_id][EnterX], HouseInfo[house_id][EnterY], HouseInfo[house_id][EnterZ], 20.0, HouseInfo[house_id][OutsideVirtualWorld]);
+public OnHouseInserted(houseId)
+{	
+	HouseInfo[houseId][Id] = cache_insert_id();
+	SetUnownedHouseLabel(houseId);
 }
 
-public DeleteHouse(house_id) 
+public DeleteHouse(houseId) 
 {
 	new query[512];
 	
 	mysql_format(mysql, query, sizeof(query), "DELETE FROM Houses \
 												WHERE id = %d",
-													HouseInfo[house_id][ID]);
+													HouseInfo[houseId][Id]);
 	mysql_tquery(mysql, query);
 }
 
-public SaveHouse(house_id)
+public SaveHouse(houseId)
 {
 	new query[512];
 	
@@ -2158,32 +2460,64 @@ public SaveHouse(house_id)
 													materials = %d, \
 													drugs = %d \												
 												WHERE id = %d",
-												HouseInfo[house_id][Owned],
-												HouseInfo[house_id][Owner],												
-												HouseInfo[house_id][Price],
-												HouseInfo[house_id][Locked],
-												HouseInfo[house_id][EnterX], 
-												HouseInfo[house_id][EnterY], 
-												HouseInfo[house_id][EnterZ], 
-												HouseInfo[house_id][EnterA], 
-												HouseInfo[house_id][ExitX],
-												HouseInfo[house_id][ExitY],
-												HouseInfo[house_id][ExitZ],
-												HouseInfo[house_id][ExitA],
-												HouseInfo[house_id][OutsideInterior],
-												HouseInfo[house_id][OutsideVirtualWorld],
-												HouseInfo[house_id][InsideInterior],
-												HouseInfo[house_id][InsideVirtualWorld],
-												HouseInfo[house_id][Slot1],
-												HouseInfo[house_id][Slot1_ammo],
-												HouseInfo[house_id][Slot2],
-												HouseInfo[house_id][Slot2_ammo],
-												HouseInfo[house_id][Slot3],
-												HouseInfo[house_id][Slot3_ammo],
-												HouseInfo[house_id][Materials],
-												HouseInfo[house_id][Drugs],
-												HouseInfo[house_id][ID]);
+												HouseInfo[houseId][Owned],
+												HouseInfo[houseId][Owner],												
+												HouseInfo[houseId][Price],
+												HouseInfo[houseId][Locked],
+												HouseInfo[houseId][EnterX], 
+												HouseInfo[houseId][EnterY], 
+												HouseInfo[houseId][EnterZ], 
+												HouseInfo[houseId][EnterA], 
+												HouseInfo[houseId][ExitX],
+												HouseInfo[houseId][ExitY],
+												HouseInfo[houseId][ExitZ],
+												HouseInfo[houseId][ExitA],
+												HouseInfo[houseId][OutsideInterior],
+												HouseInfo[houseId][OutsideVirtualWorld],
+												HouseInfo[houseId][InsideInterior],
+												HouseInfo[houseId][InsideVirtualWorld],
+												HouseInfo[houseId][Slot1],
+												HouseInfo[houseId][Slot1_ammo],
+												HouseInfo[houseId][Slot2],
+												HouseInfo[houseId][Slot2_ammo],
+												HouseInfo[houseId][Slot3],
+												HouseInfo[houseId][Slot3_ammo],
+												HouseInfo[houseId][Materials],
+												HouseInfo[houseId][Drugs],
+												HouseInfo[houseId][Id]);
 	mysql_pquery(mysql, query);
+
+	return 1;
+}
+
+public SetUnownedHouseLabel(houseId)
+{
+	new message[1024];
+
+	if(HouseInfo[houseId][Icon]) DestroyPickup(HouseInfo[houseId][Icon]);
+    HouseInfo[houseId][Icon] = CreatePickup(1273, 1, HouseInfo[houseId][EnterX], HouseInfo[houseId][EnterY], HouseInfo[houseId][EnterZ], HouseInfo[houseId][OutsideVirtualWorld]);
+
+	format(message, sizeof(message), 
+					""TEXT_COLOR_WHITE"This house has no owner !\n \
+					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_WHITE"To buy this house \n \
+					"TEXT_COLOR_RED"type /h buy", HouseInfo[houseId][Id], HouseInfo[houseId][Price]);
+    HouseLabels[houseId] = Create3DTextLabel(message, -1, HouseInfo[houseId][EnterX], HouseInfo[houseId][EnterY], HouseInfo[houseId][EnterZ], 20.0, HouseInfo[houseId][OutsideVirtualWorld]);
+
+	return 1;
+}
+
+public SetOwnedHouseLabel(houseId)
+{
+	new message[1024];
+	
+	format(message, sizeof(message), 
+					""TEXT_COLOR_WHITE"This house has owner !\n \
+					"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n \
+					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(houseId), HouseInfo[houseId][Id]);
+	HouseInfo[houseId][Icon] = CreatePickup(1272, 1, HouseInfo[houseId][EnterX], HouseInfo[houseId][EnterY], HouseInfo[houseId][EnterZ], HouseInfo[houseId][OutsideVirtualWorld]);
+	HouseLabels[houseId] = Create3DTextLabel(message, -1, HouseInfo[houseId][EnterX], HouseInfo[houseId][EnterY], HouseInfo[houseId][EnterZ], 10.0, HouseInfo[houseId][OutsideVirtualWorld], 0);
 
 	return 1;
 }
@@ -2204,10 +2538,10 @@ public OnBusinessesLoaded()
 	{
 		for(new i = 0; i < cache_num_rows(); i++)
 		{
-			cache_get_value_name_int(i, "id", BusinessInfo[GlobalBusinessesCounter][ID]);
+			cache_get_value_name_int(i, "id", BusinessInfo[GlobalBusinessesCounter][Id]);
 			cache_get_value_name_int(i, "owned", BusinessInfo[GlobalBusinessesCounter][Owned]);
 			cache_get_value_name_int(i, "user_id", BusinessInfo[GlobalBusinessesCounter][Owner]);
-			cache_get_value_name_int(i, "name", BusinessInfo[GlobalBusinessesCounter][Name]);
+			cache_get_value_name(i, "name", BusinessInfo[GlobalBusinessesCounter][Name]);
 			cache_get_value_name_int(i, "price", BusinessInfo[GlobalBusinessesCounter][Price]);
 			cache_get_value_name_int(i, "locked", BusinessInfo[GlobalBusinessesCounter][Locked]);
 			cache_get_value_name_int(i, "money", BusinessInfo[GlobalBusinessesCounter][Money]);
@@ -2229,30 +2563,25 @@ public OnBusinessesLoaded()
 			BusinessInfo[GlobalBusinessesCounter][Icon] = CreatePickup(1274, 1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld]);
 			if(BusinessInfo[GlobalBusinessesCounter][Owned] == 0)
 			{
-				new message[256];
-				format(message, sizeof(message), "This business has no owner!\n"TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_WHITE"To buy this business, kucajttypeypete /b buy", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], BusinessInfo[GlobalBusinessesCounter][Price]);
-				BusinessLabels[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
+				SetUnownedBusinessLabel(GlobalBusinessesCounter);
 				GlobalBusinessesCounter++;
 			}
 			if(BusinessInfo[GlobalBusinessesCounter][Owned] == 1)
 			{
-				new message[512];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE"This business has owner!\n "TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Enter fee"TEXT_COLOR_WHITE": %d", BusinessInfo[GlobalBusinessesCounter][Name], BusinessInfo[GlobalBusinessesCounter][ID], GetBusinessOwnerName(BusinessInfo[GlobalBusinessesCounter][Owner]), BusinessInfo[GlobalBusinessesCounter][EnterFee]);
-				BusinessLabels[GlobalBusinessesCounter] = Create3DTextLabel(message, -1, BusinessInfo[GlobalBusinessesCounter][EnterX], BusinessInfo[GlobalBusinessesCounter][EnterY], BusinessInfo[GlobalBusinessesCounter][EnterZ], 20.0, BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld], 0);
+				SetOwnedBusinessLabel(GlobalBusinessesCounter);
 				GlobalBusinessesCounter++;
 			}	
 		}
 	}
 }
 
-public InsertBusiness(business_id) 
+public InsertBusiness(businessId) 
 {
 	new query[512];
 	
 	mysql_format(mysql, query, sizeof(query), "INSERT INTO Businesses SET \
 													owned = 0, \
-													user_id = %d, \
-													name = %s, \
+													name = '%s', \
 													price = %d, \
 													locked = 0, \
 													money = 0, \
@@ -2270,49 +2599,39 @@ public InsertBusiness(business_id)
 													outside_virtual_world = %d, \
 													inside_interior = %d, \
 													inside_virtual_world = %d",
-													BusinessInfo[business_id][Owner],
-													BusinessInfo[business_id][Name],
-													BusinessInfo[business_id][Price],
-													BusinessInfo[business_id][EnterX],
-													BusinessInfo[business_id][EnterY],
-													BusinessInfo[business_id][EnterZ],
-													BusinessInfo[business_id][EnterA],
-													BusinessInfo[business_id][ExitX],
-													BusinessInfo[business_id][ExitY],
-													BusinessInfo[business_id][ExitZ],
-													BusinessInfo[business_id][ExitA],
-													BusinessInfo[business_id][Type],
-													BusinessInfo[business_id][OutsideInterior],
-													BusinessInfo[business_id][OutsideVirtualWorld],
-													BusinessInfo[business_id][InsideInterior],
-													BusinessInfo[business_id][InsideVirtualWorld]);
-	mysql_tquery(mysql, query, "OnBusinessInserted", "i", business_id);
+													BusinessInfo[businessId][Name],
+													BusinessInfo[businessId][Price],
+													BusinessInfo[businessId][EnterX],
+													BusinessInfo[businessId][EnterY],
+													BusinessInfo[businessId][EnterZ],
+													BusinessInfo[businessId][EnterA],
+													BusinessInfo[businessId][ExitX],
+													BusinessInfo[businessId][ExitY],
+													BusinessInfo[businessId][ExitZ],
+													BusinessInfo[businessId][ExitA],
+													BusinessInfo[businessId][Type],
+													BusinessInfo[businessId][OutsideInterior],
+													BusinessInfo[businessId][OutsideVirtualWorld],
+													BusinessInfo[businessId][InsideInterior],
+													BusinessInfo[businessId][InsideVirtualWorld]);
+	mysql_tquery(mysql, query, "OnBusinessInserted", "i", businessId);
 }
 
-public OnBusinessInserted(business_id)
+public OnBusinessInserted(businessId)
 {
-	new message[256];
-
-	BusinessInfo[business_id][ID] = cache_insert_id();
+	BusinessInfo[businessId][Id] = cache_insert_id();
 	
-	if(BusinessInfo[business_id][ExitIcon]) DestroyPickup(BusinessInfo[business_id][ExitIcon]);
-    if(BusinessInfo[business_id][Icon]) DestroyPickup(BusinessInfo[business_id][Icon]);
-    BusinessInfo[business_id][Icon] = CreatePickup(1274, 1, BusinessInfo[business_id][EnterX], BusinessInfo[business_id][EnterY], BusinessInfo[business_id][EnterZ], BusinessInfo[business_id][OutsideVirtualWorld]);
-
-    format(message, sizeof(message), ""TEXT_COLOR_WHITE" This business has no owner !\n "TEXT_COLOR_BLUE"Price"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_BLUE"ID"TEXT_COLOR_WHITE": %d \n To buy this business \n type "TEXT_COLOR_BLUE"/b buy", BusinessInfo[business_id][Price], BusinessInfo[business_id][ID]);
-    BusinessLabels[business_id] = Create3DTextLabel(message, -1, BusinessInfo[business_id][EnterX], BusinessInfo[business_id][EnterY], BusinessInfo[business_id][EnterZ], 20.0, BusinessInfo[business_id][OutsideVirtualWorld]);
-
 	return 1;
 }
 
-public SaveBusiness(business_id)
+public SaveBusiness(businessId)
 {
 	new query[512];
-	
+	printf("Name je %s", BusinessInfo[businessId][Name]);
 	mysql_format(mysql, query, sizeof(query), "UPDATE Businesses \
 												SET owned = %d, \
 													user_id = %d, \
-													name = %s, \
+													name = '%s', \
 													price = %d, \
 													locked = %d, \
 													money = %d, \
@@ -2331,39 +2650,220 @@ public SaveBusiness(business_id)
 													inside_interior = %d, \
 													inside_virtual_world = %d \												
 												WHERE id = %d",
-												BusinessInfo[business_id][Owned],
-												BusinessInfo[business_id][Owner],
-												BusinessInfo[business_id][Name],												
-												BusinessInfo[business_id][Price],  
-												BusinessInfo[business_id][Locked],											
-												BusinessInfo[business_id][Money],  											
-												BusinessInfo[business_id][EnterFee],  
-												BusinessInfo[business_id][EnterX], 
-												BusinessInfo[business_id][EnterY], 
-												BusinessInfo[business_id][EnterZ], 
-												BusinessInfo[business_id][EnterA], 
-												BusinessInfo[business_id][ExitX],
-												BusinessInfo[business_id][ExitY],
-												BusinessInfo[business_id][ExitZ],
-												BusinessInfo[business_id][ExitA],
-												BusinessInfo[business_id][Type],
-												BusinessInfo[business_id][OutsideInterior],
-												BusinessInfo[business_id][OutsideVirtualWorld],
-												BusinessInfo[business_id][InsideInterior],
-												BusinessInfo[business_id][InsideVirtualWorld],
-												BusinessInfo[business_id][ID]);
+												BusinessInfo[businessId][Owned],
+												BusinessInfo[businessId][Owner],
+												BusinessInfo[businessId][Name],												
+												BusinessInfo[businessId][Price],  
+												BusinessInfo[businessId][Locked],											
+												BusinessInfo[businessId][Money],  											
+												BusinessInfo[businessId][EnterFee],  
+												BusinessInfo[businessId][EnterX], 
+												BusinessInfo[businessId][EnterY], 
+												BusinessInfo[businessId][EnterZ], 
+												BusinessInfo[businessId][EnterA], 
+												BusinessInfo[businessId][ExitX],
+												BusinessInfo[businessId][ExitY],
+												BusinessInfo[businessId][ExitZ],
+												BusinessInfo[businessId][ExitA],
+												BusinessInfo[businessId][Type],
+												BusinessInfo[businessId][OutsideInterior],
+												BusinessInfo[businessId][OutsideVirtualWorld],
+												BusinessInfo[businessId][InsideInterior],
+												BusinessInfo[businessId][InsideVirtualWorld],
+												BusinessInfo[businessId][Id]);
 	mysql_pquery(mysql, query);
 
 	return 1;
 }
 
-public DeleteBusiness(business_id) 
+public DeleteBusiness(businessId) 
 {
 	new query[512];
 	
 	mysql_format(mysql, query, sizeof(query), "DELETE FROM Businesses \
 												WHERE id = %d",
-													BusinessInfo[business_id][ID]);
+													BusinessInfo[businessId][Id]);
+	mysql_tquery(mysql, query);
+}
+
+public SetUnownedBusinessLabel(businessId)
+{
+	new message[1024];
+
+	if(BusinessInfo[businessId][ExitIcon]) DestroyPickup(BusinessInfo[businessId][ExitIcon]);
+    if(BusinessInfo[businessId][Icon]) DestroyPickup(BusinessInfo[businessId][Icon]);
+    BusinessInfo[businessId][Icon] = CreatePickup(1274, 1, BusinessInfo[businessId][EnterX], BusinessInfo[businessId][EnterY], BusinessInfo[businessId][EnterZ], BusinessInfo[businessId][OutsideVirtualWorld]);
+	BusinessInfo[businessId][ExitIcon] = CreatePickup(1239, 1, BusinessInfo[businessId][ExitX], BusinessInfo[businessId][ExitY], BusinessInfo[businessId][ExitZ], BusinessInfo[businessId][InsideVirtualWorld]);
+
+    format(message, sizeof(message), 
+					""TEXT_COLOR_WHITE" This business has no owner !\n \
+					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_RED"Type"TEXT_COLOR_WHITE": %s \n \
+					To buy this business \n \
+					"TEXT_COLOR_RED"type /b buy", BusinessInfo[businessId][Id], GetBusinessTypeName(businessId), BusinessInfo[businessId][Price]);
+    BusinessLabels[businessId] = Create3DTextLabel(message, -1, BusinessInfo[businessId][EnterX], BusinessInfo[businessId][EnterY], BusinessInfo[businessId][EnterZ], 20.0, BusinessInfo[businessId][OutsideVirtualWorld]);
+	BusinessLabels[businessId] = Create3DTextLabel("Exit", -1, BusinessInfo[businessId][ExitX], BusinessInfo[businessId][ExitY], BusinessInfo[businessId][ExitZ], 20.0, BusinessInfo[businessId][InsideVirtualWorld]);
+
+	return 1;
+}
+
+public SetOwnedBusinessLabel(businessId)
+{
+	new message[1024];
+
+	if(BusinessInfo[businessId][ExitIcon]) DestroyPickup(BusinessInfo[businessId][ExitIcon]);
+    if(BusinessInfo[businessId][Icon]) DestroyPickup(BusinessInfo[businessId][Icon]);
+    BusinessInfo[businessId][Icon] = CreatePickup(1274, 1, BusinessInfo[businessId][EnterX], BusinessInfo[businessId][EnterY], BusinessInfo[businessId][EnterZ], BusinessInfo[businessId][OutsideVirtualWorld]);
+	BusinessInfo[businessId][ExitIcon] = CreatePickup(1239, 1, BusinessInfo[businessId][ExitX], BusinessInfo[businessId][ExitY], BusinessInfo[businessId][ExitZ], BusinessInfo[businessId][InsideVirtualWorld]);
+
+    format(message, sizeof(message), 
+					""TEXT_COLOR_WHITE" This business has owner !\n \
+					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s \n \
+					"TEXT_COLOR_RED"Enter fee"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_RED"Type"TEXT_COLOR_WHITE": %s \n \
+					To buy this business \n \
+					"TEXT_COLOR_RED"type /b buy", GetBusinessOwnerName(businessId), BusinessInfo[businessId][Id], BusinessInfo[businessId][EnterFee], GetBusinessTypeName(businessId));
+    BusinessLabels[businessId] = Create3DTextLabel(message, -1, BusinessInfo[businessId][EnterX], BusinessInfo[businessId][EnterY], BusinessInfo[businessId][EnterZ], 20.0, BusinessInfo[businessId][OutsideVirtualWorld]);
+	BusinessLabels[businessId] = Create3DTextLabel("Exit", -1, BusinessInfo[businessId][ExitX], BusinessInfo[businessId][ExitY], BusinessInfo[businessId][ExitZ], 20.0, BusinessInfo[businessId][InsideVirtualWorld]);
+
+	return 1;
+}
+
+public LoadSpecialBusinesses()
+{
+	new query[256];
+	
+	mysql_format(mysql, query, sizeof(query), "SELECT * FROM SPECIAL_BUSINESSES");
+	mysql_tquery(mysql, query, "OnBusinessesLoaded");
+	
+	return 0;
+}
+
+public OnSpecialBusinessesLoaded()
+{
+	if(cache_num_rows() > 0)
+	{
+		for(new i = 0; i < cache_num_rows(); i++)
+		{
+			cache_get_value_name_int(i, "id", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id]);
+			cache_get_value_name_int(i, "owned", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owned]);
+			cache_get_value_name_int(i, "user_id", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owner]);
+			cache_get_value_name_int(i, "name", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name]);
+			cache_get_value_name_int(i, "description", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description]);
+			cache_get_value_name_int(i, "price", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Price]);
+			cache_get_value_name_int(i, "money", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Money]);
+			cache_get_value_name_int(i, "enter_fee", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterFee]);
+			cache_get_value_name_float(i, "enterX", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX]);
+			cache_get_value_name_float(i, "enterY", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY]);
+			cache_get_value_name_float(i, "enterZ", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ]);
+			cache_get_value_name_float(i, "enterA", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterA]);
+			
+			SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Icon] = CreatePickup(1274, 1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 0);
+			if(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owned] == 0)
+			{
+				new message[256];
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE" This special business has no owner !\nFor more information visit forum!\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s",  SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description]);
+				SpecialBusinessLabels[GlobalSpecialBusinessesCounter] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0, 0);
+				GlobalSpecialBusinessesCounter++;
+			}
+			if(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owned] == 1)
+			{
+				new message[512];
+				format(message, sizeof(message), ""TEXT_COLOR_WHITE"This special business has owner!\n "TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Enter fee"TEXT_COLOR_WHITE": %d", 
+													SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name], 
+													SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id], 
+													GetSpecialBusinessOwnerName(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owner]), 
+													SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterFee]);
+
+				SpecialBusinessLabels[GlobalSpecialBusinessesCounter] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0, 0);
+				GlobalSpecialBusinessesCounter++;
+			}	
+		}
+	}
+}
+
+public InsertSpecialBusiness(specialBusinessId) 
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "INSERT INTO SPECIAL_BUSINESSES SET \
+													owned = 0, \
+													name = '%s', \
+													description = '%s', \
+													price = %d, \
+													money = 0, \
+													enter_fee = 0, \
+													enterX = %f, \
+													enterY = %f, \
+													enterZ = %f, \
+													enterA = %f",
+													SpecialBusinessInfo[specialBusinessId][Name],
+													SpecialBusinessInfo[specialBusinessId][Description],
+													SpecialBusinessInfo[specialBusinessId][Price],
+													SpecialBusinessInfo[specialBusinessId][EnterX],
+													SpecialBusinessInfo[specialBusinessId][EnterY],
+													SpecialBusinessInfo[specialBusinessId][EnterZ],
+													SpecialBusinessInfo[specialBusinessId][EnterA]);
+	mysql_tquery(mysql, query, "OnSpecialBusinessInserted", "i", specialBusinessId);
+}
+
+public OnSpecialBusinessInserted(specialBusinessId)
+{
+	new message[256];
+
+	SpecialBusinessInfo[specialBusinessId][Id] = cache_insert_id();
+    if(SpecialBusinessInfo[specialBusinessId][Icon]) DestroyPickup(SpecialBusinessInfo[specialBusinessId][Icon]);
+    SpecialBusinessInfo[specialBusinessId][Icon] = CreatePickup(1274, 1, SpecialBusinessInfo[specialBusinessId][EnterX], SpecialBusinessInfo[specialBusinessId][EnterY], SpecialBusinessInfo[specialBusinessId][EnterZ], 0);
+
+    format(message, sizeof(message), ""TEXT_COLOR_WHITE" This special business has no owner !\nFor more information visit forum!\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s",  SpecialBusinessInfo[specialBusinessId][Name], SpecialBusinessInfo[specialBusinessId][Id], SpecialBusinessInfo[specialBusinessId][Description]);
+    SpecialBusinessLabels[specialBusinessId] = Create3DTextLabel(message, -1, SpecialBusinessInfo[specialBusinessId][EnterX], SpecialBusinessInfo[specialBusinessId][EnterY], SpecialBusinessInfo[specialBusinessId][EnterZ], 20.0, 0);
+
+	return 1;
+}
+
+public SaveSpecialBusiness(specialBusinessId)
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "UPDATE SPECIAL_BUSINESSES \
+												SET owned = %d, \
+													user_id = %d, \
+													name = '%s', \
+													description = '%s', \
+													price = %d, \
+													money = %d, \
+													enter_fee = %d, \
+													enterX = %f, \
+													enterY = %f, \
+													enterZ = %f, \
+													enterA = %f \											
+												WHERE id = %d",
+												SpecialBusinessInfo[specialBusinessId][Owned],
+												SpecialBusinessInfo[specialBusinessId][Owner],
+												SpecialBusinessInfo[specialBusinessId][Name],												
+												SpecialBusinessInfo[specialBusinessId][Description],
+												SpecialBusinessInfo[specialBusinessId][Price],  										
+												SpecialBusinessInfo[specialBusinessId][Money],  											
+												SpecialBusinessInfo[specialBusinessId][EnterFee],  
+												SpecialBusinessInfo[specialBusinessId][EnterX], 
+												SpecialBusinessInfo[specialBusinessId][EnterY], 
+												SpecialBusinessInfo[specialBusinessId][EnterZ], 
+												SpecialBusinessInfo[specialBusinessId][EnterA],
+												SpecialBusinessInfo[specialBusinessId][Id]);
+	mysql_pquery(mysql, query);
+
+	return 1;
+}
+
+public DeleteSpecialBusiness(specialBusinessId) 
+{
+	new query[512];
+	
+	mysql_format(mysql, query, sizeof(query), "DELETE FROM SPECIAL_BUSINESSES \
+												WHERE id = %d",
+												SpecialBusinessInfo[specialBusinessId][Id]);
 	mysql_tquery(mysql, query);
 }
 
@@ -2371,7 +2871,7 @@ public OnAccountLoad(playerid)
 {
 	if(cache_num_rows() > 0)
 	{
-		cache_get_value_name_int(0, "ID", PlayerInfo[playerid][ID]);
+		cache_get_value_name_int(0, "Id", PlayerInfo[playerid][Id]);
 
 		SendClientMessage(playerid, -1, "Welcome back.");
 	}
@@ -2403,49 +2903,49 @@ public AntiRoleplayName(playerid, playerName[])
 	return 1;
 }
 
-public IsASaleVehicle(vehicleID)
+public IsASaleVehicle(vehicleId)
 {
 	for(new i = 0; i < sizeof(SaleVehicles); i++)
 	{
-	    if(vehicleID == SaleVehicles[i]) return 1;
+	    if(vehicleId == SaleVehicles[i]) return 1;
 	}
 	
 	return 0;
 }
 
-public IsAOwnedVehicle(vehicleID)
+public IsAOwnedVehicle(vehicleId)
 {
    for(new i = 0; i < sizeof(OwnedVehicles); i++)
    {
-      if(vehicleID == OwnedVehicles[i]) return 1;
+      if(vehicleId == OwnedVehicles[i]) return 1;
    }
    
    return 0;
 }
 
 
-public IsARentVehicle(vehicleID)
+public IsARentVehicle(vehicleId)
 {
    for(new i = 0; i < sizeof(RentVehicles); i++)
    {
-      if(vehicleID == RentVehicles[i]) return 1;
+      if(vehicleId == RentVehicles[i]) return 1;
    }
    
    return 0;
 }
 
-public IsALSPoliceCar(vehicleID)
+public IsALSPoliceCar(vehicleId)
 {
 	for(new i = 0; i < sizeof(LSPoliceCars); i++)
 	{
-		if(vehicleID == LSPoliceCars[i]) return 1;
+		if(vehicleId == LSPoliceCars[i]) return 1;
 	}
 	return 0;
 }
 
-public IsABike(vehicleID)
+public IsABike(vehicleId)
 {
-    new model_id = GetVehicleModel(vehicleID);
+    new model_id = GetVehicleModel(vehicleId);
 	
 	if(model_id == 448 
 		|| model_id == 461 
@@ -2468,9 +2968,9 @@ public IsABike(vehicleID)
 	return 0;
 }
 
-public IsABoat(vehicleID)
+public IsABoat(vehicleId)
 {
-    new model_id = GetVehicleModel(vehicleID);
+    new model_id = GetVehicleModel(vehicleId);
 	
 	if(model_id == 430 
 		|| model_id == 446 
@@ -2488,9 +2988,9 @@ public IsABoat(vehicleID)
 	return 0;
 }
 
-public IsAPlane(vehicleID)
+public IsAPlane(vehicleId)
 {
-    new model_id = GetVehicleModel(vehicleID);
+    new model_id = GetVehicleModel(vehicleId);
 	
 	if(model_id == 460 
 		|| model_id == 464 
@@ -2511,9 +3011,9 @@ public IsAPlane(vehicleID)
 	return 0;
 }
 
-public IsATrain(vehicleID)
+public IsATrain(vehicleId)
 {
-	new model_id = GetVehicleModel(vehicleID);
+	new model_id = GetVehicleModel(vehicleId);
 	
 	if(model_id == 449 
 		|| model_id == 537 
@@ -2572,14 +3072,14 @@ public SendRadiusMessage(Float:radius, playerid, string[], color1, color2, color
 	return 1;
 }
 
-public StartVehicleEngine(playerid, vehicleID)
+public StartVehicleEngine(playerid, vehicleId)
 {
 	new engine, lights, alarm, doors, bonnet, boot, objective, playername[MAX_PLAYER_NAME], str[128];
 	
-	GetVehicleParamsEx(vehicleID, engine, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(vehicleID, 1, 1, alarm, doors, bonnet, boot, objective);
+	GetVehicleParamsEx(vehicleId, engine, lights, alarm, doors, bonnet, boot, objective);
+	SetVehicleParamsEx(vehicleId, 1, 1, alarm, doors, bonnet, boot, objective);
 
-	VehicleEngine[vehicleID] = 1;
+	VehicleEngine[vehicleId] = 1;
 	StartingVehicleEngine[playerid] = 0;
 	TogglePlayerControllable(playerid, 1);
 
@@ -2616,8 +3116,8 @@ public AntiFreezePlayer(playerid)
 	//FUEL
 	if(RefuellingVehicle[playerid] == 1)
 	{
-	   	new vehicleID = GetPlayerVehicleID(playerid);
-	   	VehicleFuel[vehicleID] += RefillLitre[playerid];
+	   	new vehicleId = GetPlayerVehicleID(playerid);
+	   	VehicleFuel[vehicleId] += RefillLitre[playerid];
 	   	RefuellingVehicle[playerid] = 9999;
 	   	//PlayerInfo[playerid][Money] -= RefillLitre[playerid]*5;
 	   	//GivePlayerMoney(playerid, -RefillLitre[playerid]*5);
@@ -2626,8 +3126,8 @@ public AntiFreezePlayer(playerid)
 
 public OnPlayerRegistered(playerid)
 {
-	PlayerInfo[playerid][ID] = cache_insert_id();
-	printf("Korisnik se registrovao %d", PlayerInfo[playerid][ID]);
+	PlayerInfo[playerid][Id] = cache_insert_id();
+	printf("Korisnik se registrovao %d", PlayerInfo[playerid][Id]);
 	SendClientMessage(playerid, -1, "You have been registered to server.");
 }
 
@@ -3778,6 +4278,21 @@ public LoadAirportHangars()
 	CreateDynamicObject(16098,227.3999900,2466.3999000,20.5000000,0.0000000,0.0000000,270.0000000); //object(des_by_hangar_) (4)
 }
 
+public CreateHeadquartersLabels()
+{
+	CreatePickup(1314, 1, 2522.4756, -1679.2355, 15.4970, 0);
+	Create3DTextLabel("Grove Street Families HQ", -1, 2522.4756, -1679.2355, 15.4970, 10.0, 0, 0);
+
+	CreatePickup(1314, 1, 2045.5447, -1116.1219, 26.3617, 0);
+	Create3DTextLabel("Ballas HQ", -1, 2045.5447, -1116.1219, 26.3617, 10.0, 0);
+
+	CreatePickup(1314, 1, 1684.8185, -2099.0588, 13.8343, 0);
+	Create3DTextLabel("Varrios Los Aztecas HQ", -1, 1684.8185, -2099.0588, 13.8343, 10.0, 0,0);
+
+	CreatePickup(1314, 1, 2808.0615, -1189.7864, 25.3446, 0);
+	Create3DTextLabel("Los Santos Vagos HQ", -1, 2808.0615, -1189.7864, 25.3446, 10.0, 0, 0);
+}
+
 public OnGameModeInit()
 {
 	AddPlayerClass(0, 1642.2903, -2333.3423, 13.5469, 360.0, 0, 0, 0, 0, 0, 0);
@@ -3822,6 +4337,11 @@ public OnGameModeInit()
 	parkingGate1Opened = 0;
 	parkingGate2Opened = 0;
 
+	GSFHQLocked = 1;
+    BallasHQLocked = 1;
+    VLAHQLocked = 1;
+    LSVHQLocked = 1;
+
 
     //TIME AND WEATHER ON SERVER START
     new hours, minutes, seconds;
@@ -3860,6 +4380,7 @@ public OnGameModeInit()
 	LoadVehicles(); 
 	LoadHouses();
 	LoadBusinesses();
+	LoadSpecialBusinesses();
 
 	SetTimer("CheckVehicleFuel", 60000, true);
 	
@@ -3894,6 +4415,9 @@ public OnGameModeExit()
 	for(new i = 0; i < GlobalBusinessesCounter; i++)
 		SaveBusiness(i);
 
+	for(new i = 0; i < GlobalSpecialBusinessesCounter; i++)
+		SaveSpecialBusiness(i);
+
 	return 1;
 }
 
@@ -3921,7 +4445,7 @@ public OnPlayerConnect(playerid)
 	RefillLitre[playerid] = 0;
 	HasBelt[playerid] = 0;
 	HasHelmet[playerid] = 0;
-	HaveMoneyBag[playerid] = 0;
+	HaveMoneyBag[playerid] = -1;
 	
 	VehicleSellOffer[playerid] = 0;
  	VehicleBuyOffer[playerid] = 0;
@@ -3948,6 +4472,14 @@ public OnPlayerConnect(playerid)
 	CalledPlayer[playerid] = 0;
 	InCall[playerid] = 0;
 
+	InBank[playerid] = 0;
+	InCityHall[playerid] = 0;
+	InLSPDHQ[playerid] = 0;
+	InGSFHQ[playerid] = 0;
+	InBallasHQ[playerid] = 0;
+	InLSVHQ[playerid] = 0;
+	InVLAHQ[playerid] = 0;
+
 	FuelTD[playerid] = TextDrawCreate(526.399963, 412.906738, "Gorivo: 100");
 	TextDrawLetterSize(FuelTD[playerid], 0.449999, 1.600000);
 	TextDrawAlignment(FuelTD[playerid], 1);
@@ -3957,8 +4489,6 @@ public OnPlayerConnect(playerid)
 	TextDrawBackgroundColor(FuelTD[playerid], 51);
 	TextDrawFont(FuelTD[playerid], 1);
 	TextDrawSetProportional(FuelTD[playerid], 1);
-
-	InLSPDHQ[playerid] = 0;
 
 	//------------------------------------------------------------------------ > CITY HALL
 	RemoveBuildingForPlayer(playerid, 1527, 1448.2344, -1755.8984, 14.5234, 0.25);
@@ -3976,10 +4506,55 @@ public OnPlayerDisconnect(playerid, reason)
 	// If player rented a vehicle, respawn it
 	if(IsPlayerRentingVehicle[playerid]) SetVehicleToRespawn(RentedVehicle[playerid]);
 	
-	GetPlayerPos(playerid, X, Y, Z);
-	PlayerInfo[playerid][SpawnX] = X;
-	PlayerInfo[playerid][SpawnY] = Y;
-	PlayerInfo[playerid][SpawnZ] = Z;
+	if(InGSFHQ[playerid] != 0)
+	{
+		PlayerInfo[playerid][SpawnX] = 1479.3715;
+		PlayerInfo[playerid][SpawnY] = -1771.1544;
+		PlayerInfo[playerid][SpawnZ] = 18.7958;
+		SavePlayer(playerid);
+	}
+	else if(InBallasHQ[playerid] != 0)
+	{
+		PlayerInfo[playerid][SpawnX] = 2045.5447;
+		PlayerInfo[playerid][SpawnY] = -1116.1219;
+		PlayerInfo[playerid][SpawnZ] = 26.3617;
+		SavePlayer(playerid);
+	}
+	else if(InVLAHQ[playerid] != 0)
+	{
+		PlayerInfo[playerid][SpawnX] = 1684.8185;
+		PlayerInfo[playerid][SpawnY] = -2099.0588;
+		PlayerInfo[playerid][SpawnZ] = 13.8343;
+		SavePlayer(playerid);
+	}
+	else if(InLSVHQ[playerid] != 0)
+	{
+		PlayerInfo[playerid][SpawnX] = 2808.0615;
+		PlayerInfo[playerid][SpawnY] = -1189.7864;
+		PlayerInfo[playerid][SpawnZ] = 25.3446;
+		SavePlayer(playerid);
+	}
+	else if(InHouse[playerid] != 0)
+	{
+		PlayerInfo[playerid][SpawnX] = HouseInfo[InHouse[playerid]][EnterX];
+		PlayerInfo[playerid][SpawnY] = HouseInfo[InHouse[playerid]][EnterY];
+		PlayerInfo[playerid][SpawnZ] = HouseInfo[InHouse[playerid]][EnterZ];
+		SavePlayer(playerid);
+	}
+	else if(InBusiness[playerid] != 0)
+	{
+		PlayerInfo[playerid][SpawnX] = BusinessInfo[InBusiness[playerid]][EnterX];
+		PlayerInfo[playerid][SpawnY] = BusinessInfo[InBusiness[playerid]][EnterY];
+		PlayerInfo[playerid][SpawnZ] = BusinessInfo[InBusiness[playerid]][EnterZ];
+		SavePlayer(playerid);
+	}
+	else 
+	{
+		GetPlayerPos(playerid, X, Y, Z);
+		PlayerInfo[playerid][SpawnX] = X;
+		PlayerInfo[playerid][SpawnY] = Y;
+		PlayerInfo[playerid][SpawnZ] = Z;
+	}
 	
 	SavePlayer(playerid);
 		
@@ -3993,6 +4568,23 @@ public OnPlayerSpawn(playerid)
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
+	HasBelt[playerid] = 0;
+	HasHelmet[playerid] = 0;
+	RefuellingVehicle[playerid] = 0;
+	RefillLitre[playerid] = 0;
+
+	InGSFHQ[playerid] = 0;
+	InBallasHQ[playerid] = 0;
+	InLSVHQ[playerid] = 0;
+	InVLAHQ[playerid] = 0;
+	InHouse[playerid] = 0;
+	InBusiness[playerid] = 0;
+
+	iCall[playerid] = 0;
+	Caller[playerid] = 0;
+	CalledPlayer[playerid] = 0;
+	InCall[playerid] = 0;
+
 	return 1;
 }
 
@@ -4101,13 +4693,13 @@ public OnPlayerText(playerid, text[])
 		{
 			if(InCall[playerid] == 9999)
 			{
-				format(str, sizeof(str), "[IC][ID %d] %s says: %s", playerid, playerName, text);
+				format(str, sizeof(str), "[IC][Id %d] %s says: %s", playerid, playerName, text);
 		  		SendRadiusMessage(50.0, playerid, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 				SetPlayerChatBubble(playerid, str, COLOR_WHITE, 50.0, 10000);
 			}
 			else if(InCall[playerid] == 1)
 			{
-			    format(str, sizeof(str), "[MOBILE][ID %d] %s says: %s", playerid, playerName, text);
+			    format(str, sizeof(str), "[MOBILE][Id %d] %s says: %s", playerid, playerName, text);
 			    SendRadiusMessage(50.0, playerid, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 			    if(iCall[playerid] != 9999) SendClientMessage(CalledPlayer[playerid], COLOR_WHITE, str);
 			    else SendClientMessage(Caller[playerid], COLOR_WHITE, str);
@@ -4296,7 +4888,31 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
 	if(newkeys == KEY_SECONDARY_ATTACK) 
 	{
-		if(IsPlayerInRangeOfPoint(playerid, 2.0, 1553.9333, -1675.6754, 16.1953)) // Los Santos PoliceHQ ENTER
+		if(IsPlayerInRangeOfPoint(playerid, 2.0, 593.1841, -1249.7542, 18.2069)) // BANK ENTER
+		{
+		    TogglePlayerControllable(playerid, 0);
+		    SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+			SetPlayerPos(playerid, 603.5001, -1269.4661, 996.6459);
+			InBank[playerid] = 1;
+		}
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 603.5001, -1276.2461, 995.6459))  // BANK EXIT
+		{
+			SetPlayerPos(playerid, 596.9100, -1248.3107, 18.2580);
+			InBank[playerid] = 0;
+		}
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1479.3827, -1770.1901, 18.7958)) // CITY HALL ENTER
+		{
+		    TogglePlayerControllable(playerid, 0);
+		    SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+			SetPlayerPos(playerid, 1479.2421, -1779.2054, 999.0159);
+			InCityHall[playerid] = 1;
+		}
+        else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1483.3208, -1779.2054, 999.0159))  // CITY HALL EXIT
+		{
+			SetPlayerPos(playerid, 1482.6449, -1770.1901, 18.7958);
+			InCityHall[playerid] = 0;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1553.9333, -1675.6754, 16.1953)) // Los Santos PoliceHQ ENTER
 		{
 		    TogglePlayerControllable(playerid, 0);
 		    SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
@@ -4309,6 +4925,74 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 			SetPlayerPos(playerid, 1553.9333, -1675.6754, 16.1953);
 			SetPlayerInterior(playerid, 0);
 			InLSPDHQ[playerid] = 0;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2522.4756, -1679.2355, 15.4970)) // GSF HQ Enter
+		{
+		    if(GSFHQLocked == 1) return 1;
+		    TogglePlayerControllable(playerid, 0);
+	    	SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+		    SetPlayerPos(playerid, 2496.05, -1692.73, 1015.75);
+		    SetPlayerInterior(playerid, 3);
+		    SetPlayerVirtualWorld(playerid, 99);
+		    InGSFHQ[playerid] = 1;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2496.05, -1692.73, 1015.75) && GetPlayerVirtualWorld(playerid) == 99)
+		{
+		    SetPlayerPos(playerid, 2522.4756, -1679.2355, 15.4970);
+		    SetPlayerInterior(playerid, 0);
+		    SetPlayerVirtualWorld(playerid, 0);
+		    InGSFHQ[playerid] = 9999;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2045.5447, -1116.1219, 26.361)) // Ballas HQ Enter
+		{
+		    if(BallasHQLocked == 1) return 1;
+		    TogglePlayerControllable(playerid, 0);
+	    	SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+		    SetPlayerPos(playerid, 2365.3, -1134.92, 1051.91);
+		    SetPlayerInterior(playerid, 8);
+		    SetPlayerVirtualWorld(playerid, 99);
+		    InBallasHQ[playerid] = 1;
+		}
+		else if((IsPlayerInRangeOfPoint(playerid, 3.0, 2365.3, -1134.5808, 1050.875)) && (GetPlayerVirtualWorld(playerid) == 99))
+		{
+		    SetPlayerPos(playerid, 2045.5447, -1116.1219, 26.361);
+		    SetPlayerInterior(playerid, 0);
+		    SetPlayerVirtualWorld(playerid, 0);
+		    InBallasHQ[playerid] = 9999;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1684.8185, -2099.0588, 13.8343)) // VLA HQ Enter
+		{
+			if(VLAHQLocked == 1) return 1;
+			TogglePlayerControllable(playerid, 0);
+  			SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+		    SetPlayerPos(playerid, 2196.79, -1204.35, 1050.05);
+		    SetPlayerInterior(playerid, 6);
+		    SetPlayerVirtualWorld(playerid, 99);
+		    InVLAHQ[playerid] = 1;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2196.79, -1204.35, 1050.05) && GetPlayerVirtualWorld(playerid) == 99)
+		{
+		    SetPlayerPos(playerid, 1684.8185, -2099.0588, 13.8343);
+		    SetPlayerInterior(playerid, 0);
+		    SetPlayerVirtualWorld(playerid, 0);
+		    InVLAHQ[playerid] = 9999;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2808.0615, -1189.7864, 25.3446)) // LSV HQ Enter
+		{
+		    if(LSVHQLocked == 1) return 1;
+		    TogglePlayerControllable(playerid, 0);
+    		SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+		    SetPlayerPos(playerid, 82.95, 1322.44, 1084.99);
+		    SetPlayerInterior(playerid, 9);
+		    SetPlayerVirtualWorld(playerid, 99);
+		    InLSVHQ[playerid] = 1;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 82.95, 1322.44, 1084.99) && GetPlayerVirtualWorld(playerid) == 99)
+		{
+		    SetPlayerPos(playerid, 2808.0615, -1189.7864, 25.3446);
+		    SetPlayerInterior(playerid, 0);
+		    SetPlayerVirtualWorld(playerid, 0);
+		    InLSVHQ[playerid] = 9999;
 		}
 		else 
 		{
@@ -4358,7 +5042,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 					SetPlayerInterior(playerid, BusinessInfo[i][InsideInterior]);
 					SetPlayerVirtualWorld(playerid, BusinessInfo[i][InsideVirtualWorld]);
 					BusinessInfo[i][Money] += BusinessInfo[i][EnterFee];
-					
+					SaveBusiness(i);
 					InBusiness[playerid] = i;
 					
 					return 1;
@@ -4379,21 +5063,21 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	}
 	else if(newkeys == KEY_YES)
 	{
-		new vehicleID, playername[MAX_PLAYER_NAME], Float:vehicleHealth, str[128];
+		new vehicleId, playername[MAX_PLAYER_NAME], Float:vehicleHealth, str[128];
 		
 		if(!IsPlayerInAnyVehicle(playerid)) return 1;
-		vehicleID = GetPlayerVehicleID(playerid);
-		if(IsASaleVehicle(vehicleID)) return 1;
-		if(IsARentVehicle(vehicleID) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicleID)) return 1;
-		if(VehicleEngine[vehicleID] == 1) return 1;
+		vehicleId = GetPlayerVehicleID(playerid);
+		if(IsASaleVehicle(vehicleId)) return 1;
+		if(IsARentVehicle(vehicleId) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicleId)) return 1;
+		if(VehicleEngine[vehicleId] == 1) return 1;
 
-		GetVehicleHealth(vehicleID, vehicleHealth);
+		GetVehicleHealth(vehicleId, vehicleHealth);
 	    if(vehicleHealth <= 500.0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't start vehicle's engine. Engine is damaged!");
 	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Already trying to start vehicle's engine!");
 	    
 		StartingVehicleEngine[playerid] = 1;
 		TogglePlayerControllable(playerid, 0);
-		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicleID);
+		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicleId);
 	    GameTextForPlayer(playerid, "~w~Starting vehicle's engine...", 3500, 3);
 
 	    GetPlayerName(playerid, playername, sizeof(playername));
@@ -4402,30 +5086,31 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	}
 	else if(newkeys == KEY_CROUCH)
 	{
+		// TODO: Fix gate
 		if(IsPlayerInRangeOfPoint(playerid, 10.0, 1627.8000000, -1145.9000000, 23.1000000)) // LOS SANTOS PARKING
 		{
-			new id, money, sendername[MAX_PLAYER_NAME], str[128];
-			money = GetPlayerMoney(playerid);
-			GetPlayerName(playerid, sendername, sizeof(sendername));
-			id = 1;
+			new playerName[MAX_PLAYER_NAME], str[128];
+			// money = GetPlayerMoney(playerid);
+			GetPlayerName(playerid, playerName, sizeof(playerName));
+			// id = 1;
 			MoveDynamicObject(parkingGate1, 1618.8000000, -1145.9000000, 23.1000000, 1.0, 0.0000000, 0.0000000, 0.0000000);
 			parkingGate1Opened = 1;
 			SetTimer("closeParkingGate1", 10000, 0);
 			SendClientMessage(playerid, COLOR_GREEN, "You opened parking's gate.");
-			format(str, sizeof(str), "%s opens parking's gate.", sendername);
+			format(str, sizeof(str), "%s opens parking's gate.", playerName);
 			SendRadiusMessage(15.0, playerid, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 		}
 		else if(IsPlayerInRangeOfPoint(playerid, 10.0, 1647.6000000, -1145.9000000, 23.1000000)) // LOS SANTOS PARKING
 		{
-		    new money, sendername[MAX_PLAYER_NAME], id, str[128];
-		    money = GetPlayerMoney(playerid);
-			GetPlayerName(playerid, sendername, sizeof(sendername));
-			id = 1;
+		    new playerName[MAX_PLAYER_NAME], str[128];
+		    // money = GetPlayerMoney(playerid);
+			GetPlayerName(playerid, playerName, sizeof(playerName));
+			// id = 1;
 			MoveDynamicObject(parkingGate2, 1656.6000000, -1145.9000000, 23.1000000, 1.0, 0.0000000, 0.0000000, 180.0000000);
 			parkingGate2Opened = 1;
 			SetTimer("closeParkingGate2", 10000, 0);
 			SendClientMessage(playerid, COLOR_GREEN, "You opened parking's gate.");
-			format(str, sizeof(str), "%s opens parking's gate.", sendername);
+			format(str, sizeof(str), "%s opens parking's gate.", playerName);
 			SendRadiusMessage(15.0, playerid, str, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 		}
 		else if(IsPlayerInRangeOfPoint(playerid, 5.0, 1589.7000000, -1638.3101000, 14.2700000)) // LSPD
@@ -4592,7 +5277,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				PlayerInfo[playerid][Skin] = 170;
 				mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 															SET gender = %d \
-															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);																						
+															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][Id]);																						
 				mysql_tquery(mysql, query);
 			
 				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Enter how old are You");
@@ -4604,7 +5289,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				PlayerInfo[playerid][Skin] = 169;
 				mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 															SET gender = %d \
-															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][ID]);
+															WHERE id = %d", PlayerInfo[playerid][Gender], PlayerInfo[playerid][Id]);
 				mysql_tquery(mysql, query);
 				
 				format(message, sizeof(message), ""TEXT_COLOR_WHITE"Enter how old are You");
@@ -4640,7 +5325,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			PlayerInfo[playerid][Age] = years;
 			mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 														SET age = %d \
-														WHERE id = %d", years, PlayerInfo[playerid][ID]);
+														WHERE id = %d", years, PlayerInfo[playerid][Id]);
 			mysql_tquery(mysql, query);
 			ShowPlayerDialog(playerid, DIALOG_COUNTRY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Country", ""TEXT_COLOR_WHITE"Serbia\nMontenegro\nBosnia and Herzegovina\nCroatia\nMacedonia\nRest of World", "Continue", "Cancel");
 		}
@@ -4662,7 +5347,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][Country] = 0;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
-																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);									
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][Id]);									
 					mysql_tquery(mysql, query);
 					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 					
@@ -4673,7 +5358,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][Country] = 1;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
-																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][Id]);
 					mysql_tquery(mysql, query);
 					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
@@ -4683,7 +5368,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][Country] = 2;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
-																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][Id]);
 					mysql_tquery(mysql, query);
 					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
@@ -4693,7 +5378,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][Country] = 3;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
-																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][Id]);
 					mysql_tquery(mysql, query);
 					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
@@ -4703,7 +5388,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][Country] = 4;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
-																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][Id]);
 					mysql_tquery(mysql, query);
 					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
@@ -4713,7 +5398,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][Country] = 5;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET country = %d \
-																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][ID]);
+																WHERE id = %d", PlayerInfo[playerid][Country], PlayerInfo[playerid][Id]);
 					mysql_tquery(mysql, query);
 					ShowPlayerDialog(playerid, DIALOG_CITY, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - City", ""TEXT_COLOR_WHITE"Los Santos\nLas Venturas\nSan Fierro", "Continue", "Cancel");
 				}
@@ -4743,7 +5428,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnA] = 0.0;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
-																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
+																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][Id]);
 					mysql_tquery(mysql, query);
 					
 					player_age = PlayerInfo[playerid][Age];
@@ -4765,7 +5450,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
-																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
+																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][Id]);
 					mysql_tquery(mysql, query);
 					
 					format(message, sizeof(message), ""TEXT_COLOR_WHITE"You successfully finished registration. \n"TEXT_COLOR_RED"Full_Name: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Gender: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Age: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Country: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"City: "TEXT_COLOR_WHITE"%s \nEnter your password to login.", playerName, player_sex, player_age, player_country, player_city);
@@ -4781,7 +5466,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					PlayerInfo[playerid][SpawnA] = 136.9096;
 					mysql_format(mysql, query, sizeof(query), "UPDATE Users \
 																SET city = %d, spawnX = %f, spawnY = %f, spawnZ = %f \
-																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][ID]);
+																WHERE id = %d", PlayerInfo[playerid][City], PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], PlayerInfo[playerid][Id]);
 					mysql_tquery(mysql, query);
 					
 					player_age = PlayerInfo[playerid][Age];
@@ -4795,6 +5480,96 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 		}
 		
+		case DIALOG_SHOP:
+		{
+		    if(response)
+			{
+				switch(listitem)
+				{
+				    case 0:
+				    {
+				        if(BusinessInfo[InBusiness[playerid]][Type] != 2) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in shop!");
+						if(PlayerInfo[playerid][Mobile] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You already have phone!");
+						if(GetPlayerMoney(playerid) < 100) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money to buy phone! (50$)");
+
+                        PlayerInfo[playerid][Money] -= 100;
+						GivePlayerMoney(playerid, -100);
+						PlayerInfo[playerid][Mobile] = 1;
+						SavePlayer(playerid);
+
+						BusinessInfo[InBusiness[playerid]][Money] += 100;
+						SaveBusiness(InBusiness[playerid]);
+
+						SendClientMessage(playerid, -1, "You've bought phone.");
+					}
+					case 1:
+					{
+						new str[128], number;
+						number = 100000 + random(899999);
+						if(BusinessInfo[InBusiness[playerid]][Type] != 2) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in shop!");
+						if(PlayerInfo[playerid][MobileNumber] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You already have SIM card!");
+						if(GetPlayerMoney(playerid) < 25) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money to buy SIM card! (25$)");
+
+                        PlayerInfo[playerid][Money] -= 25;
+						GivePlayerMoney(playerid, -25);
+						PlayerInfo[playerid][MobileNumber] = number;
+						SavePlayer(playerid);
+
+						BusinessInfo[InBusiness[playerid]][Money] += 25;
+						SaveBusiness(InBusiness[playerid]);
+
+						format(str, sizeof(str), "You've bought SIM card. Your number is %d", number);
+						SendClientMessage(playerid, -1, str);
+					}
+					case 2:
+					{
+					    if(BusinessInfo[InBusiness[playerid]][Type] != 2) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in shop!");
+					    ShowPlayerDialog(playerid, DIALOG_CREDIT, DIALOG_STYLE_INPUT, "Credit", "Enter amount of credit you want to buy", "Buy", "Exit");
+					}
+					case 3:
+					{
+					    if(BusinessInfo[InBusiness[playerid]][Type] != 2) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in shop!");
+					    if(PlayerInfo[playerid][AddressBook] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You already have notebook!");
+					    if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money to buy notebook!");
+                        
+						PlayerInfo[playerid][Money] -= 50;
+	 					GivePlayerMoney(playerid, -50);
+						PlayerInfo[playerid][AddressBook] = 1;
+						SavePlayer(playerid);
+
+						BusinessInfo[InBusiness[playerid]][Money] += 100;
+						SaveBusiness(InBusiness[playerid]);
+
+						SendClientMessage(playerid, -1, "You've bought a notebook. To use it type /phonenumber [id/part of the name]");
+					}
+				}
+				return 1;
+			}
+		}
+
+		case DIALOG_CREDIT:
+		{
+		    if(response)
+		    {
+		        new credit, str[128];
+		        credit = strval(inputtext);
+				
+				if(BusinessInfo[InBusiness[playerid]][Type] != 2) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in shop!");
+				if(GetPlayerMoney(playerid) < credit*2) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money to buy credit!(creditx2)");
+                
+				PlayerInfo[playerid][Money] -= credit*2;
+				GivePlayerMoney(playerid, -(credit*2));
+				PlayerInfo[playerid][MobileCredit] += credit;
+				SavePlayer(playerid);
+				BusinessInfo[InBusiness[playerid]][Money] += 25;
+				SaveBusiness(InBusiness[playerid]);
+				format(str, sizeof(str), "You topped up your credit for %d", credit);
+				SendClientMessage(playerid, -1, str);
+
+				return 1;
+			}
+		}
+
 		case DIALOG_BUY_VEHICLE:
 		{
 			if(!response)
@@ -4823,15 +5598,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				}
 				else
 				{
-					new playerName[MAX_PLAYER_NAME], player, vehicleID, vehicle_model;
+					new playerName[MAX_PLAYER_NAME], player, vehicleId;
 
 					GetPlayerName(playerid, playerName, sizeof(playerName));
 					player = VehiclePlayerOffer[playerid];
-					vehicleID = VehicleForOffer[playerid];
-					vehicle_model = GetVehicleModel(vehicleID);
-					//strmid(VehicleInfo[VehicleForOffer[playerid]][vOwner], playerName, 0, strlen(playerName), 999);
-					VehicleInfo[vehicleID][Owner] = PlayerInfo[playerid][ID];
-					VehicleInfo[vehicleID][Locked] = 1;
+					vehicleId = VehicleForOffer[playerid];
+
+					VehicleInfo[vehicleId][Owner] = PlayerInfo[playerid][Id];
+					VehicleInfo[vehicleId][Locked] = 1;
 
 					RemovePlayerFromVehicle(player);
 
@@ -4845,10 +5619,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					SavePlayer(player);
 					SendClientMessage(player, COLOR_GREEN, "YOU HAVE SOLD A VEHICLE!");
 
-					SaveVehicle(vehicleID);
-					DestroyVehicle(vehicleID);
-
-					OwnedVehicles[vehicleID] = CreateVehicle(vehicle_model, VehicleInfo[vehicleID][ParkX], VehicleInfo[vehicleID][ParkY], VehicleInfo[vehicleID][ParkZ], VehicleInfo[vehicleID][ParkA], VehicleInfo[vehicleID][Color1], VehicleInfo[vehicleID][Color2], -1);
+					SaveVehicle(vehicleId);
 
 					VehicleSellOffer[player] = 0;
 					VehicleBuyOffer[playerid] = 0;
@@ -4864,36 +5635,36 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if(!response)
 			{
+				SendClientMessage(playerid, -1, "You refused to buy house.");
+				SendClientMessage(HousePlayerOffer[playerid], -1, "Player refused to buy house.");
+
 			    HouseSellOffer[HousePlayerOffer[playerid]] = 0;
 				HouseBuyOffer[playerid] = 0;
 			 	HouseForOffer[playerid] = 0;
 			 	HouseOfferPrice[playerid] = 0;
 				HousePlayerOffer[playerid] = 0;
-
-				SendClientMessage(playerid, -1, "You refused to buy house.");
-				SendClientMessage(HousePlayerOffer[playerid], -1, "Player refused to buy house.");
 			}
 			if(response)
 			{
 			    if(GetPlayerMoney(playerid) < HouseOfferPrice[playerid])
 			    {
+					SendClientMessage(playerid, -1, "You don't have enough money to buy house.");
+					SendClientMessage(HousePlayerOffer[playerid], -1, "Player don't have enough money to buy house.");
+
 			        HouseSellOffer[HousePlayerOffer[playerid]] = 0;
 					HouseBuyOffer[playerid] = 0;
 				 	HouseForOffer[playerid] = 0;
 				 	HouseOfferPrice[playerid] = 0;
 					HousePlayerOffer[playerid] = 0;
-
-					SendClientMessage(playerid, -1, "You don't have enough money to buy house.");
-					SendClientMessage(HousePlayerOffer[playerid], -1, "Player don't have enough money to buy house.");
 			    }
 			    else
 			    {
-	       			new player, id, playerName[MAX_PLAYER_NAME], house3dtext[256];
+	       			new player, id, playerName[MAX_PLAYER_NAME];
 					GetPlayerName(playerid, playerName, sizeof(playerName));
 					player = HousePlayerOffer[playerid];
 
 					id = HouseForOffer[playerid];
-					HouseInfo[id][Owner] = PlayerInfo[playerid][ID];
+					HouseInfo[id][Owner] = PlayerInfo[playerid][Id];
 					HouseInfo[id][Locked] = 1;
 
 					PlayerInfo[playerid][Money] -= HouseOfferPrice[playerid];
@@ -4908,8 +5679,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					SavePlayer(playerid);
 					SaveHouse(id);
 
-					format(house3dtext, sizeof(house3dtext), ""TEXT_COLOR_WHITE" This house has owner !\n "TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(HouseInfo[id][ID]), HouseInfo[id][ID]);
-					Update3DTextLabelText(HousesLabels[id], -1, house3dtext);
+					SetOwnedHouseLabel(id);
 
 					HouseSellOffer[player] = 0;
 					HouseBuyOffer[playerid] = 0;
@@ -4949,12 +5719,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			    }
 			    else
 			    {
-	       			new player, id, playerName[MAX_PLAYER_NAME], business3dtext[256];
+	       			new player, id, playerName[MAX_PLAYER_NAME];
 					GetPlayerName(playerid, playerName, sizeof(playerName));
 					player = BusinessPlayerOffer[playerid];
 
 					id = BusinessForOffer[playerid];
-					BusinessInfo[id][Owner] = PlayerInfo[playerid][ID];
+					BusinessInfo[id][Owner] = PlayerInfo[playerid][Id];
 					BusinessInfo[id][Locked] = 1;
 
 					PlayerInfo[playerid][Money] -= BusinessOfferPrice[playerid];
@@ -4969,8 +5739,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					SavePlayer(playerid);
 					SaveBusiness(id);
 
-					format(business3dtext, sizeof(business3dtext), ""TEXT_COLOR_WHITE"This business has owner!\n "TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Enter fee"TEXT_COLOR_WHITE": %d", BusinessInfo[id][Name], BusinessInfo[id][ID], GetBusinessOwnerName(BusinessInfo[id][Owner]), BusinessInfo[id][EnterFee]);
-					Update3DTextLabelText(BusinessLabels[id], -1, business3dtext);
+					SetOwnedBusinessLabel(id);
 
 					BusinessSellOffer[player] = 0;
 					BusinessBuyOffer[playerid] = 0;
@@ -4979,6 +5748,53 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			 		BusinessPlayerOffer[playerid] = 0;
 				}
 				return 1;
+			}
+		}
+
+		case DIALOG_ORG_INVITE:
+		{
+		    if(response)
+		    {
+		        switch(PlayerInfo[playerid][OMember])
+		        {
+		            case 1:
+		            {
+		                SendClientMessage(playerid, -1, "Prihvatili ste poziv za ulazak u organizaciju LSPD!");
+              		}
+              		case 2:
+              		{
+              		    SendClientMessage(playerid, -1, "Prihvatili ste poziv za ulazak u organizaciju FBI!");
+					}
+					case 3:
+              		{
+              		    SetPlayerSkin(playerid, 106);
+              		    SendClientMessage(playerid, -1, "Prihvatili ste poziv za ulazak u organizaciju Grove Street Families!");
+					}
+					case 4:
+              		{
+              		    SetPlayerSkin(playerid, 102);
+              		    SendClientMessage(playerid, -1, "Prihvatili ste poziv za ulazak u organizaciju Ballas!");
+					}
+					case 5:
+              		{
+              		    SetPlayerSkin(playerid, 114);
+              		    SendClientMessage(playerid, -1, "Prihvatili ste poziv za ulazak u organizaciju Varrios Los Aztecas!");
+					}
+					case 6:
+              		{
+              		    SetPlayerSkin(playerid, 108);
+              		    SendClientMessage(playerid, -1, "Prihvatili ste poziv za ulazak u organizaciju Los Santos Vagos!");
+					}
+				}
+			}
+			else
+			{
+			    PlayerInfo[playerid][OMember] = 0;
+			    PlayerInfo[playerid][ORank] = 0;
+			    PlayerInfo[playerid][OSkin] = 9999;
+				SavePlayer(playerid);
+
+			    SendClientMessage(playerid, -1, "Odbili ste poziv za ulazak u organizaciju!");
 			}
 		}
 	}
@@ -4996,7 +5812,7 @@ YCMD:avehicle(playerid, params[], help)
 {
 	#pragma unused help 
 	
-	new vehicleID, vehicle, color1, color2, Float:X, Float:Y, Float:Z;
+	new vehicleId, vehicle, color1, color2, Float:X, Float:Y, Float:Z;
 	
 	if(sscanf(params, "iii", vehicle, color1, color2))
 	{
@@ -5004,9 +5820,20 @@ YCMD:avehicle(playerid, params[], help)
 	}
 	
 	GetPlayerPos(playerid, X, Y, Z);
-	vehicleID = CreateVehicle(vehicle, X+1, Y+1, Z, 270.0, color1, color2, -1);
-	VehicleEngine[vehicleID] = 0;
-	VehicleFuel[vehicleID] = 30;
+	vehicleId = CreateVehicle(vehicle, X+1, Y+1, Z, 270.0, color1, color2, -1);
+	VehicleEngine[vehicleId] = 0;
+	VehicleFuel[vehicleId] = 30;
+	return 1;
+}
+
+YCMD:arepair(playerid, params[], help)
+{
+	#pragma unused help
+	if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not authorized to use this command!");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in vehicle!");
+	
+	RepairVehicle(GetPlayerVehicleID(playerid));
+	
 	return 1;
 }
 
@@ -5071,22 +5898,22 @@ YCMD:rentvehicle(playerid, params[], help)
 {
 	#pragma unused help
 	
-	new vehicleID;
+	new vehicleId;
 	
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 	
-	vehicleID = GetPlayerVehicleID(playerid);
-	if(!IsARentVehicle(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in rent vehicle!");
+	vehicleId = GetPlayerVehicleID(playerid);
+	if(!IsARentVehicle(vehicleId)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in rent vehicle!");
 	//if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, -1 ,"[ERROR]: You don't have enough money to rent a vehicle!");
 	if(IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are already renting a vehicle!");
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) 
 	{
-		if(RentedVehicle[i] == vehicleID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Someone already rented this vehicle!");
+		if(RentedVehicle[i] == vehicleId) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Someone already rented this vehicle!");
 	}
 	
 	IsPlayerRentingVehicle[playerid] = 1;
-	RentedVehicle[playerid] = vehicleID;
+	RentedVehicle[playerid] = vehicleId;
    	TogglePlayerControllable(playerid, 1);
 	
 	SendClientMessage(playerid, -1, "You rent a vehicle. To return a vehile type /returnvehicle");
@@ -5098,11 +5925,11 @@ YCMD:returnvehicle(playerid, params[], help)
 {
 	#pragma unused help
 
-	new vehicleID = GetPlayerVehicleID(playerid);
+	new vehicleId = GetPlayerVehicleID(playerid);
 	
 	if(!IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have rented vehicle!");
 	
-	if(vehicleID == RentedVehicle[playerid]) TogglePlayerControllable(playerid, 1);
+	if(vehicleId == RentedVehicle[playerid]) TogglePlayerControllable(playerid, 1);
 	SetVehicleToRespawn(RentedVehicle[playerid]);
 	IsPlayerRentingVehicle[playerid] = 0;
 	RentedVehicle[playerid] = 0;
@@ -5116,23 +5943,23 @@ YCMD:engine(playerid, params[], help)
 {
 	#pragma unused help
 	
-	new playername[MAX_PLAYER_NAME], vehicleID, engine, lights, alarm, doors, bonnet, boot, objective, Float:vehicleHealth, str[128];
+	new playername[MAX_PLAYER_NAME], vehicleId, engine, lights, alarm, doors, bonnet, boot, objective, Float:vehicleHealth, str[128];
 	
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
-	vehicleID = GetPlayerVehicleID(playerid);
-	GetVehicleParamsEx(vehicleID, engine, lights, alarm, doors, bonnet, boot, objective);
-	if(IsASaleVehicle(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:  You can't start vehicle's engine!");
-	if(IsARentVehicle(vehicleID) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't start vehicle's engine!");
-	if(VehicleFuel[vehicleID] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Fuel tank empty!");
+	vehicleId = GetPlayerVehicleID(playerid);
+	GetVehicleParamsEx(vehicleId, engine, lights, alarm, doors, bonnet, boot, objective);
+	if(IsASaleVehicle(vehicleId)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:  You can't start vehicle's engine!");
+	if(IsARentVehicle(vehicleId) && (IsPlayerRentingVehicle[playerid] == 0 || RentedVehicle[playerid] != vehicleId)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't start vehicle's engine!");
+	if(VehicleFuel[vehicleId] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Fuel tank empty!");
 	if(RefuellingVehicle[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Fuel refilling in progress!");
-	if(VehicleEngine[vehicleID] == 0)
+	if(VehicleEngine[vehicleId] == 0)
 	{
-    	GetVehicleHealth(vehicleID, vehicleHealth);
+    	GetVehicleHealth(vehicleId, vehicleHealth);
 	    if(vehicleHealth <= 500.0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:  You can't start vehicle's engine. Engine is damaged!");
 	    if(StartingVehicleEngine[playerid] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're already trying to start vehicle's engine!");
 	    StartingVehicleEngine[playerid] = 1;
     	TogglePlayerControllable(playerid, 0);
-		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicleID);
+		SetTimerEx("StartVehicleEngine", 3500, false, "ii", playerid, vehicleId);
 	    GameTextForPlayer(playerid, "~w~Starting vehicle's engine...", 3500, 3);
 
 	    GetPlayerName(playerid, playername, sizeof(playername));
@@ -5141,8 +5968,8 @@ YCMD:engine(playerid, params[], help)
 	}
 	else
 	{
-	    SetVehicleParamsEx(vehicleID, 0, 0, alarm, doors, bonnet, boot, objective);
-    	VehicleEngine[vehicleID] = 0;
+	    SetVehicleParamsEx(vehicleId, 0, 0, alarm, doors, bonnet, boot, objective);
+    	VehicleEngine[vehicleId] = 0;
 
     	SendClientMessage(playerid, -1, "You've turned off vehicle's engine.");
 		
@@ -5157,11 +5984,11 @@ YCMD:fillfuel(playerid, params[], help)
 {
 	#pragma unused help
 	
-	new vehicleID, litre, pump1, pump2, pump3;
+	new vehicleId, litre, pump1, pump2, pump3;
 	
 	if(sscanf(params, "i", litre)) return SendClientMessage(playerid, -1, "[USAGE]: /fillfuel [litres] (x5$)");
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
-	vehicleID = GetPlayerVehicleID(playerid);
+	vehicleId = GetPlayerVehicleID(playerid);
 	
 	pump1 = IsPlayerNearPump1(playerid);
 	pump2 = IsPlayerNearPump2(playerid);
@@ -5169,10 +5996,10 @@ YCMD:fillfuel(playerid, params[], help)
 	
 	if(pump1 != -1 && pump1 != 0)
 	{
-		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
-		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
-		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
+		if(VehicleEngine[vehicleId] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
+		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:You don't have enough money da sipate gorivo! (litar 5$)");
+		if(IsABike(vehicleId) && litre + VehicleFuel[vehicleId] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
+		else if(litre + VehicleFuel[vehicleId] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~REFUELLING TANK...", 10000, 3);
@@ -5182,10 +6009,10 @@ YCMD:fillfuel(playerid, params[], help)
 	}
 	else if(pump2 != -1 && pump2 != 0)
 	{
-		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
-		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
-		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
+		if(VehicleEngine[vehicleId] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
+		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:You don't have enough money da sipate gorivo! (litar 5$)");
+		if(IsABike(vehicleId) && litre + VehicleFuel[vehicleId] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
+		else if(litre + VehicleFuel[vehicleId] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~REFUELLING TANK...", 10000, 3);
@@ -5195,10 +6022,10 @@ YCMD:fillfuel(playerid, params[], help)
 	}
 	else if(pump3 != -1 && pump3 != 0)
 	{
-		if(VehicleEngine[vehicleID] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
-		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da sipate gorivo! (litar 5$)");
-		if(IsABike(vehicleID) && litre + VehicleFuel[vehicleID] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
-		else if(litre + VehicleFuel[vehicleID] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
+		if(VehicleEngine[vehicleId] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR] You must first turn off vehicle's engine! (/engine)");
+		//if(GetPlayerMoney(playerid) < litre*5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:You don't have enough money da sipate gorivo! (litar 5$)");
+		if(IsABike(vehicleId) && litre + VehicleFuel[vehicleId] > 30) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (30l tank fuel)");
+		else if(litre + VehicleFuel[vehicleId] > 60) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You can't fill that much litres! (60l tank fuel)");
 		
 		TogglePlayerControllable(playerid, 0);
 		GameTextForPlayer(playerid, "~w~REFUELLING TANK...", 10000, 3);
@@ -5215,10 +6042,10 @@ YCMD:belt(playerid, params[], help)
 	#pragma unused help
 	
  	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
-	new str[128], vehicleID = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
+	new str[128], vehicleId = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	if(IsABike(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're on bike, use helmet! (/helmet)");
+	if(IsABike(vehicleId)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're on bike, use helmet! (/helmet)");
 	if(HasBelt[playerid] == 0)
 	{
 	    HasBelt[playerid] = 1;
@@ -5247,10 +6074,10 @@ YCMD:helmet(playerid, params[], help)
 	#pragma unused help
 	
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
-	new str[128], vehicleID = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
+	new str[128], vehicleId = GetPlayerVehicleID(playerid), playername[MAX_PLAYER_NAME];
 	
 	GetPlayerName(playerid, playername, sizeof(playername));
-	if(!IsABike(vehicleID)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not on the bike, put seat belt! (/belt)");
+	if(!IsABike(vehicleId)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not on the bike, put seat belt! (/belt)");
 	if(HasHelmet[playerid] == 0)
 	{
 	    HasHelmet[playerid] = 1;
@@ -5288,41 +6115,43 @@ YCMD:v(playerid, params[], help)
 	{
 		if(strcmp(command, "buy", true) == 0)
 		{
-            new playerName[MAX_PLAYER_NAME], vehicleID, vehicle_model, model_name[64], new_vehicleID;
+            new playerName[MAX_PLAYER_NAME], vehicleId, vehicleModel, model_name[64], newVehicleId;
 			
 			GetPlayerName(playerid, playerName, sizeof(playerName));
 			
-			vehicleID = GetPlayerVehicleID(playerid);
-			vehicle_model = GetVehicleModel(vehicleID);
-			new_vehicleID = GlobalVehiclesCounter++;
+			vehicleId = GetPlayerVehicleID(playerid);
+			vehicleModel = GetVehicleModel(vehicleId);
+			newVehicleId = GlobalVehiclesCounter++;
 			
-			if(!IsASaleVehicle(vehicleID)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: This vehicle is not for sale!");
-			if((vehicleID == 411 || vehicleID == 415 || vehicleID == 451 || vehicleID == 495 || vehicleID == 522 || vehicleID == 541) && PlayerInfo[playerid][Donator] == 0) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: You can't buy this vehicle. You're not donator!");
+			if(!IsASaleVehicle(vehicleId)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: This vehicle is not for sale!");
+			if((vehicleId == 411 || vehicleId == 415 || vehicleId == 451 || vehicleId == 495 || vehicleId == 522 || vehicleId == 541) && PlayerInfo[playerid][Donator] == 0) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: You can't buy this vehicle. You're not donator!");
 			
-			if(GetPlayerMoney(playerid) < GetVehiclePrice(vehicleID)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: You don't have enough money to buy this vehicle!");
-			GetVehicleName(vehicle_model, model_name, sizeof(model_name));
+			if(GetPlayerMoney(playerid) < GetVehiclePrice(vehicleId)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: You don't have enough money to buy this vehicle!");
+			GetVehicleName(vehicleModel, model_name, sizeof(model_name));
 
-			VehicleInfo[new_vehicleID][Owned] = 1;
-			VehicleInfo[new_vehicleID][Owner] = PlayerInfo[playerid][ID];
-			VehicleInfo[new_vehicleID][Model] = vehicle_model;
-			VehicleInfo[new_vehicleID][ParkX] = 1590.59;
-			VehicleInfo[new_vehicleID][ParkY] = -2319.39;
-			VehicleInfo[new_vehicleID][ParkZ] = 13.3828;
-			VehicleInfo[new_vehicleID][ParkA] = 80;
-			VehicleInfo[new_vehicleID][Color1] = 1;
-			VehicleInfo[new_vehicleID][Color2] = 1;
-			VehicleInfo[new_vehicleID][Paintjob] = 9999;
-			VehicleInfo[new_vehicleID][Locked] = 1;
-			VehicleInfo[new_vehicleID][Registration] = 0;
-			
-			InsertVehicle(PlayerInfo[playerid][ID], vehicle_model, new_vehicleID);
-			OwnedVehicles[new_vehicleID] = CreateVehicle(vehicle_model, VehicleInfo[new_vehicleID][ParkX], VehicleInfo[new_vehicleID][ParkY], VehicleInfo[new_vehicleID][ParkZ], VehicleInfo[new_vehicleID][ParkA], VehicleInfo[new_vehicleID][Color1], VehicleInfo[new_vehicleID][Color2], -1);
-			VehicleFuel[OwnedVehicles[new_vehicleID]] = 60;
+			VehicleInfo[newVehicleId][Owned] = 1;
+			VehicleInfo[newVehicleId][Owner] = PlayerInfo[playerid][Id];
+			VehicleInfo[newVehicleId][Model] = vehicleModel;
+			VehicleInfo[newVehicleId][ParkX] = 1590.59;
+			VehicleInfo[newVehicleId][ParkY] = -2319.39;
+			VehicleInfo[newVehicleId][ParkZ] = 13.3828;
+			VehicleInfo[newVehicleId][ParkA] = 80;
+			VehicleInfo[newVehicleId][Color1] = 1;
+			VehicleInfo[newVehicleId][Color2] = 1;
+			VehicleInfo[newVehicleId][Paintjob] = 9999;
+			VehicleInfo[newVehicleId][Locked] = 1;
+			VehicleInfo[newVehicleId][Registration] = 0;
+
+			printf("ID Je %d", PlayerInfo[playerid][Id]);
+
+			InsertVehicle(PlayerInfo[playerid][Id], vehicleModel, newVehicleId);
+			OwnedVehicles[newVehicleId] = CreateVehicle(vehicleModel, VehicleInfo[newVehicleId][ParkX], VehicleInfo[newVehicleId][ParkY], VehicleInfo[newVehicleId][ParkZ], VehicleInfo[newVehicleId][ParkA], VehicleInfo[newVehicleId][Color1], VehicleInfo[newVehicleId][Color2], -1);
+			VehicleFuel[OwnedVehicles[newVehicleId]] = 60;
 
 			SendClientMessage(playerid, COLOR_GREEN, "* Congratulations! You've bought vehicle. Vehicle awaits You on the parking in Los Santos.");
             
-			PlayerInfo[playerid][Money] -= GetVehiclePrice(vehicle_model);
-			GivePlayerMoney(playerid, -GetVehiclePrice(vehicle_model));
+			PlayerInfo[playerid][Money] -= GetVehiclePrice(vehicleModel);
+			GivePlayerMoney(playerid, -GetVehiclePrice(vehicleModel));
 			
 			SavePlayer(playerid);
 		}
@@ -5332,7 +6161,7 @@ YCMD:v(playerid, params[], help)
 
 			for(new i = 0; i < MAX_VEHICLES; i++) 
 			{
-				if(VehicleInfo[i][Owner] != PlayerInfo[playerid][ID]) continue;
+				if(VehicleInfo[i][Owner] != PlayerInfo[playerid][Id]) continue;
 				if(VehicleInfo[i][Owned] == 1) 
 				{
 					GetVehiclePos(i, X, Y, Z);
@@ -5366,45 +6195,45 @@ YCMD:v(playerid, params[], help)
 		}
 		else if(strcmp(command, "sell", true) == 0)
 		{
-			new vehicleID;
+			new vehicleId;
 
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 
-			vehicleID = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
+			vehicleId = GetPlayerVehicleID(playerid);
+			if(VehicleInfo[vehicleId][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
 
-			VehicleInfo[vehicleID][Owned] = 9999;
-			VehicleInfo[vehicleID][ParkX] = 1590.3740;
-			VehicleInfo[vehicleID][ParkY] = -1026.0565;
-			VehicleInfo[vehicleID][ParkZ] = 23.9063;
-			VehicleInfo[vehicleID][ParkA] = 317.1649;
-			VehicleInfo[vehicleID][Locked] = 0;
-			VehicleInfo[vehicleID][Registration] = 0;
-			VehicleInfo[vehicleID][Spoiler] = 0;
-			VehicleInfo[vehicleID][Hood] = 0;
-			VehicleInfo[vehicleID][Roof] = 0;
-			VehicleInfo[vehicleID][Side_skirt] = 0;
-			VehicleInfo[vehicleID][Lamps] = 0;
-			VehicleInfo[vehicleID][Nitro] = 0;
-			VehicleInfo[vehicleID][Exhaust] = 0;
-			VehicleInfo[vehicleID][Wheels] = 0;
-			VehicleInfo[vehicleID][Stereo] = 0;
-			VehicleInfo[vehicleID][Hydraulics] = 0;
-			VehicleInfo[vehicleID][Front_bumper] = 0;
-			VehicleInfo[vehicleID][Rear_bumper] = 0;
-			VehicleInfo[vehicleID][Vent_right] = 0;
-			VehicleInfo[vehicleID][Vent_left] = 0;
-			VehicleEngine[vehicleID] = 0;
-			VehicleFuel[vehicleID] = 60;
+			VehicleInfo[vehicleId][Owned] = 9999;
+			VehicleInfo[vehicleId][ParkX] = 1590.3740;
+			VehicleInfo[vehicleId][ParkY] = -1026.0565;
+			VehicleInfo[vehicleId][ParkZ] = 23.9063;
+			VehicleInfo[vehicleId][ParkA] = 317.1649;
+			VehicleInfo[vehicleId][Locked] = 0;
+			VehicleInfo[vehicleId][Registration] = 0;
+			VehicleInfo[vehicleId][Spoiler] = 0;
+			VehicleInfo[vehicleId][Hood] = 0;
+			VehicleInfo[vehicleId][Roof] = 0;
+			VehicleInfo[vehicleId][Side_skirt] = 0;
+			VehicleInfo[vehicleId][Lamps] = 0;
+			VehicleInfo[vehicleId][Nitro] = 0;
+			VehicleInfo[vehicleId][Exhaust] = 0;
+			VehicleInfo[vehicleId][Wheels] = 0;
+			VehicleInfo[vehicleId][Stereo] = 0;
+			VehicleInfo[vehicleId][Hydraulics] = 0;
+			VehicleInfo[vehicleId][Front_bumper] = 0;
+			VehicleInfo[vehicleId][Rear_bumper] = 0;
+			VehicleInfo[vehicleId][Vent_right] = 0;
+			VehicleInfo[vehicleId][Vent_left] = 0;
+			VehicleEngine[vehicleId] = 0;
+			VehicleFuel[vehicleId] = 60;
 
-			DeleteVehicle(vehicleID);
+			DeleteVehicle(vehicleId);
 			
-			PlayerInfo[playerid][Money] += GetVehiclePrice(vehicleID);
+			PlayerInfo[playerid][Money] += GetVehiclePrice(vehicleId);
 			GivePlayerMoney(playerid, PlayerInfo[playerid][Money]);
 			SavePlayer(playerid);
 			
 			RemovePlayerFromVehicle(playerid);
-			DestroyVehicle(vehicleID);
+			DestroyVehicle(vehicleId);
 			TogglePlayerControllable(playerid, 1);
 			
 			SendClientMessage(playerid, COLOR_GREEN, "* Congratulations! You've sold your vehicle.");
@@ -5413,25 +6242,25 @@ YCMD:v(playerid, params[], help)
 		}
 		else if(!strfind(command, "sellto"))
 		{
-			new playerName[MAX_PLAYER_NAME], vehicleID, target, price, vehicle[32], Float:X, Float:Y, Float:Z, message[512];
+			new playerName[MAX_PLAYER_NAME], vehicleId, target, price, vehicle[32], Float:X, Float:Y, Float:Z, message[512];
 
-			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /sellto [id/par of the name] [price]");
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /sellto [id/part of the name] [price]");
 			if(VehicleSellOffer[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You've already sent offer for selling vehicle!");
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
-			vehicleID = GetPlayerVehicleID(playerid);
-			GetVehiclePos(vehicleID, X, Y, Z);
-			GetVehicleName(vehicleID, vehicle, sizeof(vehicle));
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
+			vehicleId = GetPlayerVehicleID(playerid);
+			GetVehiclePos(vehicleId, X, Y, Z);
+			GetVehicleName(vehicleId, vehicle, sizeof(vehicle));
+			if(VehicleInfo[vehicleId][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
 			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Player is not close to You!");
 
 			VehicleSellOffer[playerid] = 1;
 			VehicleBuyOffer[target] = 1;
-			VehicleForOffer[target] = vehicleID;
+			VehicleForOffer[target] = vehicleId;
 			VehiclePlayerOffer[target] = playerid;
 			VehicleOfferPrice[target] = price;
 
 			SetTimerEx("VehicleStopOffer", 10000, false, "ii", playerid, target);
-			format(message, sizeof(message), "\n"TEXT_COLOR_RED"Vehicle"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Registered"TEXT_COLOR_WHITE": %s\n", vehicle, GetVehicleOwnerName(vehicleID), price, GetVehicleRegistration(vehicleID));
+			format(message, sizeof(message), "\n"TEXT_COLOR_RED"Vehicle"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Registered"TEXT_COLOR_WHITE": %s\n", vehicle, GetVehicleOwnerName(vehicleId), price, GetVehicleRegistration(vehicleId));
 			ShowPlayerDialog(target, DIALOG_BUY_VEHICLE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"BUY VEHICLE", message, "Buy", "Cancel");
 
 			GetPlayerName(target, playerName, sizeof(playerName));
@@ -5445,11 +6274,11 @@ YCMD:v(playerid, params[], help)
 		else if(strcmp(command, "save", true) == 0)
 		{
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in vehicle!");
-			new vehicleID = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
-			if(VehicleInfo[vehicleID][Owned] == 1)
+			new vehicleId = GetPlayerVehicleID(playerid);
+			if(VehicleInfo[vehicleId][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
+			if(VehicleInfo[vehicleId][Owned] == 1)
 			{
-				SaveVehicleComponents(vehicleID);
+				SaveVehicleComponents(vehicleId);
 
 				SendClientMessage(playerid, COLOR_GREEN, "* Congratulations! You've saved components of your vehicle.");
 			}
@@ -5458,34 +6287,31 @@ YCMD:v(playerid, params[], help)
 		}
 		else if(strcmp(command, "park", true) == 0)
 		{
-			new vehicleID, vehicle_model, Float:X, Float:Y, Float:Z, Float:A;
+			new vehicleId, vehicleModel, Float:X, Float:Y, Float:Z, Float:A;
 
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
-			vehicleID = GetPlayerVehicleID(playerid);
-			vehicle_model = GetVehicleModel(vehicleID);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
+			vehicleId = GetPlayerVehicleID(playerid);
+			vehicleModel = GetVehicleModel(vehicleId);
+			if(VehicleInfo[vehicleId][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
 
-			GetVehiclePos(vehicleID, X, Y, Z);
-			GetVehicleZAngle(vehicleID, A);
+			GetVehiclePos(vehicleId, X, Y, Z);
+			GetVehicleZAngle(vehicleId, A);
 
-			VehicleInfo[vehicleID][ParkX] = X;
-			VehicleInfo[vehicleID][ParkY] = Y;
-			VehicleInfo[vehicleID][ParkZ] = Z;
-			VehicleInfo[vehicleID][ParkA] = A;
-			VehicleEngine[vehicleID] = 0;
+			VehicleInfo[vehicleId][ParkX] = X;
+			VehicleInfo[vehicleId][ParkY] = Y;
+			VehicleInfo[vehicleId][ParkZ] = Z;
+			VehicleInfo[vehicleId][ParkA] = A;
+			VehicleEngine[vehicleId] = 0;
 
-			printf("vehicleID je %d", vehicleID);
-			printf("id vozila je %d", VehicleInfo[vehicleID][ID]);
-
-			SaveVehicle(vehicleID);
+			SaveVehicle(vehicleId);
 			RemovePlayerFromVehicle(playerid);
-			DestroyVehicle(vehicleID);
+			DestroyVehicle(vehicleId);
 			TogglePlayerControllable(playerid, 1);
 
-			OwnedVehicles[vehicleID] = CreateVehicle(vehicle_model, VehicleInfo[vehicleID][ParkX], VehicleInfo[vehicleID][ParkY], VehicleInfo[vehicleID][ParkZ], VehicleInfo[vehicleID][ParkA], VehicleInfo[vehicleID][Color1], VehicleInfo[vehicleID][Color2], -1);
-			SetVehicleComponents(vehicleID);
+			OwnedVehicles[vehicleId] = CreateVehicle(vehicleModel, VehicleInfo[vehicleId][ParkX], VehicleInfo[vehicleId][ParkY], VehicleInfo[vehicleId][ParkZ], VehicleInfo[vehicleId][ParkA], VehicleInfo[vehicleId][Color1], VehicleInfo[vehicleId][Color2], -1);
+			SetVehicleComponents(vehicleId);
 
-			SendClientMessage(playerid, COLOR_GREEN, "Parkirali ste vase vozilo.");
+			SendClientMessage(playerid, COLOR_GREEN, "You've parked your vehicle.");
 
 			return 1;
 		}
@@ -5495,20 +6321,20 @@ YCMD:v(playerid, params[], help)
 
 			if(sscanf(params, "s[16]ii", command, color1, color2)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [color] [boja 1] [boja 2]");
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
-			new vehicleID = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
-			if(GetPlayerMoney(playerid) < 2500) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca! ($2500)");
+			new vehicleId = GetPlayerVehicleID(playerid);
+			if(VehicleInfo[vehicleId][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
+			if(GetPlayerMoney(playerid) < 2500) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:You don't have enough money! ($2500)");
 
 			PlayerInfo[playerid][Money] -= 2500;
 			GivePlayerMoney(playerid, -2500);
 			SavePlayer(playerid);
 
-			ChangeVehicleColor(vehicleID, color1, color2);
-			VehicleInfo[vehicleID][Color1] = color1;
-			VehicleInfo[vehicleID][Color2] = color2;
-			SaveVehicle(vehicleID);
+			ChangeVehicleColor(vehicleId, color1, color2);
+			VehicleInfo[vehicleId][Color1] = color1;
+			VehicleInfo[vehicleId][Color2] = color2;
+			SaveVehicle(vehicleId);
 
-			SendClientMessage(playerid, COLOR_GREEN, "Promenili ste boju vaseg vozila.");
+			SendClientMessage(playerid, COLOR_GREEN, "You've changed your vehicle's color.");
 
 			return 1;
 		}
@@ -5518,28 +6344,82 @@ YCMD:v(playerid, params[], help)
 
 			if(sscanf(params, "s[16]ii", command, paintjob)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [paintjob] [paintjob id]");
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
-			new vehicleID = GetPlayerVehicleID(playerid);
-			if(VehicleInfo[vehicleID][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
-			if(GetPlayerMoney(playerid) < 5000) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca! ($5000)");
+			new vehicleId = GetPlayerVehicleID(playerid);
+			if(VehicleInfo[vehicleId][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
+			if(GetPlayerMoney(playerid) < 5000) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:You don't have enough money! ($5000)");
 
 			PlayerInfo[playerid][Money] -= 5000;
 			GivePlayerMoney(playerid, -5000);
 			SavePlayer(playerid);
 
-			ChangeVehiclePaintjob(vehicleID, paintjob);
-			VehicleInfo[vehicleID][Paintjob] = paintjob;
-			SaveVehicle(vehicleID);
+			ChangeVehiclePaintjob(vehicleId, paintjob);
+			VehicleInfo[vehicleId][Paintjob] = paintjob;
+			SaveVehicle(vehicleId);
 
-			SendClientMessage(playerid, COLOR_GREEN, "Promenili ste boju vaseg vozila.");
+			SendClientMessage(playerid, COLOR_GREEN, "You've changed your vehicle's paintjob.");
 
 			return 1;
 		}
-		/*else
+		else
 		{
-		    SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [komanda]");
-			SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell[1-3], sellto, park[1-3], lock[1-3], find[1-3], color[1-3], paintjob[1-3], save[1-3], menu");
-		}*/
+		    SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [command]");
+			SendClientMessage(playerid, COLOR_BLUE, "Available commands: buy, sell, sellto, park, lock, find, color, paintjob, save");
+		}
 	}
+	return 1;
+}
+
+YCMD:hood(playerid, params[], help)
+{
+	#pragma unused help
+	new Float:X, Float:Y, Float:Z, engine, lights, alarm, doors, bonnet, boot, objective;
+
+	for(new i = 0; i < MAX_VEHICLES; i++)
+	{
+	    GetVehiclePos(i, X, Y, Z);
+	    if(IsPlayerInRangeOfPoint(playerid, 4.0, X, Y, Z))
+	    {
+	        GetVehicleParamsEx(i, engine, lights, alarm, doors, bonnet, boot, objective);
+	        if(VehicleHood[i] == 0)
+			{
+				SetVehicleParamsEx(i, engine, lights, alarm, doors, 1, boot, objective);
+				VehicleHood[i] = 1;
+			}
+	        else
+			{
+				SetVehicleParamsEx(i, engine, lights, alarm, doors, 0, boot, objective);
+				VehicleHood[i] = 0;
+			}
+		}
+	}
+
+	return 1;
+}
+
+YCMD:trunk(playerid, params[], help)
+{
+	#pragma unused help
+	new Float:X, Float:Y, Float:Z, engine, lights, alarm, doors, bonnet, boot, objective;
+
+	for(new i = 0; i < MAX_VEHICLES; i++)
+	{
+	    GetVehiclePos(i, X, Y, Z);
+	    if(IsPlayerInRangeOfPoint(playerid, 4.0, X, Y, Z))
+	    {
+	        GetVehicleParamsEx(i, engine, lights, alarm, doors, bonnet, boot, objective);
+	        if(VehicleTrunk[i] == 0)
+			{
+				SetVehicleParamsEx(i, engine, lights, alarm, doors, bonnet, 1, objective);
+				VehicleTrunk[i] = 1;
+			}
+	        else
+			{
+				SetVehicleParamsEx(i, engine, lights, alarm, doors, bonnet, 0, objective);
+				VehicleTrunk[i] = 0;
+			}
+		}
+	}
+
 	return 1;
 }
 
@@ -5548,35 +6428,34 @@ YCMD:h(playerid, params[], help)
 	new command[32];
 	if(sscanf(params, "s[32]", command))
 	{
-		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /h(ouse) [komanda]");
-		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavehicleIDrogu, uzmidrogu");
+		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /h(ouse) [command]");
+		SendClientMessage(playerid, COLOR_BLUE, "Available commands: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavehicleIDrogu, uzmidrogu");
 	}
 	else
 	{
 		if(strcmp(command, "buy", true) == 0)
 		{
-			new playerName[MAX_PLAYER_NAME], id, message[256];
+			new playerName[MAX_PLAYER_NAME], id;
 
 			id = IsPlayerNearHouseEnter(playerid);
 			GetPlayerName(playerid, playerName, sizeof(playerName));
 			
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu kuce!");
-			if(HouseInfo[id][Owned] != 0 || HouseInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ova kuca nije na prodaju!");
-			if(GetPlayerMoney(playerid) < HouseInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da kupite ovu kucu!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near house!");
+			if(HouseInfo[id][Owned] != 0 || HouseInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: This house is not for sale!");
+			if(GetPlayerMoney(playerid) < HouseInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:You don't have enough money da kupite ovu kucu!");
 
 			PlayerInfo[playerid][Money] -= HouseInfo[id][Price];
 			GivePlayerMoney(playerid, -HouseInfo[id][Price]);
 
 			HouseInfo[id][Owned] = 1;
-			HouseInfo[id][Owner] = PlayerInfo[playerid][ID];
+			HouseInfo[id][Owner] = PlayerInfo[playerid][Id];
 			HouseInfo[id][Locked] = 0;
 
 			DestroyPickup(HouseInfo[id][Icon]);
 			HouseInfo[id][Icon] = CreatePickup(1272, 1, HouseInfo[id][EnterX], HouseInfo[id][EnterY], HouseInfo[id][EnterZ], HouseInfo[id][OutsideVirtualWorld]);
-			SendClientMessage(playerid, COLOR_GREEN, "Kupili ste kucu.");
+			SendClientMessage(playerid, COLOR_GREEN, "You've bought house.");
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has owner !\n "TEXT_COLOR_RED"House owner"TEXT_COLOR_WHITE": %s\n "TEXT_COLOR_RED"House ID"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(id), HouseInfo[id][ID]);
-			Update3DTextLabelText(HousesLabels[id], -1, message);
+			SetOwnedHouseLabel(id);
 
 			SaveHouse(id);
 			SavePlayer(playerid);
@@ -5585,13 +6464,14 @@ YCMD:h(playerid, params[], help)
 		}
 		else if(strcmp(command, "sell", true) == 0)
 		{
-			new id, message[256];
+			new id;
 
 			id = IsPlayerNearHouseEnter(playerid);
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu kuce!");
-			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nije vasa kuca!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near house!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: This is not your house!");
 
 			HouseInfo[id][Owned] = 0;
+			HouseInfo[id][Owner] = 0;
 			HouseInfo[id][Locked] = 1;
 			HouseInfo[id][Slot1] = 9999;
 			HouseInfo[id][Slot1_ammo] = 0;
@@ -5608,10 +6488,9 @@ YCMD:h(playerid, params[], help)
 			PlayerInfo[playerid][Money] += HouseInfo[id][Price]/2;
 			GivePlayerMoney(playerid, (HouseInfo[id][Price]/2));
 
-			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste kucu.");
+			SendClientMessage(playerid, COLOR_GREEN, "You've sold house.");
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" This house has no owner !\n "TEXT_COLOR_RED"Cena kuce"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"House ID"TEXT_COLOR_WHITE": %d \n "TEXT_COLOR_RED"Da kupite ovu kucu \n kucajte /h buy", HouseInfo[id][Price], HouseInfo[id][ID]);
-			Update3DTextLabelText(HousesLabels[id], -1, message);
+			SetUnownedHouseLabel(id);
 
 			SaveHouse(id);
 			SavePlayer(playerid);
@@ -5620,13 +6499,13 @@ YCMD:h(playerid, params[], help)
 		else if(!strfind(command, "sellto"))
 		{
 			new id, target, price, Float:X, Float:Y, Float:Z,playerName[MAX_PLAYER_NAME], str[512];
-			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, -1, "[USAGE]: /h(ouse) sellto [id/par of the name] [price]");
-			if(HouseSellOffer[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste ponudili prodaju kuce!");
+			if(sscanf(params, "s[16]ii", command, target, price)) return SendClientMessage(playerid, -1, "[USAGE]: /h(ouse) sellto [id/part of the name] [price]");
+			if(HouseSellOffer[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You've already offered house!");
 			GetPlayerPos(target, X, Y, Z);
-			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac nije blizu vas!");
+			if(!IsPlayerInRangeOfPoint(target, 7.0, X, Y, Z)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Player is not close to you!");
 			id = IsPlayerNearHouseEnter(playerid);
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu kuce!");
-			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nije vasa kuca!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near house!");
+			if(HouseInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: This is not your house!");
 
 			HouseSellOffer[playerid] = 1;
 			HouseBuyOffer[target] = 1;
@@ -5635,43 +6514,138 @@ YCMD:h(playerid, params[], help)
 			HouseOfferPrice[target] = price;
 			
 			SetTimerEx("HouseStopOffer", 10000, false, "ii", playerid, target);
-			format(str, sizeof(str), "\nIgrac "TEXT_COLOR_RED"%s"TEXT_COLOR_WHITE" Vam je ponudio da kupite kucu.\n"TEXT_COLOR_RED"ID"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Trenutni vlasnik"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Cena"TEXT_COLOR_WHITE": %d", playerName, HouseInfo[id][ID], GetHouseOwnerName(HouseInfo[id][ID]), HouseOfferPrice[playerid]);
-			ShowPlayerDialog(target, DIALOG_BUY_HOUSE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"KUPOVINA KUCE", str, "Kupi", "Odbij");
+			format(str, sizeof(str), "\nPlayer "TEXT_COLOR_RED"%s"TEXT_COLOR_WHITE" offered you to buy house.\n"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Current owner"TEXT_COLOR_WHITE": %d\n "TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d", playerName, HouseInfo[id][Id], GetHouseOwnerName(id), HouseOfferPrice[playerid]);
+			ShowPlayerDialog(target, DIALOG_BUY_HOUSE, DIALOG_STYLE_MSGBOX, ""TEXT_COLOR_RED"HOUSE BUY", str, "Buy", "Decline");
 			
 			GetPlayerName(target, playerName, sizeof(playerName));
-			format(str, sizeof(str), "Ponudili ste igracu %s da kupi kucu.", playerName);
+			format(str, sizeof(str), "You offered player %s to buy house.", playerName);
 			SendClientMessage(playerid, -1, str);
 			
 			GetPlayerName(playerid, playerName, sizeof(playerName));
-			format(str, sizeof(str), "Igrac %s Vam je ponudio da kupite kucu.", playerName);
+			format(str, sizeof(str), "Player %s offered you to buy house.", playerName);
 			SendClientMessage(target, -1, str);
 			
 			return 1;
 		}
 		else if(strcmp(command, "lock", true) == 0)
 		{
-			new id = IsPlayerNearHouseEnter(playerid);
-			if(HouseInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu vase kuce!");
-			if(HouseInfo[id][Locked] == 1)
+			new id;
+			if(InHouse[playerid] != 0)
 			{
-				HouseInfo[id][Locked] = 0;
-				GameTextForPlayer(playerid, "Kuca ~g~otkljucana!", 3000, 3);
-				SaveHouse(id);
+				if(HouseInfo[InHouse[playerid]][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near your house!");
+				if(HouseInfo[InHouse[playerid]][Locked] == 1)
+				{
+					HouseInfo[InHouse[playerid]][Locked] = 0;
+					GameTextForPlayer(playerid, "House ~g~unlocked!", 3000, 3);
+					SaveHouse(InHouse[playerid]);
+				}
+				else
+				{
+					HouseInfo[InHouse[playerid]][Locked] = 1;
+					GameTextForPlayer(playerid, "House ~r~locked!", 3000, 3);
+					SaveHouse(InHouse[playerid]);
+				}			
 			}
-			else
+			else 
 			{
-				HouseInfo[id][Locked] = 1;
-				GameTextForPlayer(playerid, "Kuca ~r~zakljucana!", 3000, 3);
-				SaveHouse(id);
+				id = IsPlayerNearHouseEnter(playerid);
+				if(HouseInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near your house!");
+				if(HouseInfo[id][Locked] == 1)
+				{
+					HouseInfo[id][Locked] = 0;
+					GameTextForPlayer(playerid, "House ~g~unlocked!", 3000, 3);
+					SaveHouse(id);
+				}
+				else
+				{
+					HouseInfo[id][Locked] = 1;
+					GameTextForPlayer(playerid, "House ~r~locked!", 3000, 3);
+					SaveHouse(id);
+				}
 			}
+	
+			return 1;
+		}
+		else if(!strfind(command, "putdrug"))
+		{
+			new amount, currentDrug;
+
+			if(InHouse[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in house!");
+			if(HouseInfo[InHouse[playerid]][Owner] !=  PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your house!");
+			if(sscanf(params, "s[16]i", command, amount)) return SendClientMessage(playerid, COLOR_RED, "[USAGE]: /h(ouse) [putdrug] [amount]");
+			
+			currentDrug = PlayerInfo[playerid][Drugs];
+			if(amount > currentDrug) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have that much drug!");
+			
+			HouseInfo[InHouse[playerid]][Drugs] += amount;
+			PlayerInfo[playerid][Drugs] -= amount;
+			SendClientMessage(playerid, -1, "You've putted drug in your house.");
+			SaveHouse(InHouse[playerid]);
+			SavePlayer(playerid);
 
 			return 1;
 		}
-		/* else
+		else if(!strfind(command, "takedrug"))
 		{
-		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /h(ouse) [komanda]");
-		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavehicleIDrogu, uzmidrogu");
-		} */
+			new amount, houseDrug;			
+			if(InHouse[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in house!");
+			if(HouseInfo[InHouse[playerid]][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your house!");
+			if(sscanf(params, "s[16]i", command, amount)) return SendClientMessage(playerid, -1, "[USAGE]: /h(ouse) [takedrug] [amount]");
+			
+			houseDrug = HouseInfo[InHouse[playerid]][Drugs];
+			if(amount > houseDrug) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have that much drug in this house!");
+			
+			HouseInfo[InHouse[playerid]][Drugs] -= amount;
+			PlayerInfo[playerid][Drugs] += amount;
+			SendClientMessage(playerid, -1, "You've taken drug from your house.");
+			SaveHouse(InHouse[playerid]);
+			SavePlayer(playerid);
+
+			return 1;
+		}
+		else if(!strfind(command, "putmaterials"))
+		{
+			new amount, currmats;
+			
+			if(InHouse[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in house!");
+			if(HouseInfo[InHouse[playerid]][Owner] !=  PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your house!");
+			if(sscanf(params, "s[16]i", command, amount)) return SendClientMessage(playerid, -1, "[USAGE]: /h(ouse) [stavimaterijale] [amount]");
+			
+			currmats = PlayerInfo[playerid][Materials];
+			if(amount > currmats) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have that much materials!");
+			
+			HouseInfo[InHouse[playerid]][Materials] += amount;
+			PlayerInfo[playerid][Materials] -= amount;
+			SendClientMessage(playerid, -1, "You've putted your materials in house.");
+			SaveHouse(InHouse[playerid]);
+			SavePlayer(playerid);
+
+			return 1;
+		}
+		else if(!strfind(command, "takematerials"))
+		{
+			new amount, houseMaterials;
+			
+			if(InHouse[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in house!");
+			if(HouseInfo[InHouse[playerid]][Owner] !=  PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your house!");
+			if(sscanf(params, "s[16]i", command, amount)) return SendClientMessage(playerid, -1, "[USAGE]: /h(ouse) [uzmimaterijale] [amount]");
+			
+			houseMaterials = HouseInfo[InHouse[playerid]][Materials];
+			if(amount > houseMaterials) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have that much materials in this house!");
+			
+			HouseInfo[InHouse[playerid]][Materials] -= amount;
+			PlayerInfo[playerid][Materials] += amount;
+			SendClientMessage(playerid, -1, "You've taken materials from house.");
+			SaveHouse(InHouse[playerid]);
+			SavePlayer(playerid);
+			
+			return 1;
+		}
+		else
+		{
+			SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /h(ouse) [command]");
+			SendClientMessage(playerid, COLOR_BLUE, "Available commands: buy, sell, sellto, lock, stavioruzje, uzmioruzje, stavimaterijale, uzmimaterijale, stavehicleIDrogu, uzmidrogu");
+		}
 	}
 	return 1;
 }
@@ -5681,57 +6655,55 @@ YCMD:b(playerid, params[], help)
 	new command[16];
 	if(sscanf(params, "s[16]", command))
 	{
-		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [komanda]");
-		SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
+		SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [command]");
+		SendClientMessage(playerid, COLOR_BLUE, "Available commands: buy, sell, lock, fee, name");
 	}
 	else
 	{
 		if(strcmp(command, "buy", true) == 0)
 		{
-			new id, playerName[MAX_PLAYER_NAME], message[256];
+			new id, playerName[MAX_PLAYER_NAME];
 			
 			GetPlayerName(playerid, playerName, sizeof(playerName));
 
 			id = IsPlayerNearBusinessEnter(playerid);
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu biznisa!");
-			if(BusinessInfo[id][Owned] != 0 || BusinessInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ovaj biznis nije na prodaju!");
-			if(GetPlayerMoney(playerid) < BusinessInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno novca da kupite ovaj biznis!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near business!");
+			if(BusinessInfo[id][Owned] != 0 || BusinessInfo[id][Price] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: This business is not for sale!");
+			if(GetPlayerMoney(playerid) < BusinessInfo[id][Price]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:You don't have enough money to buy this business!");
 
 			PlayerInfo[playerid][Money] -= BusinessInfo[id][Price];
 			GivePlayerMoney(playerid, -BusinessInfo[id][Price]);
 
 			BusinessInfo[id][Locked] = 0;
 			BusinessInfo[id][Owned] = 1;
-			BusinessInfo[id][Owner] = PlayerInfo[playerid][ID];
+			BusinessInfo[id][Owner] = PlayerInfo[playerid][Id];
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis ima vlasnika !\n "TEXT_COLOR_BLUE"Ime biznisa"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Vlasnik"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Cena ulaza"TEXT_COLOR_WHITE": %d \n Da udjete kucajte "TEXT_COLOR_BLUE"/enter", BusinessInfo[id][Name], GetBusinessOwnerName(BusinessInfo[id][Owner]), BusinessInfo[id][EnterFee]);
-			Update3DTextLabelText(BusinessLabels[id], -1, message);
+			SetOwnedBusinessLabel(id);
 			SaveBusiness(id);
 			SavePlayer(playerid);
 
-			SendClientMessage(playerid, COLOR_RED, "Kupili ste biznis.");
+			SendClientMessage(playerid, COLOR_RED, "You've bought business.");
 
 			return 1;
 		}
 		else if(strcmp(command, "sell", true) == 0)
 		{
-			new id, message[256];
+			new id;
 			id = IsPlayerNearBusinessEnter(playerid);
 			// Check if near business
 
 			BusinessInfo[id][Owned] = 0;
+			BusinessInfo[id][Owner] = 0;
 			BusinessInfo[id][Locked] = 1;
 
 			PlayerInfo[playerid][Money] += BusinessInfo[id][Price]/2;
 			GivePlayerMoney(playerid, PlayerInfo[playerid][Money]);
 
-			format(message, sizeof(message), ""TEXT_COLOR_WHITE" Ovaj biznis nema vlasnika !\n "TEXT_COLOR_BLUE"Ime biznisa"TEXT_COLOR_WHITE": %s \n "TEXT_COLOR_BLUE"Cena biznisa"TEXT_COLOR_WHITE": %d \n Da kupite ovaj biznis \n kucajte "TEXT_COLOR_BLUE"/buybusiness", BusinessInfo[id][Name], BusinessInfo[id][Price]);
-			Update3DTextLabelText(BusinessLabels[id], -1, message);
-
+			SetUnownedBusinessLabel(id);
 			SaveBusiness(id);
 			SavePlayer(playerid);
 
-			SendClientMessage(playerid, COLOR_GREEN, "Prodali ste biznis.");
+			SendClientMessage(playerid, COLOR_GREEN, "You've sold business.");
 			
 			return 1;
 		}
@@ -5742,12 +6714,12 @@ YCMD:b(playerid, params[], help)
 			id = IsPlayerNearBusinessEnter(playerid);
 
 			if(sscanf(params, "s[16]i", command, fee)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [fee] [price]");
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near business!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR] This is not your business!");
 
 			BusinessInfo[id][EnterFee] = fee;
 
-			format(message, sizeof(message), "Promenili ste cenu ulaza na %d.", fee);
+			format(message, sizeof(message), "You've changed business enter fee to %d.", fee);
 			SaveBusiness(id);
 			
 			SendClientMessage(playerid, COLOR_GREEN, message);
@@ -5758,19 +6730,19 @@ YCMD:b(playerid, params[], help)
 		{
 			new id = IsPlayerNearBusinessEnter(playerid);
 
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near business!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR] This is not your business!");
 
 			if(BusinessInfo[id][Locked] == 1)
 			{
 				BusinessInfo[id][Locked] = 0;
-				GameTextForPlayer(playerid, "Biznis ~g~otkljucan!", 3000, 3);
+				GameTextForPlayer(playerid, "Business ~g~unlocked!", 3000, 3);
 				SaveBusiness(id);
 			}
 			else
 			{
 				BusinessInfo[id][Locked] = 1;
-				GameTextForPlayer(playerid, "Biznis ~r~zakljucan!", 3000, 3);
+				GameTextForPlayer(playerid, "Business ~r~locked!", 3000, 3);
 				SaveBusiness(id);
 			}
 
@@ -5781,14 +6753,14 @@ YCMD:b(playerid, params[], help)
 			new id, message[128];
 			id = IsPlayerNearBusinessEnter(playerid);
 
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate novca na racunu biznisa!");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near business!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: This is not your business!");
+			if(BusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money on business account!");
 
 			PlayerInfo[playerid][Money] += BusinessInfo[id][Money];
 			GivePlayerMoney(playerid, BusinessInfo[id][Money]);
 
-			format(message, sizeof(message), "Podigli ste %d$ sa racuna biznisa.", BusinessInfo[id][Money]);
+			format(message, sizeof(message), "You withdraw %d$ from business account.", BusinessInfo[id][Money]);
 			SendClientMessage(playerid, COLOR_GREEN, message);
 			
 			BusinessInfo[id][Money] = 0;
@@ -5804,13 +6776,13 @@ YCMD:b(playerid, params[], help)
 
 			id = IsPlayerNearBusinessEnter(playerid);
 
-			if(sscanf(params, "s[16]s[128]", command, name)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [name] [ime]");
-			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu svog biznisa!");
-			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][ID]) return SendClientMessage(playerid, COLOR_RED, "Niste blizu svog biznisa!");
+			if(sscanf(params, "s[16]s[128]", command, name)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [name] [new_name]");
+			if(id == -1 || id == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not near business!");
+			if(BusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR] This is not your business!");
 
 			BusinessInfo[id][Name] = name;
 
-			format(message, sizeof(message), "Promenili ste ime biznisa u %s.", name);
+			format(message, sizeof(message), "You've changed your business name to %s.", name);
 			SaveBusiness(id);
 
 			SendClientMessage(playerid, COLOR_GREEN, message);
@@ -5819,10 +6791,145 @@ YCMD:b(playerid, params[], help)
 		}
 		else
 		{
-			SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [komanda]");
-			SendClientMessage(playerid, COLOR_BLUE, "Dostupne komande: buy, sell, lock, fee, name");
+			SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /b(usiness) [command]");
+			SendClientMessage(playerid, COLOR_BLUE, "Available commands: buy, sell, lock, fee, name");
 		}
 	}
+	return 1;
+}
+
+
+YCMD:shop(playerid, params[], help)
+{
+	#pragma unused help
+	if(InBusiness[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in shop!");
+	if(BusinessInfo[InBusiness[playerid]][Type] != 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in shop!");
+
+	ShowPlayerDialog(playerid, DIALOG_SHOP, DIALOG_STYLE_LIST, "Shop", "Phone \nSIM card \nCredit \nNotebook", "Buy", "Exit");
+
+	return 1;
+}
+
+YCMD:acceptcall(playerid, params[], help)
+{
+	#pragma unused help
+	new playerName[MAX_PLAYER_NAME], str[128];
+	
+	InCall[playerid] = 1;
+	InCall[Caller[playerid]] = 1;
+	PlayerInfo[Caller[playerid]][MobileCredit] -= 1;
+	SavePlayer(Caller[playerid]);
+	SendClientMessage(playerid, COLOR_WHITE, "You've accepted call.");
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Player %s have accepted your call.", playerName);
+	SendClientMessage(Caller[playerid], COLOR_WHITE, str);
+	
+	return 1;
+}
+
+YCMD:cancelcall(playerid, params[], help)
+{
+	#pragma unused help
+	new playerName[MAX_PLAYER_NAME], str[128];
+	if(iCall[playerid] != 0)
+	{
+	    GetPlayerName(playerid, playerName, sizeof(playerName));
+	    SendClientMessage(playerid, COLOR_RED, "You have canceled call.");
+	    format(str, sizeof(str), "%s canceled call.", playerName);
+	    SendClientMessage(CalledPlayer[playerid], COLOR_RED, str);
+		InCall[playerid] = 0;
+		InCall[CalledPlayer[playerid]] = 0;
+		CalledPlayer[Caller[playerid]] = 0;
+		Caller[playerid] = 0;
+	}
+	else
+	{
+	    GetPlayerName(playerid, playerName, sizeof(playerName));
+	    SendClientMessage(playerid, COLOR_RED, "You have canceled call.");
+	    format(str, sizeof(str), "%s canceled call.", playerName);
+	    SendClientMessage(Caller[playerid], COLOR_RED, str);
+		InCall[playerid] = 0;
+		InCall[Caller[playerid]] = 0;
+		CalledPlayer[Caller[playerid]] = 0;
+		Caller[playerid] = 0;
+	}
+
+	return 1;
+}
+
+YCMD:advertise(playerid, params[], help)
+{
+	#pragma unused help
+	new text[128], str[128], playerName[MAX_PLAYER_NAME];
+	
+	if(sscanf(params, "s[128]", text)) return SendClientMessage(playerid, COLOR_WHITE, "[USAGE]: /oglas [text]");
+	if(PlayerInfo[playerid][Mobile] == 9999) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have cell phone!");
+	if(PlayerInfo[playerid][MobileNumber] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have SIM card!");
+	if(PlayerInfo[playerid][MobileCredit] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough credit! (5$ potrebno)");
+	if(AdvertisementTime[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]:You have to wait atelast 2 minutes before posting ad again!");
+	
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(str, sizeof(str), "AD - %s [%d]", playerName, PlayerInfo[playerid][MobileNumber]);
+	SendClientMessageToAll(COLOR_WHITE, str);
+	format(str, sizeof(str), "AD CONTENT: %s", text);
+	SendClientMessageToAll(COLOR_WHITE, str);
+	AdvertisementTime[playerid] = 120;
+	PlayerInfo[playerid][MobileCredit] -= 5;
+	SavePlayer(playerid);
+
+	return 1;
+}
+
+YCMD:phonenumber(playerid, params[], help)
+{
+	#pragma unused help
+	new player, playerName[MAX_PLAYER_NAME], str[128];
+
+	if(PlayerInfo[playerid][AddressBook] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have notebook!");
+	if(sscanf(params, "i", player)) return SendClientMessage(playerid, -1, "[USAGE]: /phonenumber [id/part of the name]");
+	else if(player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Invalid player ID!");
+	if(PlayerInfo[player][Mobile] == 9999) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Player doesn't have SIM card!");
+
+	GetPlayerName(player, playerName, sizeof(playerName));
+	format(str, sizeof(str), "%s number is: %d", playerName, PlayerInfo[player][MobileNumber]);
+	SendClientMessage(playerid, -1, str);
+
+	return 1;
+}
+
+YCMD:robbank(playerid, params[], help)
+{
+	#pragma unused help
+	if(vaultDoorOpened == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Bank has already been robbed, try again later!");
+	
+	MoveDynamicObject(vaultdoor, 582.98975, -1268.18286, 983.59998, 0.01, 0.00000, 0.00000, 240.00000);
+	SendClientMessage(playerid, COLOR_WHITE, "You robbed the bank.");
+	vaultDoorOpened = 1;
+	SetTimer("closeVaultDoor", 120000, false);
+	
+	return 1;
+}
+
+YCMD:dropbag(playerid, params[], help)
+{
+	if(HaveMoneyBag[playerid] == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You do not have bag on your back!");
+	switch (HaveMoneyBag[playerid])
+	{
+     	case 0: moneybag[0] = CreateDynamicObject(1550, 585.76355, -1257.17932, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 1: moneybag[1] = CreateDynamicObject(1550, 585.76349, -1255.18335, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 2: moneybag[2] = CreateDynamicObject(1550, 585.76349, -1256.15796, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 3: moneybag[3] = CreateDynamicObject(1550, 579.71600, -1257.17932, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 4: moneybag[4] = CreateDynamicObject(1550, 579.71600, -1255.18335, 982.29999,   0.00000, 0.00000, 0.00000);
+		case 5: moneybag[5] = CreateDynamicObject(1550, 579.71600, -1256.15796, 982.29999,   0.00000, 0.00000, 0.00000);
+	}
+
+    RemovePlayerAttachedObject(playerid, 0);
+    HaveMoneyBag[playerid] = -1;
+    PlayerInfo[playerid][Money] += 1000;
+    GivePlayerMoney(playerid, 1000);
+    SavePlayer(playerid);
+    SendClientMessage(playerid, COLOR_WHITE, "You took money and dropped the bag (1000$)");
+	
 	return 1;
 }
 
@@ -5979,7 +7086,6 @@ YCMD:makehouse(playerid, params[], help)
     playerVirtualWorld = GetPlayerVirtualWorld(playerid);
 
     HouseInfo[GlobalHousesCounter][Owned] = 0;
-    HouseInfo[GlobalHousesCounter][Owner] = PlayerInfo[playerid][ID];
     HouseInfo[GlobalHousesCounter][Price] = price;
     HouseInfo[GlobalHousesCounter][EnterX] = X;
     HouseInfo[GlobalHousesCounter][EnterY] = Y;
@@ -6042,7 +7148,7 @@ YCMD:deletehouse(playerid, params[], help)
     DeleteHouse(id);
 
    	DestroyPickup(HouseInfo[id][Icon]);
-    Delete3DTextLabel(HousesLabels[id]);
+    Delete3DTextLabel(HouseLabels[id]);
 
     return 1;
 }
@@ -6171,7 +7277,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitX] = 204.332992;
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -166.694992;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1000.523437;
-            format(name, sizeof(name), "DS (Didier Sachs)");
+            format(name, sizeof(name), "DS (Didier Sachs)'");
 			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 14: // Prolaps
@@ -6225,7 +7331,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitX] = 375.962463;
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -65.816848;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 1001.507812;
-            format(name, sizeof(name), "Cluckin'Bell");
+            format(name, sizeof(name), "Cluckin Bell");
 			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 20: // Well Stacked Pizza
@@ -6279,7 +7385,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitX] = -227.027999;
             BusinessInfo[GlobalBusinessesCounter][ExitY] = 1401.229980;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 27.765625;
-            format(name, sizeof(name), "Lil' probe inn");
+            format(name, sizeof(name), "Lil probe inn");
 			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 26: // Jay's diner
@@ -6288,7 +7394,7 @@ YCMD:makebusiness(playerid, params[], help)
             BusinessInfo[GlobalBusinessesCounter][ExitX] = 457.304748;
             BusinessInfo[GlobalBusinessesCounter][ExitY] = -88.428497;
             BusinessInfo[GlobalBusinessesCounter][ExitZ] = 999.554687;
-            format(name, sizeof(name), "Jay's diner");
+            format(name, sizeof(name), "Jays diner");
 			BusinessInfo[GlobalBusinessesCounter][Name] = name;
         }
         case 27: // Gant bridge diner
@@ -6335,7 +7441,6 @@ YCMD:makebusiness(playerid, params[], help)
     playerVirtualWorld = GetPlayerVirtualWorld(playerid);
 
     BusinessInfo[GlobalBusinessesCounter][Owned] = 0;
-    BusinessInfo[GlobalBusinessesCounter][Owner] = PlayerInfo[playerid][ID];
     BusinessInfo[GlobalBusinessesCounter][Price] = price;
     BusinessInfo[GlobalBusinessesCounter][EnterFee] = 0;
     BusinessInfo[GlobalBusinessesCounter][Money] = 0;
@@ -6360,7 +7465,7 @@ YCMD:deletebusiness(playerid, params[], help)
     new id;
     // Check for admin
     if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /deletebusiness [id]");
-    if(BusinessInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Ovaj biznis ima vlasnika.");
+    if(BusinessInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: This business has owner.");
 
     BusinessInfo[id][Owned] = 0;
     BusinessInfo[id][Price] = 0;
@@ -6387,6 +7492,256 @@ YCMD:deletebusiness(playerid, params[], help)
     return 1;
 }
 
+YCMD:makespecialbusiness(playerid, params[], help)
+{
+	#pragma unused help
+
+    new id, name[128], description[128], Float:X, Float:Y, Float:Z, Float:A, str1[128], str2[128], str3[128], message[1024];
+
+    if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "You're not authorized to use this command!");
+
+    GetPlayerPos(playerid, X, Y, Z);
+    GetPlayerFacingAngle(playerid, A);
+
+    SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owned] = 0;
+	SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Money] = 0;
+    SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Price] = 1000;
+	SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterFee] = 0;
+    SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX] = X;
+    SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY] = Y;
+    SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ] = Z;
+    SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterA] = A;
+
+    format(name, sizeof(name), "None");
+    SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name] = name;
+
+    format(description, sizeof(description), "None");
+	SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description] = description;
+
+    InsertSpecialBusiness(GlobalSpecialBusinessesCounter);
+
+    if(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Icon]) DestroyPickup(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Icon]);
+    SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Icon] = CreatePickup(1239, 1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 0);
+
+  	format(str1, sizeof(str1), ""TEXT_COLOR_WHITE"This business has no owner! \nFor more information visit forum! \nBusiness name: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name]);
+	format(str2, sizeof(str2), "\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id]);
+	format(str3, sizeof(str3), "\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description]);
+	format(message, sizeof(message), "%s%s%s", str1, str2, str3);
+    SpecialBusinessLabels[id] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0);
+
+    return 1;
+}
+
+YCMD:setsbowner(playerid, params[], help)
+{
+	#pragma unused help
+	
+	new id, player, playerName[MAX_PLAYER_NAME], str1[128], str2[128], str3[128], message[1024];
+
+	if(sscanf(params, "ii", id, player)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /setspecialbusinessowner [special business id] [id/part of the name]");
+	else if(player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Invalid player id!");
+
+	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
+	{
+		if(SpecialBusinessInfo[i][Id] == id) 
+		{
+			id = i;
+			break;
+		}
+	}
+
+	SpecialBusinessInfo[id][Owned] = 1;
+	SpecialBusinessInfo[id][Owner] = PlayerInfo[player][Id];
+	SpecialBusinessInfo[id][Money] = 0;
+
+	printf("JEBENI ID");
+	printf("%d", SpecialBusinessInfo[id][Id]);
+
+	SaveSpecialBusiness(id);
+	SavePlayer(player);
+
+	GetPlayerName(player, playerName, sizeof(playerName));
+	format(message, sizeof(message), "You've setted %s for owner of special business %d.", playerName, id);
+	SendClientMessage(playerid, COLOR_RED, message);
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(message, sizeof(message), "Admin %s have setted you for the owner of special business %d.", playerName, id);
+	SendClientMessage(player, COLOR_RED, message);
+
+	format(str1, sizeof(str1), ""TEXT_COLOR_WHITE"This special business has owner! \nBusiness name: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Name]);
+	format(str2, sizeof(str2), "\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d", SpecialBusinessInfo[id][Id]);
+	format(str3, sizeof(str3), "\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s \n"TEXT_COLOR_WHITE"Owner: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Description], GetSpecialBusinessOwnerName(id));
+	format(message, sizeof(message), "%s%s%s", str1, str2, str3);
+
+	Update3DTextLabelText(SpecialBusinessLabels[id], -1, message);
+
+	return 1;
+}
+
+YCMD:removesbowner(playerid, params[], help)
+{
+	#pragma unused help
+	new id, player, playerName[MAX_PLAYER_NAME], str[128], str1[128], str2[128], str3[128], message[1024];
+
+	// Check for admin
+	if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /removespecialbusinessowner [special business id]");
+
+	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
+	{
+		if(SpecialBusinessInfo[i][Id] == id) 
+		{
+			id = i;
+			break;
+		}
+	}
+
+	SpecialBusinessInfo[id][Owned] = 0;
+	SpecialBusinessInfo[id][Owner] = 0;
+	SpecialBusinessInfo[id][Money] = 0;
+
+	SaveSpecialBusiness(id);
+	SavePlayer(player);
+
+    GetPlayerName(player, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Skinuo si %s za vlasnika specijalnog biznisa %d.", playerName, id);
+	SendClientMessage(playerid, COLOR_GREEN, str);
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Admin %s Vam je skinuo vlasnika specijalnog biznisa %d.", playerName, id);
+	SendClientMessage(player, COLOR_RED, str);
+
+	format(str1, sizeof(str1), ""TEXT_COLOR_WHITE"This business has no owner! \nFor more information visit forum! \nBusiness name: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Name]);
+	format(str2, sizeof(str2), "\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d", SpecialBusinessInfo[id][Id]);
+	format(str3, sizeof(str3), "\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Description]);
+	format(message, sizeof(message), "%s%s%s", str1, str2, str3);
+	
+	Update3DTextLabelText(SpecialBusinessLabels[id], -1, message);
+
+	return 1;
+}
+
+YCMD:setsbname(playerid, params[], help)
+{
+	#pragma unused help
+	new id, length, name[128], message1[128], message2[128], message3[128], message[1024];
+    id = IsPlayerNearSpecialBusiness(playerid);
+
+	if(sscanf(params, "s[128]", name)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /setsbname [name]");
+	length = strlen(name);
+	if(length < 1 || length > 64) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Name must with between 1 and 64 character length!");
+	
+	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
+	{
+		if(SpecialBusinessInfo[i][Id] == id) 
+		{
+			id = i;
+			break;
+		}
+	}
+
+	if(SpecialBusinessInfo[id][Owner] == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+    if(SpecialBusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+
+    SpecialBusinessInfo[id][Name] = name;
+    SaveSpecialBusiness(id);
+
+   	format(message1, sizeof(message1), ""TEXT_COLOR_WHITE"This special business has owner! \nBusiness name: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Name]);
+	format(message2, sizeof(message2), "\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d", SpecialBusinessInfo[id][Id]);
+	format(message3, sizeof(message3), "\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s \n"TEXT_COLOR_WHITE"Owner: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Description], GetSpecialBusinessOwnerName(id));
+	format(message, sizeof(message), "%s%s%s", message1, message2, message3);
+
+	Update3DTextLabelText(SpecialBusinessLabels[id], -1, message);
+
+    return 1;
+}
+
+YCMD:setsbdescription(playerid, params[], help)
+{
+	#pragma unused help
+	new id, length, description[128], message1[128], message2[128], message3[128], message[1024];
+    id = IsPlayerNearSpecialBusiness(playerid);
+
+	if(sscanf(params, "s[128]", description)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /setspecialbusinessdescription [description]");
+	length = strlen(description);
+	if(length < 1 || length > 127) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Description must with between 1 and 127 character length!");
+
+	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
+	{
+		if(SpecialBusinessInfo[i][Id] == id) 
+		{
+			id = i;
+			break;
+		}
+	}
+
+	if(SpecialBusinessInfo[id][Owner] == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+    if(SpecialBusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+
+    SpecialBusinessInfo[id][Description] = description;
+    SaveSpecialBusiness(id);
+
+   	format(message1, sizeof(message1), ""TEXT_COLOR_WHITE"This special business has owner! \nBusiness name: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Name]);
+	format(message2, sizeof(message2), "\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d", SpecialBusinessInfo[id][Id]);
+	format(message3, sizeof(message3), "\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s \n"TEXT_COLOR_WHITE"Owner: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Description], GetSpecialBusinessOwnerName(id));
+	format(message, sizeof(message), "%s%s%s", message1, message2, message3);
+
+	Update3DTextLabelText(SpecialBusinessLabels[id], -1, message);
+
+    return 1;
+}
+
+YCMD:setsbprice(playerid, params[], help)
+{
+	#pragma unused help
+	new id, price, str[128];
+    id = IsPlayerNearSpecialBusiness(playerid);
+
+    if(sscanf(params, "i", price)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /specbizzprice [$]");
+
+	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
+	{
+		if(SpecialBusinessInfo[i][Id] == id) 
+		{
+			id = i;
+			break;
+		}
+	}
+
+	if(SpecialBusinessInfo[id][Owner] == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+    if(SpecialBusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+
+    SpecialBusinessInfo[id][EnterFee] = price;
+    SaveSpecialBusiness(id);
+
+    format(str, sizeof(str), "You've setted special business price to: %d.", price);
+    SendClientMessage(playerid, COLOR_GREEN, str);
+
+    return 1;
+}
+
+YCMD:specbizzmoney(playerid, params[], help)
+{
+	#pragma unused help
+	new id, str[128];
+    
+    id = IsPlayerNearSpecialBusiness(playerid);
+
+    if(SpecialBusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+    if(SpecialBusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have money on special business account!");
+
+    PlayerInfo[playerid][Money] += SpecialBusinessInfo[id][Money];
+    GivePlayerMoney(playerid, SpecialBusinessInfo[id][Money]);
+
+    format(str, sizeof(str), "You've withdrawn %d$ from special business account.", SpecialBusinessInfo[id][Money]);
+	SendClientMessage(playerid, COLOR_GREEN, str);
+    SpecialBusinessInfo[id][Money] = 0;
+
+    SaveSpecialBusiness(id);
+    SavePlayer(playerid);
+
+    return 1;
+}
+
 YCMD:makeadmin(playerid, params[], help)
 {
 	#pragma unused help
@@ -6398,11 +7753,11 @@ YCMD:makeadmin(playerid, params[], help)
 	SavePlayer(player);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s Vam je dodelio Admina level %d.", playerName, level);
+	format(str, sizeof(str), "Admin %s gave you admin level %d.", playerName, level);
 	SendClientMessage(player, -1, str);
 
 	GetPlayerName(player, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Dodelili ste igracu %s Admina level %d.", playerName, level);
+	format(str, sizeof(str), "You gave %s admin level %d.", playerName, level);
 	SendClientMessage(playerid, -1, str);
 
 	return 1;
@@ -6413,7 +7768,7 @@ YCMD:makedonator(playerid, params[], help)
 	#pragma unused help
 	new player, points, playerName[MAX_PLAYER_NAME], str[128];
 	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
-	if(sscanf(params, "ri", player, points)) return SendClientMessage(playerid, -1, "[USAGE]: /makedonator [id/part of the name] [poeni]");
+	if(sscanf(params, "ri", player, points)) return SendClientMessage(playerid, -1, "[USAGE]: /makedonator [id/part of the name] [points]");
 
 	if(points == 0)
 	{
@@ -6428,11 +7783,11 @@ YCMD:makedonator(playerid, params[], help)
 	SavePlayer(player);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s Vam je dodelio %d Donator poena.", playerName, points);
+	format(str, sizeof(str), "Admin %s gave you %d donator's points.", playerName, points);
 	SendClientMessage(player, -1, str);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Dodelili ste igracu %s %d Donator poena.", playerName, points);
+	format(str, sizeof(str), "You gave %s %d donator's points.", playerName, points);
 	SendClientMessage(playerid, -1, str);
 
 	return 1;
@@ -6441,17 +7796,17 @@ YCMD:makedonator(playerid, params[], help)
 YCMD:port(playerid, params[], help)
 {
     #pragma unused help
-    new target[32], vehicleID;
-    if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "s[32]", target)) return SendClientMessage(playerid, -1, "[USAGE]: /port [mesto]");
+    new target[32], vehicleId;
+    if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
+    if(sscanf(params, "s[32]", target)) return SendClientMessage(playerid, -1, "[USAGE]: /port [place]");
     if(strcmp(target, "bank", true) == 0)
     {
         if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 589.6011, -1240.2231, 17.8361);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 589.6011, -1240.2231, 17.8361);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6464,10 +7819,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 1481.5153,-1740.2601,13.1089);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 1481.5153,-1740.2601,13.1089);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6481,10 +7836,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 1637.5028, -1151.6288, 23.9063);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 1637.5028, -1151.6288, 23.9063);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6497,10 +7852,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 1364.2379,-1280.8793,13.0893);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 1364.2379,-1280.8793,13.0893);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6513,10 +7868,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, -2026.6176, -100.3294, 35.1641);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, -2026.6176, -100.3294, 35.1641);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6529,10 +7884,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 2127.8760,-1119.0120,24.9260);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 2127.8760,-1119.0120,24.9260);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6545,10 +7900,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 558.4743,-1252.5942,16.6883);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 558.4743,-1252.5942,16.6883);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6561,10 +7916,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 323.1658,2505.4736,16.0548);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 323.1658,2505.4736,16.0548);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6577,10 +7932,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, -2225.7283,2376.3650,4.5412);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, -2225.7283,2376.3650,4.5412);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6593,10 +7948,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, -1974.2048, 293.8221, 35.1719);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, -1974.2048, 293.8221, 35.1719);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6609,10 +7964,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 1539.3977,-1677.4619,13.1032);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 1539.3977,-1677.4619,13.1032);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6625,10 +7980,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 1548.0010, -2291.4651, 13.3828);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 1548.0010, -2291.4651, 13.3828);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6641,10 +7996,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 1041.1724, -1031.6471, 32.0555);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 1041.1724, -1031.6471, 32.0555);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6657,10 +8012,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, -2711.0183, 217.4066, 4.1897);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, -2711.0183, 217.4066, 4.1897);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6673,10 +8028,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, -2358.8628, -2187.9668, 33.6227);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, -2358.8628, -2187.9668, 33.6227);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6689,10 +8044,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, -2307.7209, -1658.5023, 483.6776);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, -2307.7209, -1658.5023, 483.6776);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6705,10 +8060,10 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, -1656.5377, -541.6462, 10.9824);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, -1656.5377, -541.6462, 10.9824);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
@@ -6721,14 +8076,14 @@ YCMD:port(playerid, params[], help)
 	{
 		if(IsPlayerInAnyVehicle(playerid))
 		{
-			vehicleID = GetPlayerVehicleID(playerid);
-	  		SetVehiclePos(vehicleID, 1707.2388, 1455.0815, 10.4415);
-	  		SetVehicleVirtualWorld(vehicleID, 0);
-	  		LinkVehicleToInterior(vehicleID, 0);
+			vehicleId = GetPlayerVehicleID(playerid);
+	  		SetVehiclePos(vehicleId, 1676.4181,1447.8713, 10.7845);
+	  		SetVehicleVirtualWorld(vehicleId, 0);
+	  		LinkVehicleToInterior(vehicleId, 0);
 		}
 	    else
 		{
-			SetPlayerPos(playerid, -1707.2388, 1455.0815, 10.4415);
+			SetPlayerPos(playerid, 1676.4181,1447.8713, 10.7845);
 			SetPlayerVirtualWorld(playerid, 0);
 			SetPlayerInterior(playerid, 0);
 		}
@@ -6739,19 +8094,19 @@ YCMD:port(playerid, params[], help)
 YCMD:goto(playerid, params[], help)
 {
     #pragma unused help
-    new player, playerInterior, vehicleID, Float:X, Float:Y, Float:Z;
-    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+    new player, playerInterior, vehicleId, Float:X, Float:Y, Float:Z;
+    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
     if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /goto [id/part of the name]");
-    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Pogresan ID!");
+    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Wrong Id!");
 
     GetPlayerPos(player, X, Y, Z);
     playerInterior = GetPlayerInterior(player);
 
     if(IsPlayerInAnyVehicle(playerid))
 	{
-		vehicleID = GetPlayerVehicleID(playerid);
-  		SetVehiclePos(vehicleID, X-1, Y-1, Z);
-  		LinkVehicleToInterior(vehicleID, playerInterior);
+		vehicleId = GetPlayerVehicleID(playerid);
+  		SetVehiclePos(vehicleId, X-1, Y-1, Z);
+  		LinkVehicleToInterior(vehicleId, playerInterior);
 	}
     else
 	{
@@ -6765,19 +8120,19 @@ YCMD:goto(playerid, params[], help)
 YCMD:gethere(playerid, params[], help)
 {
     #pragma unused help
-    new player, playerInterior, vehicleID, Float:X, Float:Y, Float:Z;
-    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+    new player, playerInterior, vehicleId, Float:X, Float:Y, Float:Z;
+    if(PlayerInfo[playerid][Admin] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
     if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /time [id/part of the name]");
-    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Pogresan ID!");
+    if(!IsPlayerConnected(player)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Wrong Id!");
 
     GetPlayerPos(playerid, X, Y, Z);
     playerInterior = GetPlayerInterior(playerid);
 
     if(IsPlayerInAnyVehicle(player))
 	{
-		vehicleID = GetPlayerVehicleID(player);
-  		SetVehiclePos(vehicleID, X-1, Y-1, Z);
-  		LinkVehicleToInterior(vehicleID, playerInterior);
+		vehicleId = GetPlayerVehicleID(player);
+  		SetVehiclePos(vehicleId, X-1, Y-1, Z);
+  		LinkVehicleToInterior(vehicleId, playerInterior);
   		SetPlayerInterior(player, playerInterior);
 	}
     else
@@ -6792,21 +8147,34 @@ YCMD:gethere(playerid, params[], help)
 YCMD:getincar(playerid, params[], help)
 {
 	#pragma unused help
-	// if((PlayerInfo[playerid][Admin] < 3) || (PlayerInfo[playerid][Admin] == 9999)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
+	// if((PlayerInfo[playerid][Admin] < 3) || (PlayerInfo[playerid][Admin] == 9999)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
 	new vID;
-	if(sscanf(params, "i", vID)) return SendClientMessage(playerid, -1, "[USAGE]: /getincar [ID vozila]");
-	else if(vID == INVALID_VEHICLE_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Pogresan ID vozila!");
+	if(sscanf(params, "i", vID)) return SendClientMessage(playerid, -1, "[USAGE]: /getincar [vehicle id]");
+	else if(vID == INVALID_VEHICLE_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Wrong vehicle Id!");
 
 	PutPlayerInVehicle(playerid, vID, 0);
 	return 1;
 }
 
-YCMD:getvehhere(playerid, params[], help)
+YCMD:refillvehicle(playerid, params[], help)
+{
+	#pragma unused help
+	new litre;
+
+	if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not authorized to use this command!");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in vehicle!");
+	if(sscanf(params, "i", litre)) return SendClientMessage(playerid, -1, "[USAGE]: /arefill [litara]");
+	VehicleFuel[GetPlayerVehicleID(playerid)] += litre;
+	
+	return 1;
+}
+
+YCMD:getcarhere(playerid, params[], help)
 {
     #pragma unused help
     new pINT, vehicle, Float:X, Float:Y, Float:Z;
-    // if((PlayerInfo[playerid][Admin] < 3) || (PlayerInfo[playerid][Admin] == 9999)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "i", vehicle)) return SendClientMessage(playerid, -1, "[USAGE]: /getvehhere [id vozila]");
+    // if((PlayerInfo[playerid][Admin] < 3) || (PlayerInfo[playerid][Admin] == 9999)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
+    if(sscanf(params, "i", vehicle)) return SendClientMessage(playerid, -1, "[USAGE]: /getvehhere [vehicle id]");
 
     GetPlayerPos(playerid, X, Y, Z);
     pINT = GetPlayerInterior(playerid);
@@ -6816,12 +8184,38 @@ YCMD:getvehhere(playerid, params[], help)
     return 1;
 }
 
+YCMD:destroythisvehicle(playerid, params[], help)
+{
+    #pragma unused help
+    new vehicleId;
+
+    if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not authorized to use this command!");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in vehicle!");
+	vehicleId = GetPlayerVehicleID(playerid);
+	DestroyVehicle(vehicleId);
+
+	return 1;
+}
+
+YCMD:dtv(playerid, params[], help)
+{
+    #pragma unused help
+    new vehicleId;
+
+    if(PlayerInfo[playerid][Admin] < 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not authorized to use this command!");
+	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in vehicle!");
+	vehicleId = GetPlayerVehicleID(playerid);
+	DestroyVehicle(vehicleId);
+
+	return 1;
+}
+
 YCMD:settime(playerid, params[], help)
 {
 	#pragma unused help
 	new hours, playerName[MAX_PLAYER_NAME], str[128];
- 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "i", hours)) return SendClientMessage(playerid, -1, "[USAGE]: /settime [sati]");
+ 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+    if(sscanf(params, "i", hours)) return SendClientMessage(playerid, -1, "[USAGE]: /settime [hours]");
 
 	SetWorldTime(hours);
 
@@ -6835,13 +8229,13 @@ YCMD:setweather(playerid, params[], help)
 {
     #pragma unused help
 	new weather_id, playerName[MAX_PLAYER_NAME], str[128];
- 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-    if(sscanf(params, "i", weather_id)) return SendClientMessage(playerid, -1, "[USAGE]: /setweather [id vremena]");
-    //if(weather_id < 0 || weather_id > 20) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: ID vremena mora biti izmedju 1 i 20!");
+ 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
+    if(sscanf(params, "i", weather_id)) return SendClientMessage(playerid, -1, "[USAGE]: /setweather [weather id]");
+    if(weather_id < 0 || weather_id > 20) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Weather id must be between 1 and 20!");
 	SetWeather(weather_id);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s je postavio vreme ID %d.", playerName, weather_id);
+	format(str, sizeof(str), "Admin %s set weather to id %d.", playerName, weather_id);
 	SendClientMessageToAll(-1, str);
 	return 1;
 }
@@ -6851,18 +8245,18 @@ YCMD:givemoney(playerid, params[], help)
 	#pragma unused help
 	new player, money, playerName[MAX_PLAYER_NAME], str[128];
 	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
-	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, -1, "[USAGE]: /givemoney [id/part of the name] [kolicina]");
+	if(sscanf(params, "ri", player, money)) return SendClientMessage(playerid, -1, "[USAGE]: /givemoney [id/part of the name] [amount]");
 
 	PlayerInfo[player][Money] += money;
 	GivePlayerMoney(player, money);
 	SavePlayer(player);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s Vam je dao %d$.", playerName, money);
+	format(str, sizeof(str), "Admin %s gave you %d$.", playerName, money);
 	SendClientMessage(player, -1, str);
 
 	GetPlayerName(player, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Dali ste igracu %s %d$.", playerName, money);
+	format(str, sizeof(str), "You gave %s %d$.", playerName, money);
 	SendClientMessage(playerid, -1, str);
 
 	return 1;
@@ -6872,43 +8266,42 @@ YCMD:setskin(playerid, params[], help)
 {
 	#pragma unused help
 	new player, skin, playerName[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, skin)) return SendClientMessage(playerid, -1, "[USAGE]: /setskin [id/part of the name] [id skina]");
-	if(skin < 1 || skin > 299) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: ID Skina ne moze biti manji od 1 i veci od 299!");
+	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
+	if(sscanf(params, "ri", player, skin)) return SendClientMessage(playerid, -1, "[USAGE]: /setskin [id/part of the name] [skin id]");
+	if(skin < 1 || skin > 299) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Skin id must be between 1 and 299!");
 
 	SetPlayerSkin(player, skin);
 	PlayerInfo[player][Skin] = skin;
 	SavePlayer(playerid);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s Vam je stavio skin ID: %d.", playerName, skin);
+	format(str, sizeof(str), "Admin %s set your skin to: %d.", playerName, skin);
 	SendClientMessage(player, -1, str);
 
 	GetPlayerName(player, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Postavili ste igracu %s skin ID: %d.", playerName, skin);
+	format(str, sizeof(str), "You set  %s skin id to: %d.", playerName, skin);
 	SendClientMessage(playerid, -1, str);
 
 	return 1;
 }
 
-// **TO:DO FIX**
 YCMD:setjob(playerid, params[], help)
 {
 	#pragma unused help
 	new player, job, playerName[MAX_PLAYER_NAME], str[128];
 	if(PlayerInfo[playerid][Admin] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
-	if(sscanf(params, "ri", player, job)) return SendClientMessage(playerid, -1, "[USAGE]: /ajob [id/part of the name] [id posla]");
+	if(sscanf(params, "ri", player, job)) return SendClientMessage(playerid, -1, "[USAGE]: /ajob [id/part of the name] [job id]");
 
 	PlayerInfo[player][Job] = job;
 	SavePlayer(playerid);
 
-	// GetPlayerName(playerid, playerName, sizeof(playerName));
-	// format(str, sizeof(str), "Admin %s Vam je dodelio posao: %s.", playerName, PlayerJob(player));
-	// SendClientMessage(player, -1, str);
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Admin %s set your job to: %s.", playerName, GetPlayerJobName(player));
+	SendClientMessage(player, -1, str);
 
-	// GetPlayerName(player, playerName, sizeof(playerName));
-	// format(str, sizeof(str), "Stavili ste igracu %s posao: %s.", playerName, PlayerJob(player));
-	// SendClientMessage(playerid, -1, str);
+	GetPlayerName(player, playerName, sizeof(playerName));
+	format(str, sizeof(str), "You set %s job to: %s.", playerName, GetPlayerJobName(player));
+	SendClientMessage(playerid, -1, str);
 	return 1;
 }
 
@@ -6916,18 +8309,18 @@ YCMD:sethealth(playerid, params[], help)
 {
 	#pragma unused help
 	new player, health, playerName[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, health)) return SendClientMessage(playerid, -1, "[USAGE]: /sethealth [id/part of the name] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
+	if(sscanf(params, "ri", player, health)) return SendClientMessage(playerid, -1, "[USAGE]: /sethealth [id/part of the name] [amount]");
 
 	SetPlayerHealth(player, health);
 	SavePlayer(player);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s Vam je stavio helte na %d.", playerName, health);
+	format(str, sizeof(str), "Admin %s set your health to %d.", playerName, health);
 	SendClientMessage(player, -1, str);
 
 	GetPlayerName(player, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Stavili ste igracu %s helte na %d.", playerName, health);
+	format(str, sizeof(str), "You set %s health to %d.", playerName, health);
 	SendClientMessage(playerid, -1, str);
 	return 1;
 }
@@ -6936,18 +8329,18 @@ YCMD:setarmor(playerid, params[], help)
 {
 	#pragma unused help
 	new player, armor, playerName[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, armor)) return SendClientMessage(playerid, -1, "[USAGE]: /setarmor [id/part of the name] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
+	if(sscanf(params, "ri", player, armor)) return SendClientMessage(playerid, -1, "[USAGE]: /setarmor [id/part of the name] [amount]");
 
 	SetPlayerArmour(player, armor);
 	SavePlayer(player);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s Vam je stavio pancir na %d.", playerName, armor);
+	format(str, sizeof(str), "Admin %s set your armor to %d.", playerName, armor);
 	SendClientMessage(player, -1, str);
 
 	GetPlayerName(player, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Stavili ste igracu %s pancir na %d.", playerName, armor);
+	format(str, sizeof(str), "You set %s armor to %d.", playerName, armor);
 	SendClientMessage(playerid, -1, str);
 	return 1;
 }
@@ -6956,8 +8349,8 @@ YCMD:giveweapon(playerid, params[], help)
 {
 	#pragma unused help
 	new player, weapon, ammo;
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "rii", player, weapon, ammo)) return SendClientMessage(playerid, -1, "[USAGE]: /giveweapon [id/deo imena igraca] [id oruzja] [metkovi]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
+	if(sscanf(params, "rii", player, weapon, ammo)) return SendClientMessage(playerid, -1, "[USAGE]: /giveweapon [id/part of the name] [weapon id] [ammo amount]");
 	
 	GivePlayerWeapon(player, weapon, ammo);
 
@@ -6969,8 +8362,8 @@ YCMD:giveweaponskill(playerid, params[], help)
 	#pragma unused help
 	new player, weapon, skill;
 	if(sscanf(params, "rii", player, weapon, skill)) return SendClientMessage(playerid, -1, "[USAGE]: /giveweaponskill [id/part of the name] [oruzje] [skill]");
-	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac ne postoji!");
-	else if(weapon < 1 || weapon > 11) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Broj za oruzje mora biti izmedju 1 i 9!");
+	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Player doesn't exist!");
+	else if(weapon < 1 || weapon > 11) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Weapon id must be between 1 and 9!");
 	switch(weapon)
 	{
 
@@ -7045,27 +8438,26 @@ YCMD:giveweaponskill(playerid, params[], help)
 	return 1;
 }
 
-// **TO:DO Fix**
 YCMD:setfightstyle(playerid, params[], help)
 {
 	#pragma unused help
 	new style, player, playerName[MAX_PLAYER_NAME], str[128];
 	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
 	if(sscanf(params, "ri", player, style)) return SendClientMessage(playerid, -1, "[USAGE]: /setfightstyle [id/part of the name] [stil]");
-	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Igrac ne postoji!");
-	else if (style < 4 || (style > 7 && style < 15) || style > 16) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Stil moze biti u opsegu 4-7 i 15-16!");
+	else if (player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Player doesn't exist!");
+	else if (style < 4 || (style > 7 && style < 15) || style > 16) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Fight style must between 4-7 and 15-16!");
 	
 	PlayerInfo[playerid][FightingStyle] = style;
 	SetPlayerFightingStyle(player, style);
 	SavePlayer(playerid);
 
-	// GetPlayerName(playerid, playerName, sizeof(playerName));
-	// format(str, sizeof(str), "Admin %s Vam je postavio borbeni still na: %s.", playerName, PlayerFightingStyle(playerid));
-	// SendClientMessage(player, -1, str);
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Admin %s set your fight style to: %s.", playerName, GetPlayerFightingStyleName(playerid));
+	SendClientMessage(player, -1, str);
 
-	// GetPlayerName(player, playerName, sizeof(playerName));
-	// format(str, sizeof(str), "Postavili ste %s brobeni stil na: %s.", playerName, PlayerFightingStyle(playerid));
-	// SendClientMessage(playerid, -1, str);
+	GetPlayerName(player, playerName, sizeof(playerName));
+	format(str, sizeof(str), "You set %s fight style to: %s.", playerName, GetPlayerFightingStyleName(playerid));
+	SendClientMessage(playerid, -1, str);
 
 	return 1;
 }
@@ -7075,7 +8467,7 @@ YCMD:givedrugs(playerid, params[], help)
 	#pragma unused help
 	new player, drug, playerName[MAX_PLAYER_NAME], str[128];
 	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
-	if(sscanf(params, "ri", player, drug)) return SendClientMessage(playerid, -1, "[USAGE]: /givedrugs [id/part of the name] [kolicina]");
+	if(sscanf(params, "ri", player, drug)) return SendClientMessage(playerid, -1, "[USAGE]: /givedrugs [id/part of the name] [amount]");
 
 	PlayerInfo[player][Drugs] += drug;
 	SavePlayer(player);
@@ -7095,28 +8487,87 @@ YCMD:givematerials(playerid, params[], help)
 {
 	#pragma unused help
 	new player, materials, playerName[MAX_PLAYER_NAME], str[128];
-	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste ovlasceni da koristite ovu komandu");
-	if(sscanf(params, "ri", player, materials)) return SendClientMessage(playerid, -1, "[USAGE]: /givemats [id/part of the name] [kolicina]");
+	if(PlayerInfo[playerid][Admin] < 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: part of the nameYou are not authorized to use this command!");
+	if(sscanf(params, "ri", player, materials)) return SendClientMessage(playerid, -1, "[USAGE]: /givemats [id/part of the name] [amount]");
 
 	PlayerInfo[player][Materials] += materials;
 	SavePlayer(player);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s Vam je dao %d materijala.", playerName, materials);
+	format(str, sizeof(str), "Admin %s gave you %d materials.", playerName, materials);
 	SendClientMessage(player, -1, str);
 
 	GetPlayerName(player, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Dali ste igracu %s %d materijala.", playerName, materials);
+	format(str, sizeof(str), "You gave %s %d materials.", playerName, materials);
 	SendClientMessage(playerid, -1, str);
 	return 1;
 }
 
+YCMD:givelicense(playerid, params[], help)
+{
+	#pragma unused help
+	new player, licence, playerName[MAX_PLAYER_NAME], str[128];
+	if(sscanf(params, "ri", player, licence))
+	{
+		SendClientMessage(playerid, -1, "[USAGE]]: /givelicence [id/part of the name] [1-3]");
+		SendClientMessage(playerid, -1, "1 - Driving, 2 -Flying, 3 - Sailing");
+	}
+	else if(player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Invalid player id!");
+	else if(licence < 1 || licence > 3) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: License must be between 1-3!");
+	else
+	{
+	    switch(licence)
+	    {
+			case 1:
+			{
+			    PlayerInfo[player][DrivingLicence] = 1;
+			    SavePlayer(player);
+
+				GetPlayerName(playerid, playerName, sizeof(playerName));
+			    format(str, sizeof(str), "Admin %s gave you driving licence.", playerName);
+			    SendClientMessage(player, -1, str);
+
+				GetPlayerName(player, playerName, sizeof(playerName));
+			    format(str, sizeof(str), "You gave %s driving licence.", playerName);
+			    SendClientMessage(playerid, -1, str);
+			}
+			case 2:
+			{
+			    PlayerInfo[player][FlyingLicence] = 1;
+			    SavePlayer(player);
+
+			    GetPlayerName(playerid, playerName, sizeof(playerName));
+			    format(str, sizeof(str), "Admin %s gave you flying licence.", playerName);
+			    SendClientMessage(player, -1, str);
+
+				GetPlayerName(player, playerName, sizeof(playerName));
+			    format(str, sizeof(str), "You gave %s flying licence.", playerName);
+			    SendClientMessage(playerid, -1, str);
+			}
+			case 3:
+			{
+			    PlayerInfo[player][SailingLicence] = 1;
+			    SavePlayer(player);
+
+			    GetPlayerName(playerid, playerName, sizeof(playerName));
+			    format(str, sizeof(str), "Admin %s gave you sailing licence.", playerName);
+			    SendClientMessage(player, -1, str);
+
+				GetPlayerName(player, playerName, sizeof(playerName));
+			    format(str, sizeof(str), "You gave %s sailing licence.", playerName);
+			    SendClientMessage(playerid, -1, str);
+			}
+		}
+	}
+
+	return 1;
+}
 
 YCMD:specialaction(playerid, params[], help)
 {
 	#pragma unused help
 	new action;
-	if(sscanf(params, "i", action)) return SendClientMessage(playerid, -1, "[USAGE]: /specialaction id_akcije");
+	if(sscanf(params, "i", action)) return SendClientMessage(playerid, -1, "[USAGE]: /specialaction [action id]");
 	
 	SetPlayerSpecialAction(playerid, action);
 	
@@ -7126,12 +8577,12 @@ YCMD:specialaction(playerid, params[], help)
 YCMD:call(playerid, params[], help)
 {
 	#pragma unused help
-	new number, sendername[MAX_PLAYER_NAME], str[128];
-	if(sscanf(params, "i", number)) return SendClientMessage(playerid, COLOR_WHITE, "[USAGE]: /pozovi [id/par of the name]");
-	if(PlayerInfo[playerid][Mobile] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate mobilni!");
-	if(PlayerInfo[playerid][MobileNumber] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate SIM karticu!");
-	if(PlayerInfo[playerid][MobileCredit] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate kredita!");
-	if(InCall[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vec ste u pozivu! Da prekinete poziv kucajte /prekinipoziv");
+	new number, playerName[MAX_PLAYER_NAME], str[128];
+	if(sscanf(params, "i", number)) return SendClientMessage(playerid, COLOR_WHITE, "[USAGE]: /call [id/part of the name]");
+	if(PlayerInfo[playerid][Mobile] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have cell phone!");
+	if(PlayerInfo[playerid][MobileNumber] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have SIM card!");
+	if(PlayerInfo[playerid][MobileCredit] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough credit!");
+	if(InCall[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're already in call! To hang-up type /cancelcall");
 	// if(number == 007)
 	// {
 	//     if(PlayerInfo[playerid][MobileCredit] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno kredita!");
@@ -7139,7 +8590,7 @@ YCMD:call(playerid, params[], help)
 
 	//     DetectiveCaller = playerid;
 
-	//     format(str, sizeof(str), "%s je potreban Detektiv, da prihvatite poziv kucajte /prihvati detektiv", sendername);
+	//     format(str, sizeof(str), "%s je potreban Detektiv, da prihvatite poziv kucajte /prihvati detektiv", playerName);
 	//     SendJobMessage(1, COLOR_WHITE, str);
 
 	//     SendClientMessage(playerid, COLOR_WHITE, "Detektiv sluzba je prihvatila vas poziv.");
@@ -7159,7 +8610,7 @@ YCMD:call(playerid, params[], help)
 
 	//     MechanicCaller = playerid;
 
-	//     format(str, sizeof(str), "%s je potreban Mehanicar, da prihvatite poziv kucajte /prihvati mehanicar", sendername);
+	//     format(str, sizeof(str), "%s je potreban Mehanicar, da prihvatite poziv kucajte /prihvati mehanicar", playerName);
 	//     SendJobMessage(4, COLOR_WHITE, str);
 
 	//     SendClientMessage(playerid, COLOR_WHITE, "Mehanicarska sluzba je prihvatila vas poziv.");
@@ -7180,7 +8631,7 @@ YCMD:call(playerid, params[], help)
 
 	// 	TaxiCaller = playerid;
 
-	// 	format(str, sizeof(str), "%s je potreban prevoz. da prihvatite poziv kucajte /prihvati taxi", sendername);
+	// 	format(str, sizeof(str), "%s je potreban prevoz. da prihvatite poziv kucajte /prihvati taxi", playerName);
 	// 	SendJobMessage(5, COLOR_WHITE, str);
 
 	// 	SendClientMessage(playerid, COLOR_WHITE, "S Taxi je prihvatio vas poziv.");
@@ -7200,120 +8651,21 @@ YCMD:call(playerid, params[], help)
 		{
 			if(PlayerInfo[i][MobileNumber] == number)
 			{
-				if(InCall[i] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Broj je zauzet!");
+				if(InCall[i] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Number is busy!");
 				iCall[playerid] = 1;
 				Caller[i] = playerid;
 				CalledPlayer[playerid] = i;
-				GetPlayerName(i, sendername, sizeof(sendername));
-				format(str, sizeof(str), "Pozivate %s", sendername);
+				GetPlayerName(i, playerName, sizeof(playerName));
+				format(str, sizeof(str), "You're calling %s", playerName);
 				SendClientMessage(playerid, COLOR_WHITE, str);
-				GetPlayerName(playerid, sendername, sizeof(sendername));
-				format(str, sizeof(str), "%s (%d) vas zove. Da se javite kucajte /prihvatipoziv", sendername, PlayerInfo[playerid][MobileNumber]);
+				GetPlayerName(playerid, playerName, sizeof(playerName));
+				format(str, sizeof(str), "%s (%d) is calling you.To accept call type /acceptcall", playerName, PlayerInfo[playerid][MobileNumber]);
 				SendClientMessage(i, COLOR_WHITE, str);
 				break;
 			}
 		}
-		if(CalledPlayer[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Izabrali ste nepostojeci broj!");
+		if(CalledPlayer[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Number doesn't exist!");
 	}
-	return 1;
-}
-
-YCMD:acceptcall(playerid, params[], help)
-{
-	#pragma unused help
-	new sendername[MAX_PLAYER_NAME], str[128];
-	InCall[playerid] = 1;
-	InCall[Caller[playerid]] = 1;
-	PlayerInfo[Caller[playerid]][MobileCredit] -= 1;
-	SavePlayer(Caller[playerid]);
-	SendClientMessage(playerid, COLOR_WHITE, "Prihvatili ste poziv.");
-	GetPlayerName(playerid, sendername, sizeof(sendername));
-	format(str, sizeof(str), "Igrac %s je prihvatio poziv.", sendername);
-	SendClientMessage(Caller[playerid], COLOR_WHITE, str);
-	return 1;
-}
-
-YCMD:cancelcall(playerid, params[], help)
-{
-	#pragma unused help
-	new sendername[MAX_PLAYER_NAME], str[128];
-	if(iCall[playerid] != 0)
-	{
-	    GetPlayerName(playerid, sendername, sizeof(sendername));
-	    SendClientMessage(playerid, COLOR_RED, "Prekinuli ste poziv");
-	    format(str, sizeof(str), "%s je prekinuo poziv.", sendername);
-	    SendClientMessage(CalledPlayer[playerid], COLOR_RED, str);
-		InCall[playerid] = 0;
-		InCall[CalledPlayer[playerid]] = 0;
-		CalledPlayer[Caller[playerid]] = 0;
-		Caller[playerid] = 0;
-	}
-	else
-	{
-	    GetPlayerName(playerid, sendername, sizeof(sendername));
-	    SendClientMessage(playerid, COLOR_RED, "Prekinuli ste poziv");
-	    format(str, sizeof(str), "%s je prekinuo poziv.", sendername);
-	    SendClientMessage(Caller[playerid], COLOR_RED, str);
-		InCall[playerid] = 0;
-		InCall[Caller[playerid]] = 0;
-		CalledPlayer[Caller[playerid]] = 0;
-		Caller[playerid] = 0;
-	}
-
-	return 1;
-}
-
-YCMD:advertise(playerid, params[], help)
-{
-	#pragma unused help
-	new text[128], str[128], sendername[MAX_PLAYER_NAME];
-	if(sscanf(params, "s[128]", text)) return SendClientMessage(playerid, COLOR_WHITE, "[USAGE]: /oglas [text]");
-	if(PlayerInfo[playerid][Mobile] == 9999) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate mobilni!");
-	if(PlayerInfo[playerid][MobileNumber] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate SIM karticu!");
-	if(PlayerInfo[playerid][MobileCredit] < 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Nemate dovoljno kredita! (5$ potrebno)");
-	if(AdvertisementTime[playerid] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Vreme izmedju oglasa mora biti najmanje 2 minuta!");
-	GetPlayerName(playerid, sendername, sizeof(sendername));
-	format(str, sizeof(str), "OGLAS - %s [%d]", sendername, PlayerInfo[playerid][MobileNumber]);
-	SendClientMessageToAll(COLOR_WHITE, str);
-	format(str, sizeof(str), "TEKST OGLASA: %s", text);
-	SendClientMessageToAll(COLOR_WHITE, str);
-	AdvertisementTime[playerid] = 120;
-	PlayerInfo[playerid][MobileCredit] -= 5;
-	SavePlayer(playerid);
-	return 1;
-}
-
-YCMD:robbank(playerid, params[], help)
-{
-	#pragma unused help
-	if(vaultDoorOpened == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Bank has already been robbed, try again later!");
-	MoveDynamicObject(vaultdoor, 582.98975, -1268.18286, 983.59998, 0.01, 0.00000, 0.00000, 240.00000);
-	SendClientMessage(playerid, COLOR_WHITE, "You robbed the bank.");
-	vaultDoorOpened = 1;
-	SetTimer("closeVaultDoor", 120000, false);
-	return 1;
-}
-
-YCMD:dropbag(playerid, params[], help)
-{
-	if(HaveMoneyBag[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]]: You do not have bag on your back!");
-	switch (HaveMoneyBag[playerid])
-	{
-     	case 0: moneybag[0] = CreateDynamicObject(1550, 585.76355, -1257.17932, 982.29999,   0.00000, 0.00000, 0.00000);
-		case 1: moneybag[1] = CreateDynamicObject(1550, 585.76349, -1255.18335, 982.29999,   0.00000, 0.00000, 0.00000);
-		case 2: moneybag[2] = CreateDynamicObject(1550, 585.76349, -1256.15796, 982.29999,   0.00000, 0.00000, 0.00000);
-		case 3: moneybag[3] = CreateDynamicObject(1550, 579.71600, -1257.17932, 982.29999,   0.00000, 0.00000, 0.00000);
-		case 4: moneybag[4] = CreateDynamicObject(1550, 579.71600, -1255.18335, 982.29999,   0.00000, 0.00000, 0.00000);
-		case 5: moneybag[5] = CreateDynamicObject(1550, 579.71600, -1256.15796, 982.29999,   0.00000, 0.00000, 0.00000);
-	}
-
-    RemovePlayerAttachedObject(playerid, 0);
-    HaveMoneyBag[playerid] = 9999;
-    PlayerInfo[playerid][Money] += 1000;
-    GivePlayerMoney(playerid, 1000);
-    SavePlayer(playerid);
-
-    SendClientMessage(playerid, COLOR_WHITE, "You took money and dropped the bag (1000$)");
 	return 1;
 }
 
@@ -7337,7 +8689,7 @@ task TimerPerSec[1000]()
 	{
 		if(!IsPlayerConnected(i)) return 1;
 		
-		//MONEY BAGS
+		// Money bags
 		if(IsPlayerInRangeOfPoint(i, 1.0, 585.76355, -1257.17932, 982.29999))
 		{
 		    if(HaveMoneyBag[i] != 0) return 1;
@@ -7381,25 +8733,49 @@ task TimerPerSec[1000]()
 		    HaveMoneyBag[i] = 5;
 		}
 
-		//FUEL
+		// Fuel
 		for(new v = 0; v < MAX_VEHICLES; v++)
 		{
 			if(IsPlayerInVehicle(i, v))
 			{
-				format(str, sizeof(str), "Gorivo: %i", VehicleFuel[v]);
+				format(str, sizeof(str), "Fuel: %i", VehicleFuel[v]);
 				TextDrawSetString(FuelTD[i], str);
 				TextDrawShowForPlayer(i, FuelTD[i]);
 			}
 		}
+
+		// Muted
+		if(PlayerInfo[i][Muted] != 0) 
+		{
+			if(PlayerInfo[i][MutedTime] > 0) PlayerInfo[i][MutedTime] -= 1;
+			if(PlayerInfo[i][MutedTime] == 0) PlayerInfo[i][Muted] = 0;
+		}
+
+		// Ads
+		if(AdvertisementTime[i] > 0) AdvertisementTime[i] -= 1;
 	}
 	
 	return 1;
 }
 
-ptask PhoneCall[500](playerid)
+task LevelCheck[60000]()
 {
-	new sendername[MAX_PLAYER_NAME], str[128];
-	// if(PlayerInfo[playerid][pLogged] != 1) return 1;
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+	    if(!IsPlayerConnected(i)) return 1;
+	    PlayerInfo[i][Playtime] += 1;
+
+	    SavePlayer(i);
+		SetPlayerScore(i, PlayerInfo[i][Level]);
+	}
+
+	return 1;
+}
+
+ptask PhoneCall[3000](playerid)
+{
+	new playerName[MAX_PLAYER_NAME], str[128];
+
 	if(InCall[playerid] == 0) return 1;
 	else
 	{
@@ -7411,9 +8787,9 @@ ptask PhoneCall[500](playerid)
 				iCall[playerid] = 0;
 				InCall[playerid] = 0;
 				InCall[CalledPlayer[playerid]] = 0;
-				SendClientMessage(playerid, COLOR_RED, "Nemate dovoljno kredita da nastavite razgovor!");
-				GetPlayerName(playerid, sendername, sizeof(sendername));
-				format(str, sizeof(str), "%s nema dovoljno kredita da nastavi razgovor!", sendername);
+				SendClientMessage(playerid, COLOR_RED, "You don't have enough credit to continue call!");
+				GetPlayerName(playerid, playerName, sizeof(playerName));
+				format(str, sizeof(str), "%s doesn't have enough credit to continue call!", playerName);
 				SendClientMessage(CalledPlayer[playerid], COLOR_RED, str);
 				Caller[CalledPlayer[playerid]] = 0;
 				CalledPlayer[playerid] = 0;
@@ -7425,5 +8801,271 @@ ptask PhoneCall[500](playerid)
 			}
 		}
 	}
+	return 1;
+}
+
+YCMD:makeleader(playerid, params[], help)
+{
+	#pragma unused help
+	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not authorized to use this command!");
+	new player, org, playerName[MAX_PLAYER_NAME], str[128];
+	if(sscanf(params, "ui", player, org)) return SendClientMessage(playerid, -1, "[USAGE]: /makeleader [id/part of the name] [organization id]");
+	else if(player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Invalid player id!");
+	else if(org < 1 || org > MAX_ORGS) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Organization id must be between 1 and "#MAX_ORGS"!");
+
+	PlayerInfo[player][OLeader] = org;
+	PlayerInfo[player][OMember] = org;
+	PlayerInfo[player][ORank] = 6;
+
+	switch(org)
+	{
+	    case 1:
+	    {
+	        PlayerInfo[player][OSkin] = 283;
+		}
+		case 2:
+	    {
+	        PlayerInfo[player][OSkin] = 286;
+		}
+		case 3:
+	    {
+	        PlayerInfo[player][OSkin] = 270;
+	        SetPlayerSkin(player, PlayerInfo[playerid][OSkin]);
+		}
+		case 4:
+	    {
+	        PlayerInfo[player][OSkin] = 104;
+	        SetPlayerSkin(player, PlayerInfo[playerid][OSkin]);
+		}
+		case 5:
+	    {
+	        PlayerInfo[player][OSkin] = 292;
+	        SetPlayerSkin(player, PlayerInfo[playerid][OSkin]);
+		}
+		case 6:
+	    {
+	        PlayerInfo[player][OSkin] = 109;
+	        SetPlayerSkin(player, PlayerInfo[playerid][OSkin]);
+		}
+	}
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Admin %s vas je postavio za lidera organizacije %s!", playerName, GetOrganizationName(org));
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Postavio si igraca %s za lidera organizacije %s!", playerName, GetOrganizationName(org));
+	SendClientMessage(playerid, -1, str);
+	SavePlayer(player);
+
+ 	return 1;
+}
+
+YCMD:invite(playerid, params[], help)
+{
+	#pragma unused help
+	if(PlayerInfo[playerid][OLeader] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not authorized to use this command!");
+	new player, playerName[MAX_PLAYER_NAME], str[128];
+
+	if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /invite [id/part of the name]");
+	else if(player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Invalid player id!");
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+
+	switch(PlayerInfo[playerid][OLeader])
+	{
+	    case 1:
+	    {
+	        PlayerInfo[player][OMember] = PlayerInfo[playerid][OLeader];
+	        PlayerInfo[player][ORank] = 1;
+	        PlayerInfo[player][OSkin] = 280;
+
+	        format(str, sizeof(str), "Leader %s invited you to organization LSPD", playerName);
+		}
+		case 2:
+	    {
+	        PlayerInfo[player][OMember] = PlayerInfo[playerid][OLeader];
+	        PlayerInfo[player][ORank] = 1;
+	        PlayerInfo[player][OSkin] = 163;
+
+	        format(str, sizeof(str), "Leader %s invited you to organization FBI", playerName);
+  		}
+  		case 3:
+	    {
+	        PlayerInfo[player][OMember] = PlayerInfo[playerid][OLeader];
+	        PlayerInfo[player][ORank] = 1;
+	        PlayerInfo[player][OSkin] = 106;
+
+	        format(str, sizeof(str), "Leader %s invited you to organization Grove Street Families", playerName);
+		}
+        case 4:
+	    {
+	        PlayerInfo[player][OMember] = PlayerInfo[playerid][OLeader];
+	        PlayerInfo[player][ORank] = 1;
+	        PlayerInfo[player][OSkin] = 102;
+
+	        format(str, sizeof(str), "Leader %s invited you to organization Ballas", playerName);
+		}
+		case 5:
+	    {
+	        PlayerInfo[player][OMember] = PlayerInfo[playerid][OLeader];
+	        PlayerInfo[player][ORank] = 1;
+	        PlayerInfo[player][OSkin] = 114;
+
+	        format(str, sizeof(str), "Leader %s invited you to organization Varrios Los Aztecas", playerName);
+		}
+		case 6:
+	    {
+	        PlayerInfo[player][OMember] = PlayerInfo[playerid][OLeader];
+	        PlayerInfo[player][ORank] = 1;
+	        PlayerInfo[player][OSkin] = 108;
+
+	        format(str, sizeof(str), "Leader %s invited you to organization Los Santos Vagos", playerName);
+		}
+	}
+	ShowPlayerDialog(player, DIALOG_ORG_INVITE, DIALOG_STYLE_MSGBOX, "Organization invite", str, "Accept", "Decline");
+
+	return 1;
+}
+
+YCMD:rankup(playerid, params[], help)
+{
+	#pragma unused help
+	if(PlayerInfo[playerid][OLeader] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not authorized to use this command!");
+	new player, rank, playerName[MAX_PLAYER_NAME], str[128];
+
+	if(sscanf(params, "ud", player, rank)) return SendClientMessage(playerid, -1, "[USAGE]: /rankup [id/part of the name] [rank]");
+	else if(player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Invalid player id!");
+	else if(rank < 1 || rank > 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Rank must be between 1 and 6!");
+	else if(PlayerInfo[player][OMember] != PlayerInfo[playerid][OLeader]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Player is not in your organization!");
+
+	PlayerInfo[player][ORank] = rank;
+	if(PlayerInfo[playerid][OMember] != 1 || PlayerInfo[playerid][OMember] != 2) SetPlayerOrgSkin(player, ((PlayerInfo[player][OLeader] != 0) ? (PlayerInfo[player][OLeader]) : (PlayerInfo[player][OMember])), rank);
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Leader %s set your rank to %d", playerName, rank);
+	SendClientMessage(player, -1, str);
+
+	GetPlayerName(player, playerName, sizeof(playerName));
+	format(str, sizeof(str), "You set member %s rank to %d", playerName, rank);
+	SendClientMessage(playerid, -1, str);
+	SavePlayer(player);
+
+	return 1;
+}
+
+YCMD:kickout(playerid, params[], help)
+{
+	#pragma unused help
+	if(PlayerInfo[playerid][OLeader] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not authorized to use this command!");
+	new player, playerName[MAX_PLAYER_NAME], str[128];
+
+	if(sscanf(params, "u", player)) return SendClientMessage(playerid, -1, "[USAGE]: /izbaci [id/part of the name]");
+	else if(player == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Invalid player id!");
+	else if(PlayerInfo[player][OMember] != PlayerInfo[playerid][OLeader]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Player is not in your organization!");
+
+	PlayerInfo[player][OMember] = 9999;
+	PlayerInfo[player][ORank] = 9999;
+	PlayerInfo[player][OSkin] = 9999;
+
+	SetPlayerSkin(player, PlayerInfo[player][Skin]);
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	format(str, sizeof(str), "Leader %s kicked you out from organization!", playerName);
+	SendClientMessage(player, COLOR_RED, str);
+
+	GetPlayerName(player, playerName, sizeof(playerName));
+	format(str, sizeof(str), "You kicked outs %s from organization!", playerName);
+	SendClientMessage(playerid, COLOR_RED, str);
+	SavePlayer(player);
+
+	return 1;
+}
+
+YCMD:r(playerid, params[], help)
+{
+	#pragma unused help
+	if(PlayerInfo[playerid][OMember] == 0 && PlayerInfo[playerid][OLeader] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You must be member of some organization!");
+	new str[128], chatmsg[128], playerName[MAX_PLAYER_NAME];
+
+	if(sscanf(params, "s[128]", chatmsg)) return SendClientMessage(playerid, -1, "[USAGE]: /r [text]");
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+	    if(PlayerInfo[i][OMember] == PlayerInfo[playerid][OMember])
+	    {
+	        format(str, sizeof(str), "%s [Rank %d] says: %s", playerName, PlayerInfo[playerid][ORank], chatmsg);
+	        SendClientMessage(i, -1, str);
+		}
+	}
+
+	return 1;
+}
+
+YCMD:lockhq(playerid, params[], help)
+{
+	#pragma unused help
+	if(PlayerInfo[playerid][OLeader] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not leader of any organization!");
+	if(IsPlayerInRangeOfPoint(playerid, 5.0, 2522.4756, -1679.2355, 15.4970)) // GSF
+	{
+	    if(PlayerInfo[playerid][OLeader] != 3) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your organization HQ!!");
+		if(GSFHQLocked == 1)
+		{
+		    GameTextForPlayer(playerid, "~g~HQ unlocked!", 2000, 3);
+			GSFHQLocked = 0;
+		}
+		else
+		{
+		    GameTextForPlayer(playerid, "~g~HQ locked!", 2000, 3);
+			GSFHQLocked = 1;
+		}
+
+	}
+	else if(IsPlayerInRangeOfPoint(playerid, 5.0, 2045.5447, -1116.1219, 26.3617)) // BALLAS
+	{
+	    if(PlayerInfo[playerid][OLeader] != 4) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your organization HQ!!");
+	    if(BallasHQLocked == 1)
+		{
+		    GameTextForPlayer(playerid, "~g~HQ unlocked!", 2000, 3);
+			BallasHQLocked = 0;
+		}
+		else
+		{
+		    GameTextForPlayer(playerid, "~g~HQ locked!", 2000, 3);
+			BallasHQLocked = 1;
+		}
+	}
+	else if(IsPlayerInRangeOfPoint(playerid, 5.0, 1684.8185, -2099.0588, 13.8343)) // VARRIOUS LOS AZTECAS
+	{
+		if(PlayerInfo[playerid][OLeader] != 5) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your organization HQ!!");
+		if(VLAHQLocked == 1)
+		{
+		    GameTextForPlayer(playerid, "~g~HQ unlocked!", 2000, 3);
+			VLAHQLocked = 0;
+		}
+		else
+		{
+		    GameTextForPlayer(playerid, "~g~HQ locked!", 2000, 3);
+			VLAHQLocked = 1;
+		}
+	}
+	else if(IsPlayerInRangeOfPoint(playerid, 5.0, 2808.0615, -1189.7864, 25.3446)) // LOS SANTOS VAGOS
+	{
+	    if(PlayerInfo[playerid][OLeader] != 6) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your organization HQ!!");
+	    if(LSVHQLocked == 1)
+		{
+		    GameTextForPlayer(playerid, "~g~HQ unlocked!", 2000, 3);
+			LSVHQLocked = 0;
+		}
+		else
+		{
+		    GameTextForPlayer(playerid, "~g~HQ locked!", 2000, 3);
+			LSVHQLocked = 1;
+		}
+	}
+	else return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your organization HQ!!");
+	
 	return 1;
 }
