@@ -26,13 +26,13 @@ main()
 // Dialogs
 #define DIALOG_LOGIN 0 // On login, typing password to enter the game
 #define DIALOG_REGISTER 1 // On registration, first step for making account and typing password
-#define DIALOG_SEX 2 // On registration, choose between Male and Female
+#define DIALOG_GENDER 2 // On registration, choose between Male and Female
 #define DIALOG_AGE 3 // On registration, enter age
 #define DIALOG_COUNTRY 4 // On registration, choose between Balkan countries
 #define DIALOG_CITY 5 // On registration, choose between in-game cities
 #define DIALOG_SHOP 6 // Dialog for buying items in shop
 #define DIALOG_CREDIT 7 // Dialog for credit top up
-
+#define DIALOG_LICENCE 8 
 
 #define DIALOG_BUY_VEHICLE 10
 
@@ -415,7 +415,7 @@ forward OnPlayerRegistered(playerid);
 forward OnAccountLoad(playerid);
 forward OnPasswordHashed(playerid);
 forward OnPasswordChecked(playerid);
-
+forward SetPlayerSkills(playerid);
 forward AntiRoleplayName(playerid, playerName[]);
 
 forward IsARentVehicle(vehicleId);
@@ -426,6 +426,10 @@ forward IsABike(vehicleId);
 forward IsABoat(vehicleId);
 forward IsAPlane(vehicleId);
 forward IsATrain(vehicleId);
+forward IsAGSFCars(vehicleid);
+forward IsABallasCars(vehicleid);
+forward IsAVLACars(vehicleid);
+forward IsALSVCars(vehicleid);
 
 forward IsPlayerNearPump1(playerid);
 forward IsPlayerNearPump2(playerid);
@@ -438,7 +442,7 @@ forward SendRadiusMessage(Float:radius, playerid, string[], color1, color2, colo
 
 forward LoadVehicles();
 forward OnVehiclesLoaded();
-forward InsertVehicle(vehicle_owner, vehicleModel, vehicle_id);
+forward InsertVehicle(vehicleOwner, vehicleModel, vehicle_id);
 forward OnVehicleInserted(vehicleId);
 forward DeleteVehicle(vehicleId);
 forward SaveVehicle(vehicleId);
@@ -489,6 +493,10 @@ forward LoadLosSantosParking();
 forward LoadLosSantosAirport();
 forward LoadLosSantosPoliceDepartment();
 forward LoadLosSantosPoliceCars();
+forward LoadGSFCars();
+forward LoadBallasCars();
+forward LoadVLACars();
+forward LoadLSVCars();
 forward LoadLosSantosTaxiJob();
 forward LoadLosSantosSmugglerJob();
 forward LoadLosSantosBankInterior();
@@ -506,6 +514,9 @@ forward closeLspdGarageDoor();
 forward closeVaultDoor();
 forward closeParkingGate1();
 forward closeParkingGate2();
+
+forward SetTime();
+forward PayDay();
 // ====================================================================================================== Variables
 new MySQL:mysql;
 
@@ -517,6 +528,9 @@ new GlobalBusinessesCounter = 1;
 new GlobalSpecialBusinessesCounter = 1;
 // Textdraws
 new Text:FuelTD[MAX_PLAYERS];
+new Text:BankMoneyTD[MAX_PLAYERS];
+new Text:DateTD;
+new Text:TimeTD;
 
 // Players TABLE
 enum PlayerData
@@ -723,6 +737,7 @@ new CalledPlayer[MAX_PLAYERS];
 new InCall[MAX_PLAYERS];
 new AdvertisementTime[MAX_PLAYERS];
 new HaveMoneyBag[MAX_PLAYERS];
+new PayCash[MAX_PLAYERS];
 
 // Vehicle
 new VehicleEngine[MAX_VEHICLES];
@@ -756,10 +771,15 @@ new RentVehicles[24];
 new SaleVehicles[89];
 new OwnedVehicles[sizeof(VehicleInfo)];
 new LSPoliceCars[13];
+new GSFCars[9];
+new BallasCars[9];
+new VLACars[9];
+new LSVCars[9];
 
 new Text3D:SaleVehicleLabels[MAX_VEHICLES];
 new Text3D:HouseLabels[sizeof(HouseInfo)];
 new Text3D:BusinessLabels[sizeof(BusinessInfo)];
+new Text3D:BusinessExitLabels[sizeof(BusinessInfo)];
 new Text3D:SpecialBusinessLabels[sizeof(SpecialBusinessInfo)];
 
 // Doors, gates, windows etc..
@@ -789,6 +809,7 @@ new parkingGate2Opened;
 
 new InBank[MAX_PLAYERS];
 new InCityHall[MAX_PLAYERS];
+new InDrivingSchool[MAX_PLAYERS];
 new InLSPDHQ[MAX_PLAYERS];
 new InGSFHQ[MAX_PLAYERS];
 new InBallasHQ[MAX_PLAYERS];
@@ -837,7 +858,7 @@ stock SafeGetPlayerMoney(playerid)
 	return PlayerInfo[playerid][Money];
 }
 
-stock isNumeric(string[])
+stock IsNumeric(string[])
 {
 	for(new i = 0; i < strlen(string); i++)
 	{
@@ -1470,10 +1491,10 @@ public OnPasswordHashed(playerid)
 	
 	mysql_format(mysql, query, sizeof(query), "INSERT INTO Users SET \
 												name = '%e', \
-												password_digest = '%e", playername, PlayerInfo[playerid][Password]);
+												password_digest = '%e'", playername, PlayerInfo[playerid][Password]);
 	mysql_tquery(mysql, query, "OnPlayerRegistered", "i", playerid);
 	
-	ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Gender", ""TEXT_COLOR_WHITE"Male\nFemale", "Continue", "Cancel");
+	ShowPlayerDialog(playerid, DIALOG_GENDER, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Gender", ""TEXT_COLOR_WHITE"Male\nFemale", "Continue", "Cancel");
 }
 
 public OnPasswordChecked(playerid)
@@ -1488,7 +1509,7 @@ public OnPasswordChecked(playerid)
 		// If player didnt pick Gender, show him dialog
 		if(PlayerInfo[playerid][Gender] == 9999)
 		{
-			ShowPlayerDialog(playerid, DIALOG_SEX, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Gender", ""TEXT_COLOR_WHITE"Male\nFemale", "Continue", "Cancel");
+			ShowPlayerDialog(playerid, DIALOG_GENDER, DIALOG_STYLE_LIST, ""TEXT_COLOR_RED"Registration - Gender", ""TEXT_COLOR_WHITE"Male\nFemale", "Continue", "Cancel");
 		}
 		// If player didnt pick Age, show him dialog
 		else if(PlayerInfo[playerid][Age] == 9999)
@@ -1509,8 +1530,10 @@ public OnPasswordChecked(playerid)
 		// Otherwise, player is fully registered, spawn him
 		else 
 		{
+			ResetPlayerMoney(playerid);
 			SetSpawnInfo(playerid, 0, 0, PlayerInfo[playerid][SpawnX], PlayerInfo[playerid][SpawnY], PlayerInfo[playerid][SpawnZ], 360.0, 0, 0, 0, 0, 0, 0);
 			SpawnPlayer(playerid);
+			GivePlayerMoney(playerid, PlayerInfo[playerid][Money]);
 		}
 	}
 	else
@@ -1523,6 +1546,22 @@ public OnPasswordChecked(playerid)
 		format(message, sizeof(message), ""TEXT_COLOR_WHITE"Password You entered is incorrect. \n"TEXT_COLOR_RED"Full_Name: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Gender: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Age: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Country: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"City: "TEXT_COLOR_WHITE"%s \nTry again. \nEnter your password to login.", playerName, player_sex, player_age, player_country, player_city);
 		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Continue", "Cancel");
 	}
+}
+
+public SetPlayerSkills(playerid)
+{
+    SetPlayerSkillLevel(playerid, WEAPONSKILL_PISTOL, PlayerInfo[playerid][PistolSkill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_PISTOL_SILENCED, PlayerInfo[playerid][SilencedSkill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_DESERT_EAGLE, PlayerInfo[playerid][DesertSkill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_SHOTGUN, PlayerInfo[playerid][ShotgunSkill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_SAWNOFF_SHOTGUN, PlayerInfo[playerid][SawnoffSkill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_SPAS12_SHOTGUN, PlayerInfo[playerid][CombatSkill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_MICRO_UZI, PlayerInfo[playerid][UziSkill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_MP5, PlayerInfo[playerid][MP5Skill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_AK47, PlayerInfo[playerid][AK47Skill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_M4, PlayerInfo[playerid][M4Skill]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_SNIPERRIFLE, PlayerInfo[playerid][SniperSkill]);
+	return 1;
 }
 
 public LoadVehicles()
@@ -1591,7 +1630,7 @@ public LoadVehiclesFuel()
 	}
 }
 
-public InsertVehicle(vehicle_owner, vehicleModel, vehicle_id) 
+public InsertVehicle(vehicleOwner, vehicleModel, vehicle_id) 
 {
 	new query[512];
 	
@@ -1622,7 +1661,7 @@ public InsertVehicle(vehicle_owner, vehicleModel, vehicle_id)
 													rear_bumper = 0, \
 													vent_right = 0, \
 													vent_left = 0",
-													vehicle_owner,
+													vehicleOwner,
 													vehicleModel);
 	mysql_tquery(mysql, query, "OnVehicleInserted", "i", vehicle_id);
 }
@@ -2503,6 +2542,7 @@ public SetUnownedHouseLabel(houseId)
 					"TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d \n \
 					"TEXT_COLOR_WHITE"To buy this house \n \
 					"TEXT_COLOR_RED"type /h buy", HouseInfo[houseId][Id], HouseInfo[houseId][Price]);
+	Delete3DTextLabel(HouseLabels[houseId]);
     HouseLabels[houseId] = Create3DTextLabel(message, -1, HouseInfo[houseId][EnterX], HouseInfo[houseId][EnterY], HouseInfo[houseId][EnterZ], 20.0, HouseInfo[houseId][OutsideVirtualWorld]);
 
 	return 1;
@@ -2512,11 +2552,14 @@ public SetOwnedHouseLabel(houseId)
 {
 	new message[1024];
 	
+	if(HouseInfo[houseId][Icon]) DestroyPickup(HouseInfo[houseId][Icon]);
+	HouseInfo[houseId][Icon] = CreatePickup(1272, 1, HouseInfo[houseId][EnterX], HouseInfo[houseId][EnterY], HouseInfo[houseId][EnterZ], HouseInfo[houseId][OutsideVirtualWorld]);
+
 	format(message, sizeof(message), 
 					""TEXT_COLOR_WHITE"This house has owner !\n \
 					"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n \
 					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d", GetHouseOwnerName(houseId), HouseInfo[houseId][Id]);
-	HouseInfo[houseId][Icon] = CreatePickup(1272, 1, HouseInfo[houseId][EnterX], HouseInfo[houseId][EnterY], HouseInfo[houseId][EnterZ], HouseInfo[houseId][OutsideVirtualWorld]);
+	Delete3DTextLabel(HouseLabels[houseId]);
 	HouseLabels[houseId] = Create3DTextLabel(message, -1, HouseInfo[houseId][EnterX], HouseInfo[houseId][EnterY], HouseInfo[houseId][EnterZ], 10.0, HouseInfo[houseId][OutsideVirtualWorld], 0);
 
 	return 1;
@@ -2566,7 +2609,7 @@ public OnBusinessesLoaded()
 				SetUnownedBusinessLabel(GlobalBusinessesCounter);
 				GlobalBusinessesCounter++;
 			}
-			if(BusinessInfo[GlobalBusinessesCounter][Owned] == 1)
+			else
 			{
 				SetOwnedBusinessLabel(GlobalBusinessesCounter);
 				GlobalBusinessesCounter++;
@@ -2620,6 +2663,7 @@ public InsertBusiness(businessId)
 public OnBusinessInserted(businessId)
 {
 	BusinessInfo[businessId][Id] = cache_insert_id();
+	SetUnownedBusinessLabel(businessId);
 	
 	return 1;
 }
@@ -2627,7 +2671,6 @@ public OnBusinessInserted(businessId)
 public SaveBusiness(businessId)
 {
 	new query[512];
-	printf("Name je %s", BusinessInfo[businessId][Name]);
 	mysql_format(mysql, query, sizeof(query), "UPDATE Businesses \
 												SET owned = %d, \
 													user_id = %d, \
@@ -2688,7 +2731,7 @@ public DeleteBusiness(businessId)
 
 public SetUnownedBusinessLabel(businessId)
 {
-	new message[1024];
+	new message[1024], labelId;
 
 	if(BusinessInfo[businessId][ExitIcon]) DestroyPickup(BusinessInfo[businessId][ExitIcon]);
     if(BusinessInfo[businessId][Icon]) DestroyPickup(BusinessInfo[businessId][Icon]);
@@ -2701,16 +2744,20 @@ public SetUnownedBusinessLabel(businessId)
 					"TEXT_COLOR_RED"Price"TEXT_COLOR_WHITE": %d \n \
 					"TEXT_COLOR_RED"Type"TEXT_COLOR_WHITE": %s \n \
 					To buy this business \n \
-					"TEXT_COLOR_RED"type /b buy", BusinessInfo[businessId][Id], GetBusinessTypeName(businessId), BusinessInfo[businessId][Price]);
+					"TEXT_COLOR_RED"type /b buy", BusinessInfo[businessId][Id], BusinessInfo[businessId][Price], GetBusinessTypeName(businessId));
+
+	if(BusinessLabels[businessId]) Delete3DTextLabel(BusinessLabels[businessId]);
+	if(BusinessExitLabels[businessId]) Delete3DTextLabel(BusinessExitLabels[businessId]);
+
     BusinessLabels[businessId] = Create3DTextLabel(message, -1, BusinessInfo[businessId][EnterX], BusinessInfo[businessId][EnterY], BusinessInfo[businessId][EnterZ], 20.0, BusinessInfo[businessId][OutsideVirtualWorld]);
-	BusinessLabels[businessId] = Create3DTextLabel("Exit", -1, BusinessInfo[businessId][ExitX], BusinessInfo[businessId][ExitY], BusinessInfo[businessId][ExitZ], 20.0, BusinessInfo[businessId][InsideVirtualWorld]);
+	BusinessExitLabels[businessId] = Create3DTextLabel("Exit", -1, BusinessInfo[businessId][ExitX], BusinessInfo[businessId][ExitY], BusinessInfo[businessId][ExitZ], 20.0, BusinessInfo[businessId][InsideVirtualWorld]);
 
 	return 1;
 }
 
 public SetOwnedBusinessLabel(businessId)
 {
-	new message[1024];
+	new message[1024], labelId;
 
 	if(BusinessInfo[businessId][ExitIcon]) DestroyPickup(BusinessInfo[businessId][ExitIcon]);
     if(BusinessInfo[businessId][Icon]) DestroyPickup(BusinessInfo[businessId][Icon]);
@@ -2722,11 +2769,13 @@ public SetOwnedBusinessLabel(businessId)
 					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d \n \
 					"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s \n \
 					"TEXT_COLOR_RED"Enter fee"TEXT_COLOR_WHITE": %d \n \
-					"TEXT_COLOR_RED"Type"TEXT_COLOR_WHITE": %s \n \
-					To buy this business \n \
-					"TEXT_COLOR_RED"type /b buy", GetBusinessOwnerName(businessId), BusinessInfo[businessId][Id], BusinessInfo[businessId][EnterFee], GetBusinessTypeName(businessId));
+					"TEXT_COLOR_RED"Type"TEXT_COLOR_WHITE": %s \n",  BusinessInfo[businessId][Id], GetBusinessOwnerName(businessId), BusinessInfo[businessId][EnterFee], GetBusinessTypeName(businessId));
+
+	if(BusinessLabels[businessId]) Delete3DTextLabel(BusinessLabels[businessId]);
+	if(BusinessExitLabels[businessId]) Delete3DTextLabel(BusinessExitLabels[businessId]);
+
     BusinessLabels[businessId] = Create3DTextLabel(message, -1, BusinessInfo[businessId][EnterX], BusinessInfo[businessId][EnterY], BusinessInfo[businessId][EnterZ], 20.0, BusinessInfo[businessId][OutsideVirtualWorld]);
-	BusinessLabels[businessId] = Create3DTextLabel("Exit", -1, BusinessInfo[businessId][ExitX], BusinessInfo[businessId][ExitY], BusinessInfo[businessId][ExitZ], 20.0, BusinessInfo[businessId][InsideVirtualWorld]);
+	BusinessExitLabels[businessId] = Create3DTextLabel("Exit", -1, BusinessInfo[businessId][ExitX], BusinessInfo[businessId][ExitY], BusinessInfo[businessId][ExitZ], 20.0, BusinessInfo[businessId][InsideVirtualWorld]);
 
 	return 1;
 }
@@ -2763,21 +2812,26 @@ public OnSpecialBusinessesLoaded()
 			SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Icon] = CreatePickup(1274, 1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 0);
 			if(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owned] == 0)
 			{
-				new message[256];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE" This special business has no owner !\nFor more information visit forum!\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s",  SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description]);
-				SpecialBusinessLabels[GlobalSpecialBusinessesCounter] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0, 0);
+				new message[1024];
+				format(message, sizeof(message),
+					""TEXT_COLOR_WHITE"This business has no owner!\n \
+					For more information visit forum!\n \
+					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s \n \
+					"TEXT_COLOR_RED"Description"TEXT_COLOR_WHITE": %s", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description]);
+    			SpecialBusinessLabels[GlobalSpecialBusinessesCounter] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0);
 				GlobalSpecialBusinessesCounter++;
 			}
 			if(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owned] == 1)
 			{
-				new message[512];
-				format(message, sizeof(message), ""TEXT_COLOR_WHITE"This special business has owner!\n "TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d\n"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s\n"TEXT_COLOR_RED"Enter fee"TEXT_COLOR_WHITE": %d", 
-													SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name], 
-													SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id], 
-													GetSpecialBusinessOwnerName(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Owner]), 
-													SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterFee]);
-
-				SpecialBusinessLabels[GlobalSpecialBusinessesCounter] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0, 0);
+				new message[1024];
+				format(message, sizeof(message),
+					""TEXT_COLOR_WHITE"This business has owner!\n \
+					"TEXT_COLOR_RED"Owner"TEXT_COLOR_WHITE": %s \n \
+					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s \n \
+					"TEXT_COLOR_RED"Description"TEXT_COLOR_WHITE": %s", GetSpecialBusinessOwnerName(GlobalSpecialBusinessesCounter), SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description]);
+    			SpecialBusinessLabels[GlobalSpecialBusinessesCounter] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0);
 				GlobalSpecialBusinessesCounter++;
 			}	
 		}
@@ -2811,14 +2865,7 @@ public InsertSpecialBusiness(specialBusinessId)
 
 public OnSpecialBusinessInserted(specialBusinessId)
 {
-	new message[256];
-
 	SpecialBusinessInfo[specialBusinessId][Id] = cache_insert_id();
-    if(SpecialBusinessInfo[specialBusinessId][Icon]) DestroyPickup(SpecialBusinessInfo[specialBusinessId][Icon]);
-    SpecialBusinessInfo[specialBusinessId][Icon] = CreatePickup(1274, 1, SpecialBusinessInfo[specialBusinessId][EnterX], SpecialBusinessInfo[specialBusinessId][EnterY], SpecialBusinessInfo[specialBusinessId][EnterZ], 0);
-
-    format(message, sizeof(message), ""TEXT_COLOR_WHITE" This special business has no owner !\nFor more information visit forum!\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s",  SpecialBusinessInfo[specialBusinessId][Name], SpecialBusinessInfo[specialBusinessId][Id], SpecialBusinessInfo[specialBusinessId][Description]);
-    SpecialBusinessLabels[specialBusinessId] = Create3DTextLabel(message, -1, SpecialBusinessInfo[specialBusinessId][EnterX], SpecialBusinessInfo[specialBusinessId][EnterY], SpecialBusinessInfo[specialBusinessId][EnterZ], 20.0, 0);
 
 	return 1;
 }
@@ -3028,6 +3075,42 @@ public IsATrain(vehicleId)
     return 0;
 }
 
+public IsAGSFCars(vehicleid)
+{
+	for(new i = 0; i < sizeof(GSFCars); i++)
+	{
+		if(vehicleid == GSFCars[i]) return 1;
+	}
+	return 0;
+}
+
+public IsABallasCars(vehicleid)
+{
+	for(new i = 0; i < sizeof(BallasCars); i++)
+	{
+		if(vehicleid == BallasCars[i]) return 1;
+	}
+	return 0;
+}
+
+public IsAVLACars(vehicleid)
+{
+	for(new i = 0; i < sizeof(VLACars); i++)
+	{
+		if(vehicleid == VLACars[i]) return 1;
+	}
+	return 0;
+}
+
+public IsALSVCars(vehicleid)
+{
+	for(new i = 0; i < sizeof(LSVCars); i++)
+	{
+		if(vehicleid == LSVCars[i]) return 1;
+	}
+	return 0;
+}
+
 public IsPlayerNearPump1(playerid)
 {
 	if(IsPlayerInRangeOfPoint(playerid, 10.0, 1944.3260, -1772.9254, 13.3906)) return 1;
@@ -3127,7 +3210,6 @@ public AntiFreezePlayer(playerid)
 public OnPlayerRegistered(playerid)
 {
 	PlayerInfo[playerid][Id] = cache_insert_id();
-	printf("Korisnik se registrovao %d", PlayerInfo[playerid][Id]);
 	SendClientMessage(playerid, -1, "You have been registered to server.");
 }
 
@@ -3364,6 +3446,76 @@ public LoadSaleVehicles()
 	SaleVehicles[87] = AddStaticVehicleEx(511,244.5000000,2471.5000000,18.0000000,0.0000000, 1, 1, 15); //Beagle
 	SaleVehicles[88] = AddStaticVehicleEx(487,365.1000100,2536.5000000,16.9000000,180.0000000, 6, 6, 15); //Maverick
 	GlobalVehiclesCounter += 89;
+}
+
+public LoadLosSantosPoliceCars()
+{
+	LSPoliceCars[0] = AddStaticVehicleEx(596,1570.3000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	LSPoliceCars[1] = AddStaticVehicleEx(596,1574.4000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	LSPoliceCars[2] = AddStaticVehicleEx(596,1578.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	LSPoliceCars[3] = AddStaticVehicleEx(596,1583.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	LSPoliceCars[4] = AddStaticVehicleEx(596,1587.4000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	LSPoliceCars[5] = AddStaticVehicleEx(596,1591.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	LSPoliceCars[6] = AddStaticVehicleEx(596,1595.5000000,-1710.2000000,5.7000000,0.0000000,-1,-1,300); //Police Car (LSPD)
+	LSPoliceCars[7] = AddStaticVehicleEx(523,1601.5000000,-1704.2000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	LSPoliceCars[8] = AddStaticVehicleEx(523,1601.5000000,-1700.2000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	LSPoliceCars[9] = AddStaticVehicleEx(523,1601.5000000,-1696.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	LSPoliceCars[10] = AddStaticVehicleEx(523,1601.5000000,-1692.0000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	LSPoliceCars[11] = AddStaticVehicleEx(523,1601.5000000,-1688.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	LSPoliceCars[12] = AddStaticVehicleEx(523,1601.5000000,-1684.1000000,5.6000000,90.0000000,-1,-1,300); //HPV1000
+	GlobalVehiclesCounter += 13;
+}
+
+public LoadGSFCars()
+{
+	GSFCars[0] = AddStaticVehicleEx(567,2506.3000000,-1676.4000000,13.4786400,325.0000000,128,1,300); //Savanna
+	GSFCars[1] = AddStaticVehicleEx(567,2508.0000000,-1665.5000000,13.3786400,11.5000000,128,1,300); //Savanna
+	GSFCars[2] = AddStaticVehicleEx(492,2517.2000000,-1672.2000000,14.1682800,62.0000000,128,1,300); //Greenwood
+	GSFCars[3] = AddStaticVehicleEx(412,2501.8000000,-1657.2000000,13.3000000,57.2500000,128,1,300); //Voodoo
+	GSFCars[4] = AddStaticVehicleEx(412,2491.5000000,-1655.2000000,13.3000000,90.0000000,128,1,300); //Voodoo
+	GSFCars[5] = AddStaticVehicleEx(468,2494.3000000,-1682.7000000,13.1000000,0.0000000,128,1,300); //Sanchez
+	GSFCars[6] = AddStaticVehicleEx(468,2491.3000000,-1682.7000000,13.1000000,0.0000000,128,1,300); //Sanchez
+	GSFCars[7] = AddStaticVehicleEx(468,2488.3000000,-1682.8000000,13.1000000,0.0000000,128,1,300); //Sanchez
+	GlobalVehiclesCounter += 8;
+}
+
+public LoadBallasCars()
+{
+	BallasCars[0] = AddStaticVehicleEx(566,2051.8000000,-1118.0000000,24.8000000,180.0000000,147,1,300); //Tahoma
+	BallasCars[1] = AddStaticVehicleEx(517,2046.1000000,-1130.1000000,23.9000000,90.0000000,147,1,300); //Majestic
+	BallasCars[2] = AddStaticVehicleEx(517,2037.1000000,-1130.1000000,24.2000000,90.0000000,147,1,300); //Majestic
+	BallasCars[3] = AddStaticVehicleEx(412,2046.1000000,-1141.9000000,24.0000000,90.0000000,147,1,300); //Voodoo
+	BallasCars[4] = AddStaticVehicleEx(412,2037.1000000,-1141.9004000,24.2000000,90.0000000,147,1,300); //Voodoo
+	BallasCars[5] = AddStaticVehicleEx(468,2048.3999000,-1111.6000000,25.4000000,215.0000000,147,1,300); //Sanchez
+	BallasCars[6] = AddStaticVehicleEx(468,2049.8999000,-1110.2000000,25.4000000,214.9970000,147,1,300); //Sanchez
+	BallasCars[7] = AddStaticVehicleEx(468,2055.1001000,-1113.2000000,25.1000000,135.0000000,147,1,300); //Sanchez
+	GlobalVehiclesCounter += 8;
+}
+
+public LoadVLACars()
+{
+	VLACars[0] = AddStaticVehicleEx(466,1699.0000000,-2100.0000000,13.5000000,180.0000000,135,1,300); //Glendale
+	VLACars[1] = AddStaticVehicleEx(575,1693.2000000,-2107.2000000,13.3000000,90.0000000,135,1,300); //Broadway
+	VLACars[2] = AddStaticVehicleEx(575,1684.2000000,-2107.2000000,13.3000000,270.0000000,135,1,300); //Broadway
+	VLACars[3] = AddStaticVehicleEx(474,1693.2000000,-2118.7000000,13.3000000,90.0000000,135,1,300); //Hermes
+	VLACars[4] = AddStaticVehicleEx(474,1684.2002000,-2118.7000000,13.6117400,270.0000000,135,1,300); //Hermes
+	VLACars[5] = AddStaticVehicleEx(468,1696.5000000,-2091.8000000,13.3000000,180.0000000,135,1,300); //Sanchez
+	VLACars[6] = AddStaticVehicleEx(468,1699.0000000,-2091.8000000,13.3000000,180.0000000,135,1,300); //Sanchez
+	VLACars[7] = AddStaticVehicleEx(468,1701.5000000,-2091.8999000,13.3000000,180.0000000,135,1,300); //Sanchez
+	GlobalVehiclesCounter += 8;
+}
+
+public LoadLSVCars()
+{
+	LSVCars[0] = AddStaticVehicleEx(576,2828.5000000,-1193.5000000,24.9000000,315.0000000,6,1,300); //Tornado
+	LSVCars[1] = AddStaticVehicleEx(576,2828.5000000,-1198.5000000,24.9000000,315.0000000,6,1,300); //Tornado
+	LSVCars[2] = AddStaticVehicleEx(474,2827.3000000,-1171.8000000,24.9000000,225.0000000,6,1,300); //Hermes
+	LSVCars[3] = AddStaticVehicleEx(474,2827.3000000,-1166.2000000,24.9000000,225.0000000,6,1,300); //Hermes
+	LSVCars[4] = AddStaticVehicleEx(467,2820.2000000,-1186.1000000,25.2196100,315.0000000,6,1,300); //Oceanic
+	LSVCars[5] = AddStaticVehicleEx(468,2822.3999000,-1178.1000000,25.0000000,225.0000000,6,1,300); //Sanchez
+	LSVCars[6] = AddStaticVehicleEx(468,2818.8999000,-1178.1000000,25.0000000,225.0000000,6,1,300); //Sanchez
+	LSVCars[7] = AddStaticVehicleEx(468,2814.9004000,-1178.0996000,25.0000000,225.0000000,6,1,300); //Sanchez
+	GlobalVehiclesCounter += 8;
 }
 
 public LoadLosSantosParking()
@@ -4293,6 +4445,82 @@ public CreateHeadquartersLabels()
 	Create3DTextLabel("Los Santos Vagos HQ", -1, 2808.0615, -1189.7864, 25.3446, 10.0, 0, 0);
 }
 
+stock PayCheckCalculate(playerid)
+{
+	new level = PlayerInfo[playerid][Level];
+	// new paycheck = JobPayCheck(playerid);
+	// PayCash[playerid] = level*100 + paycheck;
+	PayCash[playerid] = level*100;
+
+	return PayCash;
+}
+
+public PayDay()
+{
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+	    new str[128], respect, lvlRespect;
+
+	    if(!IsPlayerConnected(i)) return 1;
+	    if(PlayerInfo[i][Playtime] < 40) return SendClientMessage(i, COLOR_RED, "You have not played enough to receive paycheck!");
+	    respect = 2;
+	    lvlRespect = PlayerInfo[i][Level]*respect;
+	    PayCheckCalculate(i);
+	    PlayerInfo[i][Money] +=  PayCash[i];
+		GivePlayerMoney(i, PayCash[i]);
+		// if(PlayerInfo[i][pJobContract] > 0) PlayerInfo[i][pJobContract] -= 1;
+		PlayerInfo[i][Respect] += 1;
+		PlayerInfo[i][Hours] += 1;
+		PlayerInfo[i][Playtime] = 0;
+		if(PlayerInfo[i][Respect] >= lvlRespect)
+		{
+		    PlayerInfo[i][Level] += 1;
+		    PlayerInfo[i][Respect] = 0;
+		    SavePlayer(i);
+			format(str, sizeof(str), "Cestitamo! Sada ste level %d!", PlayerInfo[i][Level]);
+			SendClientMessage(i, COLOR_GREEN, str);
+		}
+		SavePlayer(i);
+		format(str, sizeof(str), "PLATA! Zaradili ste %d$", PayCash[i]);
+		SendClientMessage(i, COLOR_GREEN, str);
+	}
+
+	return 1;
+}
+
+public SetTime()
+{
+        new str[128], year, month, day, hours, minutes, seconds;
+        getdate(year, month, day);
+		gettime(hours, minutes, seconds);
+
+        format(str, sizeof(str), "%d/%s%d/%s%d", day, ((month < 10) ? ("0") : ("")), month, (year < 10) ? ("0") : (""), year);
+        TextDrawSetString(DateTD, str);
+
+        format(str, sizeof(str), "%s%d:%s%d:%s%d", (hours < 10) ? ("0") : (""), hours, (minutes < 10) ? ("0") : (""), minutes, (seconds < 10) ? ("0") : (""), seconds);
+        TextDrawSetString(TimeTD, str);
+
+        if(minutes == 00 && seconds == 00)
+		{
+			PayDay();
+			switch(hours)
+			{
+				case 16: SetWorldTime(21);
+				case 17: SetWorldTime(22);
+				case 18: SetWorldTime(23);
+				case 19: SetWorldTime(24);
+				case 1: SetWorldTime(1);
+				case 2: SetWorldTime(2);
+				case 3: SetWorldTime(3);
+				case 4: SetWorldTime(4);
+				case 5: SetWorldTime(5);
+				case 6: SetWorldTime(6);
+				case 7: SetWorldTime(7);
+				case 8: SetWorldTime(8);
+			}
+		}
+}
+
 public OnGameModeInit()
 {
 	AddPlayerClass(0, 1642.2903, -2333.3423, 13.5469, 360.0, 0, 0, 0, 0, 0, 0);
@@ -4382,8 +4610,55 @@ public OnGameModeInit()
 	LoadBusinesses();
 	LoadSpecialBusinesses();
 
+	SetTimer("SetTime", 1000, true);
 	SetTimer("CheckVehicleFuel", 60000, true);
 	
+	CreatePickup(1314, 1, 2522.4756, -1679.2355, 15.4970, 0);
+	Create3DTextLabel("Grove Street Families HQ", -1, 2522.4756, -1679.2355, 15.4970, 10.0, 0, 0);
+
+	CreatePickup(1314, 1, 2045.5447, -1116.1219, 26.3617, 0);
+	Create3DTextLabel("Ballas HQ", -1, 2045.5447, -1116.1219, 26.3617, 10.0, 0);
+
+	CreatePickup(1314, 1, 1684.8185, -2099.0588, 13.8343, 0);
+	Create3DTextLabel("Varrios Los Aztecas HQ", -1, 1684.8185, -2099.0588, 13.8343, 10.0, 0,0);
+
+	CreatePickup(1314, 1, 2808.0615, -1189.7864, 25.3446, 0);
+	Create3DTextLabel("Los Santos Vagos HQ", -1, 2808.0615, -1189.7864, 25.3446, 10.0, 0, 0);
+
+    CreatePickup(1239, 1, 593.1841, -1249.7542, 18.2069, 0);
+	Create3DTextLabel("Bank", -1, 593.1841, -1249.7542, 18.2069, 10.0, 0, 0);
+
+	CreatePickup(1239, 1, 573.1008, -1265.4025, 995.6459, 0);
+	Create3DTextLabel("Window 1 \nMoney deposit and withdraw", -1, 573.1008, -1265.4025, 995.6459, 10.0, 0, 0);
+
+	CreatePickup(1239, 1, 573.1008, -1258.3695, 995.6459, 0);
+	Create3DTextLabel("Window 2 \nMoney deposit and withdraw", -1, 573.1008, -1258.3695, 995.6459, 10.0, 0, 0);
+
+	CreatePickup(1239, 1, 576.4832, -1273.1786, 995.6459, 0);
+	Create3DTextLabel("Open bank account \n/bankaccount", -1, 576.4832, -1273.1786, 995.6459, 10.0, 0, 0);
+
+    CreatePickup(1239, 1, 573.1008, -1287.5659, 995.6459, 0);
+	Create3DTextLabel("Take bank credit \n/bankcredit", -1, 573.1008, -1287.5659, 995.6459, 10.0, 0, 0);
+
+	CreatePickup(1239, 1, 1479.3827, -1770.1901 ,18.7958, 0);
+	Create3DTextLabel("City Hall\nTo enter press F", -1, 1479.3827, -1770.1901, 18.7958, 10.0, 0, 0);
+
+	CreatePickup(1239, 1, 1553.9333, -1675.6754, 16.1953, 0);
+	Create3DTextLabel("Los Santos Police Department", -1, 1553.9333, -1675.6754, 16.1953, 10.0, 0, 0);
+
+	CreatePickup(1239, 1, 2047.0300, -1908.0302, 13.5469, 0);
+	Create3DTextLabel("Driving school", -1, 2047.0300, -1908.0302, 13.5469, 10.0, 0, 0);
+
+	DateTD = TextDrawCreate(547.000000, 11.000000, "--");
+	TextDrawFont(DateTD,3);
+	TextDrawLetterSize(DateTD,0.399999, 1.600000);
+    TextDrawColor(DateTD, 0xffffffff);
+
+	TimeTD = TextDrawCreate(547.000000, 28.000000, "--");
+	TextDrawFont(TimeTD,3);
+	TextDrawLetterSize(TimeTD, 0.399999 ,1.600000);
+	TextDrawColor(TimeTD, 0xffffffff);
+
 	// Textdraws for vehicles on sale
 	for(new i = 0; i < MAX_VEHICLES; i++)
 	{
@@ -4474,11 +4749,14 @@ public OnPlayerConnect(playerid)
 
 	InBank[playerid] = 0;
 	InCityHall[playerid] = 0;
+	InDrivingSchool[playerid] = 0;
 	InLSPDHQ[playerid] = 0;
 	InGSFHQ[playerid] = 0;
 	InBallasHQ[playerid] = 0;
 	InLSVHQ[playerid] = 0;
 	InVLAHQ[playerid] = 0;
+
+	PayCash[playerid] = 0;
 
 	FuelTD[playerid] = TextDrawCreate(526.399963, 412.906738, "Gorivo: 100");
 	TextDrawLetterSize(FuelTD[playerid], 0.449999, 1.600000);
@@ -4496,6 +4774,15 @@ public OnPlayerConnect(playerid)
 	//------------------------------------------------------------------------ > LSPD CELLS
 	RemoveBuildingForPlayer(playerid, 14843, 266.3516, 81.1953, 1001.2813, 0.25);
 	
+	BankMoneyTD[playerid] = TextDrawCreate(610.000000, 101.000000, "");
+	TextDrawAlignment(BankMoneyTD[playerid], 3);
+	TextDrawBackgroundColor(BankMoneyTD[playerid], 255);
+	TextDrawFont(BankMoneyTD[playerid], 2);
+	TextDrawLetterSize(BankMoneyTD[playerid], 0.300000, 1.000000);
+	TextDrawColor(BankMoneyTD[playerid], -1);
+	TextDrawSetOutline(BankMoneyTD[playerid], 1);
+	TextDrawSetProportional(BankMoneyTD[playerid], 1);
+
 	return 1;
 }
 
@@ -4555,7 +4842,10 @@ public OnPlayerDisconnect(playerid, reason)
 		PlayerInfo[playerid][SpawnY] = Y;
 		PlayerInfo[playerid][SpawnZ] = Z;
 	}
-	
+
+    TextDrawHideForPlayer(playerid, DateTD);
+	TextDrawHideForPlayer(playerid, TimeTD);
+
 	SavePlayer(playerid);
 		
 	return 1;
@@ -4563,16 +4853,34 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerSpawn(playerid)
 {
+	if(PlayerInfo[playerid][OSkin] != 0 && PlayerInfo[playerid][OMember] != 0)
+	{
+	 	if(PlayerInfo[playerid][OMember] == 1 || PlayerInfo[playerid][OMember] == 2) return SetPlayerSkin(playerid, PlayerInfo[playerid][Skin]);
+    	else SetPlayerSkin(playerid, PlayerInfo[playerid][OSkin]);
+    }
+    else SetPlayerSkin(playerid, PlayerInfo[playerid][Skin]);
+
+	SetPlayerSkills(playerid);
+	SetPlayerFightingStyle(playerid, PlayerInfo[playerid][FightingStyle]);
+    SetCameraBehindPlayer(playerid);
+
+    TextDrawShowForPlayer(playerid, DateTD);
+	TextDrawShowForPlayer(playerid, TimeTD);
+    TextDrawShowForPlayer(playerid, BankMoneyTD[playerid]);
+
 	return 1;
 }
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
+	new weapon;
+
 	HasBelt[playerid] = 0;
 	HasHelmet[playerid] = 0;
 	RefuellingVehicle[playerid] = 0;
 	RefillLitre[playerid] = 0;
 
+	InLSPDHQ[playerid] = 0;
 	InGSFHQ[playerid] = 0;
 	InBallasHQ[playerid] = 0;
 	InLSVHQ[playerid] = 0;
@@ -4584,6 +4892,93 @@ public OnPlayerDeath(playerid, killerid, reason)
 	Caller[playerid] = 0;
 	CalledPlayer[playerid] = 0;
 	InCall[playerid] = 0;
+
+	PlayerInfo[playerid][Dead] = 1;
+	PlayerInfo[killerid][Kills]++;
+	PlayerInfo[playerid][Deaths]++;
+
+	weapon = GetPlayerWeapon(killerid);
+	switch(weapon)
+	{
+	    case 22:
+	    {
+	        PlayerInfo[killerid][PistolSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_PISTOL, PlayerInfo[killerid][PistolSkill]);
+	    }
+	    case 23:
+	    {
+	        PlayerInfo[killerid][SilencedSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_PISTOL_SILENCED, PlayerInfo[killerid][SilencedSkill]);
+	    }
+	    case 24:
+		{
+	        PlayerInfo[killerid][DesertSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_DESERT_EAGLE, PlayerInfo[killerid][DesertSkill]);
+		}
+		case 25:
+		{
+	        PlayerInfo[killerid][ShotgunSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_SHOTGUN, PlayerInfo[killerid][ShotgunSkill]);
+		}
+		case 26:
+		{
+	        PlayerInfo[killerid][SawnoffSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_SAWNOFF_SHOTGUN, PlayerInfo[killerid][SawnoffSkill]);
+		}
+		case 27:
+		{
+	        PlayerInfo[killerid][CombatSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_SPAS12_SHOTGUN, PlayerInfo[killerid][CombatSkill]);
+		}
+		case 28:
+		{
+	        PlayerInfo[killerid][UziSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_MICRO_UZI, PlayerInfo[killerid][UziSkill]);
+		}
+		case 29:
+		{
+	        PlayerInfo[killerid][MP5Skill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_MP5, PlayerInfo[killerid][MP5Skill]);
+		}
+		case 30:
+		{
+	        PlayerInfo[killerid][AK47Skill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_AK47, PlayerInfo[killerid][AK47Skill]);
+		}
+		case 31:
+		{
+	        PlayerInfo[killerid][M4Skill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_M4, PlayerInfo[killerid][M4Skill]);
+		}
+		case 32:
+		{
+	        PlayerInfo[killerid][UziSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_MICRO_UZI, PlayerInfo[killerid][UziSkill]);
+		}
+		case 34:
+		{
+	        PlayerInfo[killerid][SniperSkill] += 5;
+	        SavePlayer(killerid);
+	        SetPlayerSkillLevel(killerid, WEAPONSKILL_SNIPERRIFLE, PlayerInfo[killerid][SniperSkill]);
+		}
+	}
+
+	//MONEY BALANCE
+	GivePlayerMoney(playerid, 100);
+
+	SetPlayerVirtualWorld(playerid, 0);
+	SetPlayerInterior(playerid, 0);
 
 	return 1;
 }
@@ -4722,13 +5117,13 @@ public OnPlayerCommandText(playerid, cmdtext[])
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-	new vehicle_name[32], vehicle_owner[64], str[128];
-	GetVehicleName(vehicleid, vehicle_name, sizeof(vehicle_name));
-	vehicle_owner = GetVehicleOwnerName(vehicleid);
+	new vehicleName[32], vehicleOwner[64], str[128];
+	GetVehicleName(vehicleid, vehicleName, sizeof(vehicleName));
+	vehicleOwner = GetVehicleOwnerName(vehicleid);
 	
 	if(IsAOwnedVehicle(vehicleid))
 	{
-	    format(str, sizeof(str), "You are entering in %s (%d). Owner: %s", vehicle_name, vehicleid, vehicle_owner);
+	    format(str, sizeof(str), "You are entering in %s (%d). Owner: %s", vehicleName, vehicleid, vehicleOwner);
 	    SendClientMessage(playerid, -1, str);
 		
 	    if(VehicleInfo[vehicleid][Locked] == 1)
@@ -4746,7 +5141,7 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 	}
 	else
 	{
-	    format(str, sizeof(str), "You are entering in %s (%d). Owner: Country", vehicle_name, vehicleid);
+	    format(str, sizeof(str), "You are entering in %s (%d). Owner: Country", vehicleName, vehicleid);
 	    SendClientMessage(playerid, -1, str);
 	}
 	return 1;
@@ -4772,10 +5167,80 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
     		if (RentedVehicle[playerid] != newcar)
    			{
          		TogglePlayerControllable(playerid, 0);
+         		SendClientMessage(playerid, -1, "To rent this vehicle type /rentvehicle");
+         		SendClientMessage(playerid, -1, "To exit this vehicle type /exitvehicle");
    			}
    			else return 1;
   		}
+		else if(IsALSPoliceCar(newcar))
+  		{
+  		    if(PlayerInfo[playerid][OMember] != 1)
+  		    {
+  		    	RemovePlayerFromVehicle(playerid);
+  		    	TogglePlayerControllable(playerid, 1);
+  		    	SendClientMessage(playerid, COLOR_RED, "You're not member of LSPD!");
+			}
+		}
+		else if(IsAGSFCars(newcar))
+  		{
+  		    if(PlayerInfo[playerid][OMember] != 3)
+  		    {
+  		    	RemovePlayerFromVehicle(playerid);
+  		    	TogglePlayerControllable(playerid, 1);
+  		    	SendClientMessage(playerid, COLOR_RED, "You're not member of  Grove Street Families!");
+			}
+		}
+		else if(IsABallasCars(newcar))
+  		{
+  		    if(PlayerInfo[playerid][OMember] != 4)
+  		    {
+  		    	RemovePlayerFromVehicle(playerid);
+  		    	TogglePlayerControllable(playerid, 1);
+  		    	SendClientMessage(playerid, COLOR_RED, "You're not member of  Ballas!");
+			}
+		}
+		else if(IsAVLACars(newcar))
+  		{
+  		    if(PlayerInfo[playerid][OMember] != 5)
+  		    {
+  		    	RemovePlayerFromVehicle(playerid);
+  		    	TogglePlayerControllable(playerid, 1);
+  		    	SendClientMessage(playerid, COLOR_RED, "You're not member of  Varrios Los Aztecas!");
+			}
+		}
+		else if(IsALSVCars(newcar))
+  		{
+  		    if(PlayerInfo[playerid][OMember] != 6)
+  		    {
+  		    	RemovePlayerFromVehicle(playerid);
+  		    	TogglePlayerControllable(playerid, 1);
+  		    	SendClientMessage(playerid, COLOR_RED, "You're not member of  Los Santos Vagos!");
+			}
+		}
+
+		if(IsABoat(newcar) && (PlayerInfo[playerid][SailingLicence] == 0))
+		{
+		    RemovePlayerFromVehicle(playerid);
+		    SendClientMessage(playerid, COLOR_RED, "You don't have sailing licence!");
+		}
+		else if(IsAPlane(newcar) && (PlayerInfo[playerid][FlyingLicence] == 0))
+		{
+		    RemovePlayerFromVehicle(playerid);
+		    SendClientMessage(playerid, COLOR_RED, "You don't have flying licence!");
+		}
+		else if(PlayerInfo[playerid][DrivingLicence] == 0) SendClientMessage(playerid, COLOR_RED, "You don't have driving licence, drive carefully and watchout for police!");
 		
+		format(str, sizeof(str), "Fuel: %i", VehicleFuel[newcar]);
+		TextDrawSetString(FuelTD[playerid], str);
+	    TextDrawShowForPlayer(playerid, FuelTD[playerid]);
+	}
+	else if(newstate == PLAYER_STATE_PASSENGER)
+	{
+	    new newcar, str[128];
+		newcar = GetPlayerVehicleID(playerid);
+		if(IsABike(newcar)) SendClientMessage(playerid, -1, "Don't forget to put helmet on. /helmet");
+	    else SendClientMessage(playerid, -1, "Don't forget to put seat belt on. /belt");
+
 		format(str, sizeof(str), "Fuel: %i", VehicleFuel[newcar]);
 		TextDrawSetString(FuelTD[playerid], str);
 	    TextDrawShowForPlayer(playerid, FuelTD[playerid]);
@@ -4891,7 +5356,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		if(IsPlayerInRangeOfPoint(playerid, 2.0, 593.1841, -1249.7542, 18.2069)) // BANK ENTER
 		{
 		    TogglePlayerControllable(playerid, 0);
-		    SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+		    SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 			SetPlayerPos(playerid, 603.5001, -1269.4661, 996.6459);
 			InBank[playerid] = 1;
 		}
@@ -4903,7 +5368,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
         else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1479.3827, -1770.1901, 18.7958)) // CITY HALL ENTER
 		{
 		    TogglePlayerControllable(playerid, 0);
-		    SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+		    SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 			SetPlayerPos(playerid, 1479.2421, -1779.2054, 999.0159);
 			InCityHall[playerid] = 1;
 		}
@@ -4915,7 +5380,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1553.9333, -1675.6754, 16.1953)) // Los Santos PoliceHQ ENTER
 		{
 		    TogglePlayerControllable(playerid, 0);
-		    SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+		    SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 			SetPlayerPos(playerid, 246.783996, 63.900199, 1003.640625);
 			SetPlayerInterior(playerid, 6);
 			InLSPDHQ[playerid] = 1;
@@ -4930,7 +5395,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		{
 		    if(GSFHQLocked == 1) return 1;
 		    TogglePlayerControllable(playerid, 0);
-	    	SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+	    	SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 		    SetPlayerPos(playerid, 2496.05, -1692.73, 1015.75);
 		    SetPlayerInterior(playerid, 3);
 		    SetPlayerVirtualWorld(playerid, 99);
@@ -4947,7 +5412,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		{
 		    if(BallasHQLocked == 1) return 1;
 		    TogglePlayerControllable(playerid, 0);
-	    	SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+	    	SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 		    SetPlayerPos(playerid, 2365.3, -1134.92, 1051.91);
 		    SetPlayerInterior(playerid, 8);
 		    SetPlayerVirtualWorld(playerid, 99);
@@ -4964,7 +5429,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		{
 			if(VLAHQLocked == 1) return 1;
 			TogglePlayerControllable(playerid, 0);
-  			SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+  			SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 		    SetPlayerPos(playerid, 2196.79, -1204.35, 1050.05);
 		    SetPlayerInterior(playerid, 6);
 		    SetPlayerVirtualWorld(playerid, 99);
@@ -4981,7 +5446,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		{
 		    if(LSVHQLocked == 1) return 1;
 		    TogglePlayerControllable(playerid, 0);
-    		SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+    		SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 		    SetPlayerPos(playerid, 82.95, 1322.44, 1084.99);
 		    SetPlayerInterior(playerid, 9);
 		    SetPlayerVirtualWorld(playerid, 99);
@@ -4994,6 +5459,20 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		    SetPlayerVirtualWorld(playerid, 0);
 		    InLSVHQ[playerid] = 9999;
 		}
+		else if(IsPlayerInRangeOfPoint(playerid, 3.0,  2047.0300, -1908.0302, 13.5469))
+		{
+		    SetPlayerPos(playerid, 1494.325195, 1304.942871, 1093.289062);
+		    SetPlayerInterior(playerid, 3);
+		    SetPlayerVirtualWorld(playerid, 99);
+		    InDrivingSchool[playerid] = 1;
+		}
+		else if(IsPlayerInRangeOfPoint(playerid, 3.0, 1494.325195, 1304.942871, 1093.289062) && GetPlayerVirtualWorld(playerid) == 99)
+		{
+		    SetPlayerPos(playerid, 2047.0300, -1908.0302, 13.5469);
+		    SetPlayerInterior(playerid, 0);
+		    SetPlayerVirtualWorld(playerid, 0);
+		    InDrivingSchool[playerid] = 0;
+		}
 		else 
 		{
 			for(new i = 0; i < sizeof(HouseInfo); i++)
@@ -5002,7 +5481,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 				{
 					if(HouseInfo[i][Locked] == 1) return 1;
 					TogglePlayerControllable(playerid, 0);
-					SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+					SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 					SetPlayerPos(playerid, HouseInfo[i][ExitX], HouseInfo[i][ExitY], HouseInfo[i][ExitZ]);
 					SetPlayerFacingAngle(playerid, HouseInfo[i][ExitA]);
 					SetPlayerInterior(playerid, HouseInfo[i][InsideInterior]);
@@ -5036,7 +5515,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 					GivePlayerMoney(playerid, -BusinessInfo[i][EnterFee]);
 					SavePlayer(playerid);
 					TogglePlayerControllable(playerid, 0);
-					SetTimerEx("AntiFreezePlayer", 1000, false, "i", playerid);
+					SetTimerEx("AntiFreezePlayer", 500, false, "i", playerid);
 					SetPlayerPos(playerid, BusinessInfo[i][ExitX], BusinessInfo[i][ExitY], BusinessInfo[i][ExitZ]);
 					SetPlayerFacingAngle(playerid, BusinessInfo[i][ExitA]);
 					SetPlayerInterior(playerid, BusinessInfo[i][InsideInterior]);
@@ -5207,6 +5686,11 @@ public OnRconLoginAttempt(ip[], password[], success)
 
 public OnPlayerUpdate(playerid)
 {
+	new bankMoney[128];
+
+    format(bankMoney, sizeof(bankMoney),"$ %d",PlayerInfo[playerid][BankMoney]);
+    TextDrawSetString(BankMoneyTD[playerid], bankMoney);
+
 	return 1;
 }
 
@@ -5262,7 +5746,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			bcrypt_hash(inputtext, BCRYPT_COST, "OnPasswordHashed", "d", playerid);
 		}
 		
-		case DIALOG_SEX:
+		case DIALOG_GENDER:
 		{
 			new query[256], message[256];
 			
@@ -5311,7 +5795,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration - Age", ""TEXT_COLOR_WHITE"You did not eneter your age. \nEnter how old are You.", "Continue", "Cancel");
 			}
 			
-			if(!isNumeric(inputtext))
+			if(!IsNumeric(inputtext))
 			{
 				return ShowPlayerDialog(playerid, DIALOG_AGE, DIALOG_STYLE_INPUT, ""TEXT_COLOR_RED"Registration - Age", ""TEXT_COLOR_WHITE"You did not eneter your age. \nEnter how old are You.", "Continue", "Cancel");
 			}
@@ -5422,6 +5906,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				case 0:
 				{
 					PlayerInfo[playerid][City] = 0;
+					PlayerInfo[playerid][Money] = 50;
 					PlayerInfo[playerid][SpawnX] = 1642.2903;
 					PlayerInfo[playerid][SpawnY] = -2333.3423;
 					PlayerInfo[playerid][SpawnZ] = 13.5469;
@@ -5443,6 +5928,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				case 1:
 				{
 					PlayerInfo[playerid][City] = 1;
+					PlayerInfo[playerid][Money] = 50;
 					PlayerInfo[playerid][SpawnX] = 1676.4181;
 					PlayerInfo[playerid][SpawnY] = 1447.8713;
 					PlayerInfo[playerid][SpawnZ] = 10.7845;
@@ -5460,6 +5946,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				case 2:
 				{
 					PlayerInfo[playerid][City] = 2;
+					PlayerInfo[playerid][Money] = 50;
 					PlayerInfo[playerid][SpawnX] = -1410.8577;
 					PlayerInfo[playerid][SpawnY] = -301.6284;
 					PlayerInfo[playerid][SpawnZ] = 14.1484;
@@ -5477,6 +5964,45 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					format(message, sizeof(message), ""TEXT_COLOR_WHITE"You successfully finished registration. \n"TEXT_COLOR_RED"Full_Name: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Gender: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"Age: "TEXT_COLOR_WHITE"%d \n"TEXT_COLOR_RED"Country: "TEXT_COLOR_WHITE"%s \n"TEXT_COLOR_RED"City: "TEXT_COLOR_WHITE"%s \nEnter your password to login.", playerName, player_sex, player_age, player_country, player_city);
 					ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, ""TEXT_COLOR_RED"Login", message, "Continue", "Cancel");	
 				}
+			}
+		}
+
+		case DIALOG_LICENCE:
+		{
+			if(!response) return 1;
+			if(response)
+			{
+				if(listitem == 0)
+				{
+				    if(PlayerInfo[playerid][DrivingLicence] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You already have driving licence!");
+					if(GetPlayerMoney(playerid) < 2500) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money to buy licence! (2500$)");
+                    PlayerInfo[playerid][Money] -= 2500;
+					GivePlayerMoney(playerid, -2500);
+					PlayerInfo[playerid][DrivingLicence] = 1;
+					SavePlayer(playerid);
+					SendClientMessage(playerid, COLOR_GREEN, "You've bought driving licence!");
+				}
+				else if(listitem == 1)
+				{
+				    if(PlayerInfo[playerid][FlyingLicence] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You already have flying licence!");
+					if(GetPlayerMoney(playerid) < 7500) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money to buy licence! (7500$)");
+                    PlayerInfo[playerid][Money] -= 7500;
+					GivePlayerMoney(playerid, -7500);
+					PlayerInfo[playerid][FlyingLicence] = 1;
+					SavePlayer(playerid);
+					SendClientMessage(playerid, COLOR_GREEN, "You've bought flying licence!");
+				}
+				else if(listitem == 2)
+				{
+					if(PlayerInfo[playerid][SailingLicence] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You already have sailing licence!");
+					if(GetPlayerMoney(playerid) < 7500) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have enough money to buy licence! (7500$)");
+					PlayerInfo[playerid][Money] -= 7500;
+					GivePlayerMoney(playerid, -7500);
+					PlayerInfo[playerid][SailingLicence] = 1;
+					SavePlayer(playerid);
+					SendClientMessage(playerid, COLOR_GREEN, "You've bought sailing licence!");
+				}
+				return 1;
 			}
 		}
 		
@@ -5821,6 +6347,7 @@ YCMD:avehicle(playerid, params[], help)
 	
 	GetPlayerPos(playerid, X, Y, Z);
 	vehicleId = CreateVehicle(vehicle, X+1, Y+1, Z, 270.0, color1, color2, -1);
+	GlobalVehiclesCounter++;
 	VehicleEngine[vehicleId] = 0;
 	VehicleFuel[vehicleId] = 30;
 	return 1;
@@ -5904,7 +6431,7 @@ YCMD:rentvehicle(playerid, params[], help)
 	
 	vehicleId = GetPlayerVehicleID(playerid);
 	if(!IsARentVehicle(vehicleId)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in rent vehicle!");
-	//if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, -1 ,"[ERROR]: You don't have enough money to rent a vehicle!");
+	if(GetPlayerMoney(playerid) < 50) return SendClientMessage(playerid, -1 ,"[ERROR]: You don't have enough money to rent a vehicle!");
 	if(IsPlayerRentingVehicle[playerid]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are already renting a vehicle!");
 	
 	for(new i = 0; i < MAX_PLAYERS; i++) 
@@ -5912,6 +6439,10 @@ YCMD:rentvehicle(playerid, params[], help)
 		if(RentedVehicle[i] == vehicleId) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Someone already rented this vehicle!");
 	}
 	
+	
+    PlayerInfo[playerid][Money] -= 50;
+	GivePlayerMoney(playerid, -50);
+	SavePlayer(playerid);
 	IsPlayerRentingVehicle[playerid] = 1;
 	RentedVehicle[playerid] = vehicleId;
    	TogglePlayerControllable(playerid, 1);
@@ -5936,6 +6467,15 @@ YCMD:returnvehicle(playerid, params[], help)
 	
 	SendClientMessage(playerid, -1, "You returned the rented vehicle.");
 	
+	return 1;
+}
+
+YCMD:exitvehicle(playerid, params[], help)
+{
+	#pragma unused help
+	if(!IsPlayerInAnyVehicle(playerid)) return 1;
+	RemovePlayerFromVehicle(playerid);
+	TogglePlayerControllable(playerid, 1);
 	return 1;
 }
 
@@ -6123,6 +6663,7 @@ YCMD:v(playerid, params[], help)
 			vehicleModel = GetVehicleModel(vehicleId);
 			newVehicleId = GlobalVehiclesCounter++;
 			
+			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in vehicle!");
 			if(!IsASaleVehicle(vehicleId)) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: This vehicle is not for sale!");
 			if((vehicleId == 411 || vehicleId == 415 || vehicleId == 451 || vehicleId == 495 || vehicleId == 522 || vehicleId == 541) && PlayerInfo[playerid][Donator] == 0) return SendClientMessage(playerid, COLOR_WHITE, "[ERROR]: You can't buy this vehicle. You're not donator!");
 			
@@ -6142,16 +6683,13 @@ YCMD:v(playerid, params[], help)
 			VehicleInfo[newVehicleId][Locked] = 1;
 			VehicleInfo[newVehicleId][Registration] = 0;
 
-			printf("ID Je %d", PlayerInfo[playerid][Id]);
-
 			InsertVehicle(PlayerInfo[playerid][Id], vehicleModel, newVehicleId);
 			OwnedVehicles[newVehicleId] = CreateVehicle(vehicleModel, VehicleInfo[newVehicleId][ParkX], VehicleInfo[newVehicleId][ParkY], VehicleInfo[newVehicleId][ParkZ], VehicleInfo[newVehicleId][ParkA], VehicleInfo[newVehicleId][Color1], VehicleInfo[newVehicleId][Color2], -1);
 			VehicleFuel[OwnedVehicles[newVehicleId]] = 60;
 
 			SendClientMessage(playerid, COLOR_GREEN, "* Congratulations! You've bought vehicle. Vehicle awaits You on the parking in Los Santos.");
-            
-			PlayerInfo[playerid][Money] -= GetVehiclePrice(vehicleModel);
-			GivePlayerMoney(playerid, -GetVehiclePrice(vehicleModel));
+			PlayerInfo[playerid][Money] -= GetVehiclePrice(vehicleId);
+			GivePlayerMoney(playerid, -GetVehiclePrice(vehicleId));
 			
 			SavePlayer(playerid);
 		}
@@ -6319,7 +6857,7 @@ YCMD:v(playerid, params[], help)
 		{
 			new color1, color2;
 
-			if(sscanf(params, "s[16]ii", command, color1, color2)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [color] [boja 1] [boja 2]");
+			if(sscanf(params, "s[16]ii", command, color1, color2)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /v(ehicle) [color] [color1 1] [color 2]");
 			if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not in vehicle!");
 			new vehicleId = GetPlayerVehicleID(playerid);
 			if(VehicleInfo[vehicleId][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in your vehicle!");
@@ -7452,7 +7990,7 @@ YCMD:makebusiness(playerid, params[], help)
     BusinessInfo[GlobalBusinessesCounter][Locked] = 0;
     BusinessInfo[GlobalBusinessesCounter][OutsideInterior] = playerInterior;
     BusinessInfo[GlobalBusinessesCounter][OutsideVirtualWorld] = playerVirtualWorld;
-    BusinessInfo[GlobalBusinessesCounter][InsideVirtualWorld] = id;
+    BusinessInfo[GlobalBusinessesCounter][InsideVirtualWorld] = GlobalBusinessesCounter;
 
     InsertBusiness(GlobalBusinessesCounter);
 	GlobalBusinessesCounter++;
@@ -7466,6 +8004,15 @@ YCMD:deletebusiness(playerid, params[], help)
     // Check for admin
     if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /deletebusiness [id]");
     if(BusinessInfo[id][Owned] == 1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: This business has owner.");
+
+	for(new i = 0; i < sizeof(BusinessInfo); i++) 
+	{
+		if(BusinessInfo[i][Id] == id) 
+		{
+			id = i;
+			break;
+		}
+	}
 
     BusinessInfo[id][Owned] = 0;
     BusinessInfo[id][Price] = 0;
@@ -7487,6 +8034,7 @@ YCMD:deletebusiness(playerid, params[], help)
 
    	DestroyPickup(BusinessInfo[id][Icon]);
 	Delete3DTextLabel(BusinessLabels[id]);
+	Delete3DTextLabel(BusinessExitLabels[id]);
     DeleteBusiness(id);
 
     return 1;
@@ -7496,7 +8044,7 @@ YCMD:makespecialbusiness(playerid, params[], help)
 {
 	#pragma unused help
 
-    new id, name[128], description[128], Float:X, Float:Y, Float:Z, Float:A, str1[128], str2[128], str3[128], message[1024];
+    new name[128], description[128], Float:X, Float:Y, Float:Z, Float:A, message[1024];
 
     if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "You're not authorized to use this command!");
 
@@ -7518,16 +8066,17 @@ YCMD:makespecialbusiness(playerid, params[], help)
     format(description, sizeof(description), "None");
 	SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description] = description;
 
-    InsertSpecialBusiness(GlobalSpecialBusinessesCounter);
-
     if(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Icon]) DestroyPickup(SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Icon]);
     SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Icon] = CreatePickup(1239, 1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 0);
 
-  	format(str1, sizeof(str1), ""TEXT_COLOR_WHITE"This business has no owner! \nFor more information visit forum! \nBusiness name: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name]);
-	format(str2, sizeof(str2), "\n"TEXT_COLOR_WHITE"ID: "TEXT_COLOR_RED"%d", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id]);
-	format(str3, sizeof(str3), "\n"TEXT_COLOR_WHITE"Description: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description]);
-	format(message, sizeof(message), "%s%s%s", str1, str2, str3);
-    SpecialBusinessLabels[id] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0);
+	format(message, sizeof(message),
+					""TEXT_COLOR_WHITE"This business has no owner!\n \
+					For more information visit forum!\n \
+					"TEXT_COLOR_RED"Id"TEXT_COLOR_WHITE": %d \n \
+					"TEXT_COLOR_RED"Name"TEXT_COLOR_WHITE": %s \n \
+					"TEXT_COLOR_RED"Description"TEXT_COLOR_WHITE": %s", SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Id], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Name], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][Description]);
+    SpecialBusinessLabels[GlobalSpecialBusinessesCounter] = Create3DTextLabel(message, -1, SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterX], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterY], SpecialBusinessInfo[GlobalSpecialBusinessesCounter][EnterZ], 20.0, 0);
+    InsertSpecialBusiness(GlobalSpecialBusinessesCounter);
 
     return 1;
 }
@@ -7553,9 +8102,6 @@ YCMD:setsbowner(playerid, params[], help)
 	SpecialBusinessInfo[id][Owned] = 1;
 	SpecialBusinessInfo[id][Owner] = PlayerInfo[player][Id];
 	SpecialBusinessInfo[id][Money] = 0;
-
-	printf("JEBENI ID");
-	printf("%d", SpecialBusinessInfo[id][Id]);
 
 	SaveSpecialBusiness(id);
 	SavePlayer(player);
@@ -7583,7 +8129,7 @@ YCMD:removesbowner(playerid, params[], help)
 	#pragma unused help
 	new id, player, playerName[MAX_PLAYER_NAME], str[128], str1[128], str2[128], str3[128], message[1024];
 
-	// Check for admin
+	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You are not authorized to use this command!");
 	if(sscanf(params, "i", id)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /removespecialbusinessowner [special business id]");
 
 	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
@@ -7603,11 +8149,11 @@ YCMD:removesbowner(playerid, params[], help)
 	SavePlayer(player);
 
     GetPlayerName(player, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Skinuo si %s za vlasnika specijalnog biznisa %d.", playerName, id);
+	format(str, sizeof(str), "You've removed %s as owner of special business %d.", playerName, id);
 	SendClientMessage(playerid, COLOR_GREEN, str);
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	format(str, sizeof(str), "Admin %s Vam je skinuo vlasnika specijalnog biznisa %d.", playerName, id);
+	format(str, sizeof(str), "Admin %s have removed you as owner of special business %d.", playerName, id);
 	SendClientMessage(player, COLOR_RED, str);
 
 	format(str1, sizeof(str1), ""TEXT_COLOR_WHITE"This business has no owner! \nFor more information visit forum! \nBusiness name: "TEXT_COLOR_RED"%s", SpecialBusinessInfo[id][Name]);
@@ -7624,22 +8170,12 @@ YCMD:setsbname(playerid, params[], help)
 {
 	#pragma unused help
 	new id, length, name[128], message1[128], message2[128], message3[128], message[1024];
-    id = IsPlayerNearSpecialBusiness(playerid);
 
 	if(sscanf(params, "s[128]", name)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /setsbname [name]");
+    id = IsPlayerNearSpecialBusiness(playerid);
 	length = strlen(name);
 	if(length < 1 || length > 64) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Name must with between 1 and 64 character length!");
-	
-	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
-	{
-		if(SpecialBusinessInfo[i][Id] == id) 
-		{
-			id = i;
-			break;
-		}
-	}
-
-	if(SpecialBusinessInfo[id][Owner] == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+	if(id == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
     if(SpecialBusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
 
     SpecialBusinessInfo[id][Name] = name;
@@ -7664,17 +8200,7 @@ YCMD:setsbdescription(playerid, params[], help)
 	if(sscanf(params, "s[128]", description)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /setspecialbusinessdescription [description]");
 	length = strlen(description);
 	if(length < 1 || length > 127) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Description must with between 1 and 127 character length!");
-
-	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
-	{
-		if(SpecialBusinessInfo[i][Id] == id) 
-		{
-			id = i;
-			break;
-		}
-	}
-
-	if(SpecialBusinessInfo[id][Owner] == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+	if(id == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
     if(SpecialBusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
 
     SpecialBusinessInfo[id][Description] = description;
@@ -7697,17 +8223,8 @@ YCMD:setsbprice(playerid, params[], help)
     id = IsPlayerNearSpecialBusiness(playerid);
 
     if(sscanf(params, "i", price)) return SendClientMessage(playerid, COLOR_BLUE, "[USAGE]: /specbizzprice [$]");
-
-	for(new i = 0; i < sizeof(SpecialBusinessInfo); i++) 
-	{
-		if(SpecialBusinessInfo[i][Id] == id) 
-		{
-			id = i;
-			break;
-		}
-	}
-
-	if(SpecialBusinessInfo[id][Owner] == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
+	if(price < 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Enter fee must be greater than zero!");
+	if(id == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
     if(SpecialBusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
 
     SpecialBusinessInfo[id][EnterFee] = price;
@@ -7723,9 +8240,9 @@ YCMD:specbizzmoney(playerid, params[], help)
 {
 	#pragma unused help
 	new id, str[128];
-    
     id = IsPlayerNearSpecialBusiness(playerid);
 
+	if(id == -1) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
     if(SpecialBusinessInfo[id][Owner] != PlayerInfo[playerid][Id]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your special business!");
     if(SpecialBusinessInfo[id][Money] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have money on special business account!");
 
@@ -8193,6 +8710,7 @@ YCMD:destroythisvehicle(playerid, params[], help)
 	if(!IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in vehicle!");
 	vehicleId = GetPlayerVehicleID(playerid);
 	DestroyVehicle(vehicleId);
+	GlobalVehiclesCounter--;
 
 	return 1;
 }
@@ -9067,5 +9585,75 @@ YCMD:lockhq(playerid, params[], help)
 	}
 	else return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to your organization HQ!!");
 	
+	return 1;
+}
+
+YCMD:buylicence(playerid, params[], help)
+{
+	#pragma unused help
+	if(InDrivingSchool[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in driving school!");
+	ShowPlayerDialog(playerid, DIALOG_LICENCE, DIALOG_STYLE_LIST, "Choose licence", "Driving\nFlying\nSailing", "Buy", "Cancel");
+	return 1;
+}
+
+YCMD:bankaccount(playerid, params[], help)
+{
+	#pragma unused help
+	if(InBank[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in bank!");
+	if(!IsPlayerInRangeOfPoint(playerid, 3.0, 576.4832, -1273.1786, 995.6459)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to window for bank account!");
+	if(PlayerInfo[playerid][BankAccount] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You already have a bank account here!");
+	PlayerInfo[playerid][BankAccount] = 1;
+	PlayerInfo[playerid][BankMoney] = 0;
+	PlayerInfo[playerid][BankCredit] = 0;
+	SavePlayer(playerid);
+	SendClientMessage(playerid, COLOR_GREEN, "You've opened a bank account!");
+	return 1;
+}
+
+YCMD:bankcredit(playerid, params[], help)
+{
+	#pragma unused help
+	if(InBank[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in bank!");
+	if(!IsPlayerInRangeOfPoint(playerid, 3.0, 573.1008, -1287.5659, 995.6459)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to window for money withdraw!");
+	if(PlayerInfo[playerid][BankCredit] != 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You already have credit in this bank!");
+	PlayerInfo[playerid][BankMoney] += 100000;
+	PlayerInfo[playerid][BankCredit] = 1;
+	SavePlayer(playerid);
+	SendClientMessage(playerid, COLOR_GREEN, "[SUCCESS]: You took credit in bank for 100000$!");
+	return 1;
+}
+
+YCMD:deposit(playerid, params[], help)
+{
+	#pragma unused help
+	new ammount, str[128];
+ 	if(InBank[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in bank!");
+	if(!IsPlayerInRangeOfPoint(playerid, 3.0, 573.1008, -1265.4025, 995.6459) && !IsPlayerInRangeOfPoint(playerid, 3.0, 573.1008, -1258.3695, 995.6459)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not close to window for money deposit!");
+	if(sscanf(params, "i", ammount)) return SendClientMessage(playerid, -1, "[USAGE]: /deposit [amount]");
+	if(ammount > GetPlayerMoney(playerid)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have that amount of money!");
+    PlayerInfo[playerid][Money] -= ammount;
+	GivePlayerMoney(playerid, -ammount);
+	PlayerInfo[playerid][BankMoney] += ammount;
+	SavePlayer(playerid);
+	SavePlayer(playerid);
+	format(str, sizeof(str), "You deposit %d$ in bank. Your new amount in bank is %d$", ammount, PlayerInfo[playerid][BankMoney]);
+	SendClientMessage(playerid, COLOR_GREEN, str);
+	return 1;
+}
+
+YCMD:withdraw(playerid, params[], help)
+{
+	#pragma unused help
+	new ammount, str[128];
+ 	if(InBank[playerid] == 0) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You're not in bank!");
+	if(!IsPlayerInRangeOfPoint(playerid, 3.0, 573.1008, -1265.4025, 995.6459) && !IsPlayerInRangeOfPoint(playerid, 3.0, 573.1008, -1258.3695, 995.6459)) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: Niste blizu saltera za uplatu/podizanje novca!");
+	if(sscanf(params, "i", ammount)) return SendClientMessage(playerid, -1, "[USAGE]: /withdraw [amount]");
+	if(ammount > PlayerInfo[playerid][BankMoney]) return SendClientMessage(playerid, COLOR_RED, "[ERROR]: You don't have that amount of money na racunu!");
+    PlayerInfo[playerid][Money] += ammount;
+	GivePlayerMoney(playerid, ammount);
+	PlayerInfo[playerid][BankMoney] -= ammount;
+	SavePlayer(playerid);
+	format(str, sizeof(str), "You withdrawn %d$ from bank. Your new amount in bank is %d$", ammount, PlayerInfo[playerid][BankMoney]);
+	SendClientMessage(playerid, COLOR_GREEN, str);
 	return 1;
 }
